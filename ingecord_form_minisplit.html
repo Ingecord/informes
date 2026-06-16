@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Ingecord — Informe Técnico</title>
+<style>
+  :root {
+    --teal: #0F6E56;
+    --teal-dark: #085041;
+    --teal-light: #E1F5EE;
+    --teal-mid: #1D9E75;
+    --amber-bg: #FAEEDA;
+    --amber-text: #633806;
+    --green-bg: #EAF3DE;
+    --green-text: #3B6D11;
+    --red-bg: #FCEBEB;
+    --red-text: #791F1F;
+    --blue-bg: #E6F1FB;
+    --blue-text: #0C447C;
+    --gray-bg: #F1EFE8;
+    --border: #e0e0dc;
+    --border-light: #efefeb;
+    --text: #1a1a18;
+    --text-muted: #6b6b67;
+    --surface: #f8f8f5;
+    --white: #ffffff;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--surface);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .top-bar {
+    background: var(--teal);
+    padding: 16px 20px 14px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .top-bar .brand { font-size: 11px; color: rgba(255,255,255,0.7); letter-spacing: 0.08em; text-transform: uppercase; }
+  .top-bar h1 { font-size: 17px; font-weight: 600; color: #fff; margin-top: 2px; }
+  .top-bar .subtitle { font-size: 12px; color: rgba(255,255,255,0.75); margin-top: 2px; }
+
+  .container { max-width: 600px; margin: 0 auto; padding: 16px; }
+
+  /* Info card (datos pre-cargados) */
+  .info-card {
+    background: var(--white);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin-bottom: 16px;
+  }
+  .info-card .badge-source {
+    font-size: 11px; color: var(--teal); background: var(--teal-light);
+    border-radius: 4px; padding: 2px 8px; display: inline-block; margin-bottom: 10px;
+    font-weight: 500;
+  }
+  .info-row { display: flex; justify-content: space-between; align-items: baseline; padding: 4px 0; border-bottom: 1px solid var(--border-light); }
+  .info-row:last-child { border-bottom: none; }
+  .info-lbl { font-size: 12px; color: var(--text-muted); }
+  .info-val { font-size: 13px; font-weight: 600; color: var(--text); text-align: right; max-width: 60%; }
+
+  /* Secciones */
+  .section {
+    background: var(--white);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .section-title {
+    font-size: 13px; font-weight: 600; color: var(--teal);
+    display: flex; align-items: center; gap: 7px;
+    border-bottom: 1px solid var(--border-light); padding-bottom: 10px; margin-bottom: 14px;
+  }
+  .section-title svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+  /* Labels */
+  .field-label {
+    font-size: 12px; font-weight: 600; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.04em;
+    margin-bottom: 8px; margin-top: 14px; display: block;
+  }
+  .field-label:first-child { margin-top: 0; }
+
+  /* Tipo mantenimiento */
+  .tipo-group { display: flex; gap: 8px; }
+  .tipo-btn {
+    flex: 1; padding: 10px 8px; border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm); background: transparent;
+    font-size: 13px; font-weight: 500; color: var(--text-muted);
+    cursor: pointer; text-align: center; transition: all 0.15s;
+  }
+  .tipo-btn.active { border-color: var(--teal); background: var(--teal-light); color: var(--teal-dark); }
+
+  /* Checklist Si/No/NA */
+  .checklist-table { width: 100%; border-collapse: collapse; }
+  .checklist-table th {
+    font-size: 11px; font-weight: 600; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.04em;
+    padding: 6px 4px; text-align: center; border-bottom: 1px solid var(--border);
+  }
+  .checklist-table th:first-child { text-align: left; padding-left: 0; }
+  .checklist-table td { padding: 9px 4px; border-bottom: 1px solid var(--border-light); vertical-align: middle; }
+  .checklist-table tr:last-child td { border-bottom: none; }
+  .checklist-table .item-name { font-size: 13px; color: var(--text); padding-left: 0; }
+  .checklist-group-header td {
+    font-size: 11px; font-weight: 700; color: var(--teal);
+    text-transform: uppercase; letter-spacing: 0.05em;
+    background: var(--teal-light); padding: 6px 8px;
+    border-radius: 4px; border-bottom: none;
+  }
+  .radio-cell { text-align: center; }
+  .radio-sn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 34px; height: 28px; border-radius: 5px;
+    border: 1.5px solid var(--border); font-size: 12px; font-weight: 600;
+    cursor: pointer; transition: all 0.12s; color: var(--text-muted);
+    background: transparent; -webkit-tap-highlight-color: transparent;
+  }
+  .radio-sn.si.selected { border-color: var(--teal); background: var(--teal-light); color: var(--teal-dark); }
+  .radio-sn.no.selected { border-color: #D85A30; background: #FAECE7; color: #712B13; }
+  .radio-sn.na.selected { border-color: #888780; background: var(--gray-bg); color: #444441; }
+
+  /* Mediciones eléctricas */
+  .medicion-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .medicion-group { background: var(--surface); border-radius: var(--radius-sm); padding: 10px 12px; }
+  .medicion-group-title { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; }
+  .medicion-field { margin-bottom: 8px; }
+  .medicion-field:last-child { margin-bottom: 0; }
+  .medicion-field label { font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 3px; }
+  .medicion-field .field-row { display: flex; gap: 6px; align-items: center; }
+  .medicion-field .placa-wrap { position: relative; flex: 1; }
+  .medicion-field .placa-wrap::before {
+    content: 'placa'; font-size: 9px; color: var(--text-muted);
+    position: absolute; top: -8px; left: 0;
+  }
+  .medicion-field .real-wrap { position: relative; flex: 1; }
+  .medicion-field .real-wrap::before {
+    content: 'real'; font-size: 9px; color: var(--teal);
+    font-weight: 600; position: absolute; top: -8px; left: 0;
+  }
+  input[type=number], input[type=text], textarea, select {
+    width: 100%; border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm); padding: 9px 10px;
+    font-size: 14px; color: var(--text); background: var(--white);
+    -webkit-appearance: none; appearance: none;
+    transition: border-color 0.15s;
+  }
+  input[type=number]:focus, input[type=text]:focus, textarea:focus, select:focus {
+    outline: none; border-color: var(--teal);
+  }
+  input.placa { background: var(--surface); color: var(--text-muted); font-size: 13px; }
+  .unit { font-size: 11px; color: var(--text-muted); white-space: nowrap; }
+
+  /* Presiones y temperaturas */
+  .params-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 4px; }
+  .param-field label { font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px; }
+  .delta-display {
+    background: var(--blue-bg); border-radius: var(--radius-sm);
+    padding: 10px 12px; display: flex; justify-content: space-between; align-items: center;
+    margin-top: 10px;
+  }
+  .delta-display .delta-label { font-size: 12px; color: var(--blue-text); font-weight: 600; }
+  .delta-display .delta-value { font-size: 18px; font-weight: 700; color: var(--blue-text); }
+  .delta-display .delta-status { font-size: 11px; margin-top: 2px; }
+
+  /* Estado equipo */
+  .estado-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .estado-btn {
+    padding: 10px 8px; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+    background: transparent; font-size: 12px; font-weight: 600; cursor: pointer;
+    text-align: center; color: var(--text-muted); transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .estado-btn.atendido.active { border-color: var(--teal-mid); background: var(--green-bg); color: var(--green-text); }
+  .estado-btn.seguimiento.active { border-color: #BA7517; background: var(--amber-bg); color: var(--amber-text); }
+  .estado-btn.accesible.active { border-color: #D85A30; background: #FAECE7; color: #712B13; }
+
+  /* Trabajo adicional */
+  .trabajo-toggle { display: flex; gap: 8px; margin-bottom: 10px; }
+  .toggle-btn {
+    flex: 1; padding: 9px; border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm); font-size: 13px; font-weight: 600;
+    cursor: pointer; text-align: center; color: var(--text-muted);
+    background: transparent; transition: all 0.15s;
+  }
+  .toggle-btn.active-no { border-color: var(--teal-mid); background: var(--green-bg); color: var(--green-text); }
+  .toggle-btn.active-si { border-color: #BA7517; background: var(--amber-bg); color: var(--amber-text); }
+  .trabajo-desc { display: none; }
+  .trabajo-desc.visible { display: block; }
+
+  /* Textarea */
+  textarea { min-height: 90px; resize: vertical; font-family: inherit; }
+
+  /* Fotos */
+  .foto-zone {
+    border: 2px dashed var(--border); border-radius: var(--radius);
+    padding: 22px 16px; text-align: center; cursor: pointer;
+    transition: border-color 0.15s; position: relative;
+  }
+  .foto-zone:hover { border-color: var(--teal-mid); }
+  .foto-zone input[type=file] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer;
+    width: 100%; height: 100%; font-size: 0;
+  }
+  .foto-zone-icon { font-size: 28px; color: var(--text-muted); margin-bottom: 6px; }
+  .foto-zone p { font-size: 13px; color: var(--text-muted); }
+  .foto-zone small { font-size: 11px; color: var(--text-muted); display: block; margin-top: 3px; }
+  .foto-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 10px; }
+  .foto-thumb-wrap { position: relative; aspect-ratio: 1; }
+  .foto-thumb-wrap img { width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--border); }
+  .foto-remove {
+    position: absolute; top: -6px; right: -6px;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: #D85A30; color: white; border: none;
+    font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    line-height: 1;
+  }
+  .foto-count-label { font-size: 12px; color: var(--teal); font-weight: 600; margin-top: 6px; }
+
+  /* Submit */
+  .submit-btn {
+    width: 100%; padding: 15px; background: var(--teal);
+    color: white; border: none; border-radius: var(--radius);
+    font-size: 16px; font-weight: 700; cursor: pointer;
+    margin-top: 8px; transition: background 0.15s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .submit-btn:hover { background: var(--teal-dark); }
+  .submit-btn:disabled { background: #9FE1CB; cursor: not-allowed; }
+
+  /* Nota opcional */
+  .optional-note { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+
+  /* Observaciones de placa */
+  .placa-toggle {
+    font-size: 12px; color: var(--teal); cursor: pointer; font-weight: 500;
+    display: inline-flex; align-items: center; gap: 4px; margin-bottom: 10px;
+    background: none; border: none; padding: 0;
+  }
+  .placa-fields { display: none; }
+  .placa-fields.visible { display: block; }
+
+  .required-star { color: #D85A30; margin-left: 2px; }
+
+  .bottom-space { height: 32px; }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="brand">Ingecord</div>
+  <h1 id="pageTitle">Informe — Mini Split / DX</h1>
+  <div class="subtitle" id="pageSubtitle">Cargando datos de la OT...</div>
+</div>
+
+<div class="container">
+
+  <!-- Datos de la OT (pre-cargados) -->
+  <div class="info-card" id="otInfoCard">
+    <div class="badge-source">Datos cargados desde OT</div>
+    <div class="info-row"><span class="info-lbl">OT</span><span class="info-val" id="infoOT">—</span></div>
+    <div class="info-row"><span class="info-lbl">Cliente</span><span class="info-val" id="infoCliente">—</span></div>
+    <div class="info-row"><span class="info-lbl">Sucursal</span><span class="info-val" id="infoSucursal">—</span></div>
+    <div class="info-row"><span class="info-lbl">Equipo</span><span class="info-val" id="infoEquipo">—</span></div>
+    <div class="info-row"><span class="info-lbl">Ubicación</span><span class="info-val" id="infoUbicacion">—</span></div>
+    <div class="info-row"><span class="info-lbl">Marca / Modelo</span><span class="info-val" id="infoMarca">—</span></div>
+    <div class="info-row"><span class="info-lbl">Refrigerante</span><span class="info-val" id="infoRef">—</span></div>
+    <div class="info-row" style="border-bottom:none"><span class="info-lbl">Técnico</span><span class="info-val" id="infoTecnico">—</span></div>
+  </div>
+
+  <!-- Tipo de mantenimiento -->
+  <div class="section">
+    <div class="section-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+      Tipo de mantenimiento <span class="required-star">*</span>
+    </div>
+    <div class="tipo-group">
+      <button class="tipo-btn" id="btnPreventivo" onclick="setTipo('Preventivo')">Preventivo</button>
+      <button class="tipo-btn" id="btnCorrectivo" onclick="setTipo('Correctivo')">Correctivo</button>
+      <button class="tipo-btn" id="btnInspeccion" onclick="setTipo('Inspección')">Inspección</button>
+    </div>
+  </div>
+
+  <!-- Checklist -->
+  <div class="section">
+    <div class="section-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+      Checklist de actividades
+    </div>
+    <table class="checklist-table">
+      <thead>
+        <tr>
+          <th style="width:52%">Actividad</th>
+          <th style="width:16%">Sí</th>
+          <th style="width:16%">No</th>
+          <th style="width:16%">NA</th>
+        </tr>
+      </thead>
+      <tbody id="checklistBody"></tbody>
+    </table>
+  </div>
+
+  <!-- Parámetros eléctricos -->
+  <div class="section">
+    <div class="section-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      Parámetros eléctricos
+    </div>
+
+    <button class="placa-toggle" onclick="togglePlaca(this)" id="placaToggleBtn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+      Ingresar valores de placa (opcional)
+    </button>
+
+    <div class="placa-fields" id="placaFields">
+      <span class="field-label">Voltaje de placa (V)</span>
+      <div class="params-grid">
+        <div class="param-field"><label>A-B</label><input type="number" class="placa" placeholder="220" id="pVoltAB"></div>
+        <div class="param-field"><label>B-C</label><input type="number" class="placa" placeholder="220" id="pVoltBC"></div>
+        <div class="param-field"><label>A-C</label><input type="number" class="placa" placeholder="220" id="pVoltAC"></div>
+      </div>
+      <span class="field-label" style="margin-top:12px">Amperaje de placa (A)</span>
+      <div class="params-grid">
+        <div class="param-field"><label>Fase A</label><input type="number" class="placa" placeholder="—" id="pAmpA"></div>
+        <div class="param-field"><label>Fase B</label><input type="number" class="placa" placeholder="—" id="pAmpB"></div>
+        <div class="param-field"><label>Fase C</label><input type="number" class="placa" placeholder="—" id="pAmpC"></div>
+      </div>
+      <div style="height:12px"></div>
+    </div>
+
+    <span class="field-label">Voltaje medido (V) <span class="required-star">*</span></span>
+    <div class="params-grid">
+      <div class="param-field"><label>A-B</label><input type="number" placeholder="221" id="rVoltAB" onchange="checkAmp()"></div>
+      <div class="param-field"><label>B-C</label><input type="number" placeholder="223" id="rVoltBC"></div>
+      <div class="param-field"><label>A-C</label><input type="number" placeholder="222" id="rVoltAC"></div>
+    </div>
+
+    <span class="field-label" style="margin-top:14px">Amperaje medido (A) <span class="required-star">*</span></span>
+    <div class="params-grid">
+      <div class="param-field"><label>Fase A</label><input type="number" placeholder="33" id="rAmpA" onchange="checkAmp()"></div>
+      <div class="param-field"><label>Fase B</label><input type="number" placeholder="32" id="rAmpB" onchange="checkAmp()"></div>
+      <div class="param-field"><label>Fase C</label><input type="number" placeholder="34" id="rAmpC" onchange="checkAmp()"></div>
+    </div>
+
+    <div id="ampAlerta" style="display:none; margin-top:10px; background:var(--amber-bg); border-radius:6px; padding:8px 10px; font-size:12px; color:var(--amber-text);">
+      ⚠️ Amperaje medido supera el valor de placa — verificar.
+    </div>
+  </div>
+
+  <!-- Presiones y temperaturas -->
+  <div class="section">
+    <div class="section-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 14.76V3.5a2.5 2.5 0 00-5 0v11.26a4.5 4.5 0 105 0z"/></svg>
+      Presiones y temperaturas
+    </div>
+
+    <span class="field-label">Presiones del refrigerante</span>
+    <div class="params-grid">
+      <div class="param-field"><label>Presión alta (PSI)</label><input type="number" placeholder="388" id="presAlta"></div>
+      <div class="param-field"><label>Presión baja (PSI)</label><input type="number" placeholder="124" id="presBaja"></div>
+    </div>
+
+    <span class="field-label" style="margin-top:14px">Temperaturas de aire</span>
+    <div class="params-grid">
+      <div class="param-field"><label>Temperatura suministro (°F)</label><input type="number" placeholder="54" id="tempSum" oninput="calcDelta()"></div>
+      <div class="param-field"><label>Temperatura retorno (°F)</label><input type="number" placeholder="75" id="tempRet" oninput="calcDelta()"></div>
+    </div>
+
+    <div class="delta-display" id="deltaDisplay" style="display:none">
+      <div>
+        <div class="delta-label">Delta T calculado</div>
+        <div class="delta-status" id="deltaStatus"></div>
+      </div>
+      <div class="delta-value" id="deltaVal">—</div>
+    </div>
+  </div>
+
+  <!-- Estado del equipo -->
+  <div class="section">
+    <div class="section-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+      Estado del equipo <span class="required-star">*</span>
+    </div>
+    <div class="estado-group">
+      <button class="estado-btn atendido" onclick="setEstado(this,'Atendido')">✓ Atendido</button>
+      <button class="estado-btn seguimiento" onclick="setEstado(this,'Requiere seguimiento')">⚠ Requiere seguimiento</button>
+      <button class="estado-btn accesible" style="grid-column:1/-1" onclick="setEstado(this,'No accesible')">✕ No accesible</button>
+    </div>
+  </div>
+
+  <!-- Trabajo adicional -->
+  <div class="section">
+    <div class="section-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      Trabajo adicional detectado <span class="required-star">*</span>
+    </div>
+    <div class="trabajo-toggle">
+      <button class="toggle-btn" id="btnTrabNo" onclick="setTrabajo(false)">No detectado</button>
+      <button class="toggle-btn" id="btnTrabSi" onclick="setTrabajo(true)">Sí detectado</button>
+    </div>
+    <div class="trabajo-desc" id="trabajoDescWrap">
+      <label style="font-size:13px;color:var(--text-muted);display:block;margin-bottom:6px">Descripción del trabajo adicional</label>
+      <textarea id="trabajoDesc" placeholder="Describa el trabajo adicional observado..."></textarea>
+    </div>
+  </div>
+
+  <!-- Observaciones del técnico -->
+  <div class="section">
+    <div class="section-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      Observaciones del técnico
+    </div>
+    <textarea id="observaciones" placeholder="Describa en sus propias palabras el trabajo realizado, condiciones del equipo y cualquier observación relevante..."></textarea>
+
+  </div>
+
+  <!-- Fotos -->
+  <div class="section">
+    <div class="section-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      Fotos del equipo
+    </div>
+    <div class="foto-zone" id="fotoZone">
+      <input type="file" accept="image/*" multiple id="fotoInput" onchange="handleFotos(this)">
+      <div class="foto-zone-icon">📷</div>
+      <p>Seleccionar fotos de la galería</p>
+      <small>Máximo 5 fotos</small>
+    </div>
+    <div class="foto-grid" id="fotoGrid"></div>
+    <p class="foto-count-label" id="fotoCount"></p>
+  </div>
+
+  <!-- Submit -->
+  <button class="submit-btn" id="submitBtn" onclick="enviarInforme()">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    Enviar informe
+  </button>
+
+  <div class="bottom-space"></div>
+</div>
+
+<script>
+// ─── Datos de la OT (simulados — en producción llegan por URL params o Power Automate) ───
+const OT_DATA = {
+  ot: 'OT-2026-045',
+  cliente: 'Puma Energy Bahamas',
+  sucursal: 'Chorrera',
+  equipo: 'Split Sala Cajeros',
+  ubicacion: 'Área de cajas',
+  marca: 'LG / LS-Q122C4A0',
+  refrigerante: 'R-410A',
+  tecnico: 'Jorge González',
+  tipoEquipo: 'Split',
+  equipoOT_ID: 'EOT-2026-0312'  // ID del registro Equipos_OT a actualizar
+};
+
+// ─── Checklist ───
+const CHECKLIST = [
+  { group: 'Limpieza', items: [
+    'Limpieza de serpentín condensador',
+    'Limpieza de serpentín evaporador',
+    'Lavado o cambio de filtros de aire',
+    'Limpieza de desagüe condensado',
+  ]},
+  { group: 'Área mecánica', items: [
+    'Lubricación de motores',
+    'Ajuste de correas',
+    'Ajuste de poleas',
+    'Inspección de rodamientos',
+  ]},
+  { group: 'Área eléctrica / electrónica', items: [
+    'Revisión de contactores',
+    'Revisión de capacitores',
+    'Revisión de sensores de temperatura',
+    'Revisión de sensores de humedad',
+    'Revisión de sensores de presión',
+    'Inspección de acometida eléctrica',
+  ]},
+  { group: 'Área hidráulica / refrigeración', items: [
+    'Verificación de presión del refrigerante',
+    'Reparación de fugas de refrigerante',
+    'Carga de gas refrigerante',
+  ]},
+];
+
+const checklistState = {};
+
+function buildChecklist() {
+  const tbody = document.getElementById('checklistBody');
+  let html = '';
+  CHECKLIST.forEach(group => {
+    html += `<tr class="checklist-group-header"><td colspan="4">${group.group}</td></tr>`;
+    group.items.forEach((item, i) => {
+      const key = `${group.group}-${i}`;
+      checklistState[key] = null;
+      html += `<tr>
+        <td class="item-name">${item}</td>
+        <td class="radio-cell"><button class="radio-sn si" data-key="${key}" data-val="Si" onclick="setCheck(this)">Sí</button></td>
+        <td class="radio-cell"><button class="radio-sn no" data-key="${key}" data-val="No" onclick="setCheck(this)">No</button></td>
+        <td class="radio-cell"><button class="radio-sn na" data-key="${key}" data-val="NA" onclick="setCheck(this)">NA</button></td>
+      </tr>`;
+    });
+  });
+  tbody.innerHTML = html;
+}
+
+function setCheck(btn) {
+  const key = btn.dataset.key;
+  const val = btn.dataset.val;
+  checklistState[key] = val;
+  document.querySelectorAll(`.radio-sn[data-key="${key}"]`).forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+// ─── Tipo mantenimiento ───
+let tipoSelected = null;
+function setTipo(tipo) {
+  tipoSelected = tipo;
+  ['Preventivo','Correctivo','Inspección'].forEach(t => {
+    document.getElementById('btn' + t).classList.toggle('active', t === tipo);
+  });
+}
+
+// ─── Placa toggle ───
+function togglePlaca(btn) {
+  const fields = document.getElementById('placaFields');
+  const isVisible = fields.classList.contains('visible');
+  fields.classList.toggle('visible', !isVisible);
+  btn.innerHTML = isVisible
+    ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> Ingresar valores de placa (opcional)'
+    : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg> Ocultar valores de placa';
+}
+
+// ─── Alerta amperaje vs placa ───
+function checkAmp() {
+  const pA = parseFloat(document.getElementById('pAmpA').value);
+  const rA = parseFloat(document.getElementById('rAmpA').value);
+  const alerta = document.getElementById('ampAlerta');
+  if (!isNaN(pA) && !isNaN(rA) && rA > pA * 1.05) {
+    alerta.style.display = 'block';
+  } else {
+    alerta.style.display = 'none';
+  }
+}
+
+// ─── Delta T ───
+function calcDelta() {
+  const ret = parseFloat(document.getElementById('tempRet').value);
+  const sum = parseFloat(document.getElementById('tempSum').value);
+  const display = document.getElementById('deltaDisplay');
+  const val = document.getElementById('deltaVal');
+  const status = document.getElementById('deltaStatus');
+  if (!isNaN(ret) && !isNaN(sum)) {
+    const delta = Math.abs(ret - sum).toFixed(1);
+    val.textContent = delta + '°F';
+    display.style.display = 'flex';
+    if (delta >= 15 && delta <= 22) {
+      status.textContent = '✓ Rango normal (15–22°F)';
+      status.style.color = 'var(--green-text)';
+    } else if (delta < 15) {
+      status.textContent = '⚠ Bajo — posible presión baja o filtros sucios';
+      status.style.color = 'var(--amber-text)';
+    } else {
+      status.textContent = '⚠ Alto — verificar carga del sistema';
+      status.style.color = 'var(--amber-text)';
+    }
+  } else {
+    display.style.display = 'none';
+  }
+}
+
+// ─── Estado equipo ───
+let estadoSelected = null;
+function setEstado(btn, val) {
+  estadoSelected = val;
+  document.querySelectorAll('.estado-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ─── Trabajo adicional ───
+let trabajoAdicional = null;
+function setTrabajo(si) {
+  trabajoAdicional = si;
+  document.getElementById('btnTrabNo').className = 'toggle-btn' + (!si ? ' active-no' : '');
+  document.getElementById('btnTrabSi').className = 'toggle-btn' + (si ? ' active-si' : '');
+  document.getElementById('trabajoDescWrap').classList.toggle('visible', si);
+}
+
+// ─── Fotos ───
+let fotosFiles = [];
+let fotosBase64 = [];
+
+function handleFotos(input) {
+  const nuevas = Array.from(input.files);
+  fotosFiles = [...fotosFiles, ...nuevas].slice(0, 5);
+  renderFotos();
+  document.getElementById('fotoZone').querySelector('p').textContent =
+    fotosFiles.length >= 5 ? 'Máximo alcanzado (5 fotos)' : 'Agregar más fotos';
+  input.value = '';
+}
+
+function removeFoto(idx) {
+  fotosFiles.splice(idx, 1);
+  renderFotos();
+  if (fotosFiles.length < 5)
+    document.getElementById('fotoZone').querySelector('p').textContent = 'Seleccionar fotos de la galería';
+}
+
+function renderFotos() {
+  const grid = document.getElementById('fotoGrid');
+  const count = document.getElementById('fotoCount');
+  grid.innerHTML = fotosFiles.map((f, i) => `
+    <div class="foto-thumb-wrap">
+      <img src="${URL.createObjectURL(f)}" alt="Foto ${i+1}">
+      <button class="foto-remove" onclick="removeFoto(${i})">×</button>
+    </div>
+  `).join('');
+  count.textContent = fotosFiles.length > 0 ? `${fotosFiles.length} foto(s) seleccionada(s)` : '';
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve({
+      nombre: file.name,
+      tipo: file.type,
+      datos: reader.result.split(',')[1]
+    });
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// ─── Cargar datos OT ───
+function loadOTData() {
+  // En producción: leer URL params (?ot=OT-2026-045&eqot=EOT-xxx)
+  // y llamar a Power Automate para obtener datos completos
+  document.getElementById('infoOT').textContent = OT_DATA.ot;
+  document.getElementById('infoCliente').textContent = OT_DATA.cliente;
+  document.getElementById('infoSucursal').textContent = OT_DATA.sucursal;
+  document.getElementById('infoEquipo').textContent = OT_DATA.equipo;
+  document.getElementById('infoUbicacion').textContent = OT_DATA.ubicacion;
+  document.getElementById('infoMarca').textContent = OT_DATA.marca;
+  document.getElementById('infoRef').textContent = OT_DATA.refrigerante;
+  document.getElementById('infoTecnico').textContent = OT_DATA.tecnico;
+  document.getElementById('pageSubtitle').textContent = `${OT_DATA.cliente} — ${OT_DATA.sucursal}`;
+}
+
+// ─── URL del Power Automate HTTP trigger ───
+// Reemplazar con la URL real al publicar el flujo
+const POWER_AUTOMATE_URL = 'REEMPLAZAR_CON_URL_POWER_AUTOMATE';
+
+// ─── Enviar informe ───
+async function enviarInforme() {
+  if (!tipoSelected) { alert('Selecciona el tipo de mantenimiento.'); return; }
+  if (!estadoSelected) { alert('Selecciona el estado del equipo.'); return; }
+  if (trabajoAdicional === null) { alert('Indica si se detectó trabajo adicional.'); return; }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.innerHTML = '⏳ Enviando informe...';
+
+  // Convertir fotos a base64
+  let fotosData = [];
+  if (fotosFiles.length > 0) {
+    try {
+      fotosData = await Promise.all(fotosFiles.map(fileToBase64));
+    } catch (e) {
+      console.error('Error convirtiendo fotos:', e);
+    }
+  }
+
+  const payload = {
+    // Identificadores
+    ot: OT_DATA.ot,
+    equipoOT_ID: OT_DATA.equipoOT_ID,
+    equipo: OT_DATA.equipo,
+    cliente: OT_DATA.cliente,
+    sucursal: OT_DATA.sucursal,
+    ubicacion: OT_DATA.ubicacion,
+    marca: OT_DATA.marca,
+    refrigerante: OT_DATA.refrigerante,
+    tecnico: OT_DATA.tecnico,
+    tipoEquipo: OT_DATA.tipoEquipo,
+    // Formulario
+    tipoMantenimiento: tipoSelected,
+    fechaInforme: new Date().toISOString(),
+    checklist: checklistState,
+    // Placa (opcional)
+    placaVoltAB: document.getElementById('pVoltAB').value || null,
+    placaVoltBC: document.getElementById('pVoltBC').value || null,
+    placaVoltAC: document.getElementById('pVoltAC').value || null,
+    placaAmpA: document.getElementById('pAmpA').value || null,
+    placaAmpB: document.getElementById('pAmpB').value || null,
+    placaAmpC: document.getElementById('pAmpC').value || null,
+    // Mediciones reales
+    voltAB: document.getElementById('rVoltAB').value || null,
+    voltBC: document.getElementById('rVoltBC').value || null,
+    voltAC: document.getElementById('rVoltAC').value || null,
+    ampA: document.getElementById('rAmpA').value || null,
+    ampB: document.getElementById('rAmpB').value || null,
+    ampC: document.getElementById('rAmpC').value || null,
+    // Presiones y temperaturas
+    presionAlta: document.getElementById('presAlta').value || null,
+    presionBaja: document.getElementById('presBaja').value || null,
+    tempSuministro: document.getElementById('tempSum').value || null,
+    tempRetorno: document.getElementById('tempRet').value || null,
+    deltaT: document.getElementById('deltaVal').textContent !== '—' ? document.getElementById('deltaVal').textContent : null,
+    // Estado
+    estadoEquipo: estadoSelected,
+    trabajoAdicionalDetectado: trabajoAdicional,
+    descripcionTrabajoAdicional: trabajoAdicional ? document.getElementById('trabajoDesc').value : null,
+    observacionesTecnico: document.getElementById('observaciones').value,
+    // Fotos en base64
+    fotos: fotosData,
+  };
+
+  try {
+    const resp = await fetch(POWER_AUTOMATE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (resp.ok || resp.status === 202) {
+      btn.innerHTML = '✓ Informe enviado correctamente';
+      btn.style.background = 'var(--teal-mid)';
+    } else {
+      throw new Error('Error ' + resp.status);
+    }
+  } catch (e) {
+    // En desarrollo (sin URL configurada) simular éxito
+    if (POWER_AUTOMATE_URL === 'REEMPLAZAR_CON_URL_POWER_AUTOMATE') {
+      console.log('MODO DESARROLLO — Payload:', JSON.stringify(payload, null, 2));
+      btn.innerHTML = '✓ Informe enviado correctamente';
+      btn.style.background = 'var(--teal-mid)';
+    } else {
+      btn.disabled = false;
+      btn.innerHTML = '✕ Error al enviar — reintentar';
+      btn.style.background = '#D85A30';
+      console.error(e);
+    }
+  }
+}
+
+// ─── Init ───
+buildChecklist();
+loadOTData();
+</script>
+</body>
+</html>
