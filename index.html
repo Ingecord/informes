@@ -28,9 +28,9 @@
     --radius: 10px;
     --radius-sm: 6px;
   }
-
+ 
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
+ 
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background: var(--surface);
@@ -39,7 +39,7 @@
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
   }
-
+ 
   .top-bar {
     background: var(--teal);
     padding: 16px 20px 14px;
@@ -50,9 +50,9 @@
   .top-bar .brand { font-size: 11px; color: rgba(255,255,255,0.7); letter-spacing: 0.08em; text-transform: uppercase; }
   .top-bar h1 { font-size: 17px; font-weight: 600; color: #fff; margin-top: 2px; }
   .top-bar .subtitle { font-size: 12px; color: rgba(255,255,255,0.75); margin-top: 2px; }
-
+ 
   .container { max-width: 600px; margin: 0 auto; padding: 16px; }
-
+ 
   /* Info card (datos pre-cargados) */
   .info-card {
     background: var(--white);
@@ -70,7 +70,7 @@
   .info-row:last-child { border-bottom: none; }
   .info-lbl { font-size: 12px; color: var(--text-muted); }
   .info-val { font-size: 13px; font-weight: 600; color: var(--text); text-align: right; max-width: 60%; }
-
+ 
   /* Secciones */
   .section {
     background: var(--white);
@@ -85,7 +85,7 @@
     border-bottom: 1px solid var(--border-light); padding-bottom: 10px; margin-bottom: 14px;
   }
   .section-title svg { width: 16px; height: 16px; flex-shrink: 0; }
-
+ 
   /* Labels */
   .field-label {
     font-size: 12px; font-weight: 600; color: var(--text-muted);
@@ -93,7 +93,7 @@
     margin-bottom: 8px; margin-top: 14px; display: block;
   }
   .field-label:first-child { margin-top: 0; }
-
+ 
   /* Tipo mantenimiento */
   .tipo-group { display: flex; gap: 8px; }
   .tipo-btn {
@@ -103,7 +103,7 @@
     cursor: pointer; text-align: center; transition: all 0.15s;
   }
   .tipo-btn.active { border-color: var(--teal); background: var(--teal-light); color: var(--teal-dark); }
-
+ 
   /* Checklist Si/No/NA */
   .checklist-table { width: 100%; border-collapse: collapse; }
   .checklist-table th {
@@ -132,7 +132,7 @@
   .radio-sn.si.selected { border-color: var(--teal); background: var(--teal-light); color: var(--teal-dark); }
   .radio-sn.no.selected { border-color: #D85A30; background: #FAECE7; color: #712B13; }
   .radio-sn.na.selected { border-color: #888780; background: var(--gray-bg); color: #444441; }
-
+ 
   /* Mediciones eléctricas */
   .medicion-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .medicion-group { background: var(--surface); border-radius: var(--radius-sm); padding: 10px 12px; }
@@ -163,7 +163,7 @@
   }
   input.placa { background: var(--surface); color: var(--text-muted); font-size: 13px; }
   .unit { font-size: 11px; color: var(--text-muted); white-space: nowrap; }
-
+ 
   /* Presiones y temperaturas */
   .params-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 4px; }
   .param-field label { font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px; }
@@ -175,7 +175,7 @@
   .delta-display .delta-label { font-size: 12px; color: var(--blue-text); font-weight: 600; }
   .delta-display .delta-value { font-size: 18px; font-weight: 700; color: var(--blue-text); }
   .delta-display .delta-status { font-size: 11px; margin-top: 2px; }
-
+ 
   /* Estado equipo */
   .estado-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .estado-btn {
@@ -187,7 +187,7 @@
   .estado-btn.atendido.active { border-color: var(--teal-mid); background: var(--green-bg); color: var(--green-text); }
   .estado-btn.seguimiento.active { border-color: #BA7517; background: var(--amber-bg); color: var(--amber-text); }
   .estado-btn.accesible.active { border-color: #D85A30; background: #FAECE7; color: #712B13; }
-
+ 
   /* Trabajo adicional */
   .trabajo-toggle { display: flex; gap: 8px; margin-bottom: 10px; }
   .toggle-btn {
@@ -200,10 +200,10 @@
   .toggle-btn.active-si { border-color: #BA7517; background: var(--amber-bg); color: var(--amber-text); }
   .trabajo-desc { display: none; }
   .trabajo-desc.visible { display: block; }
-
+ 
   /* Textarea */
   textarea { min-height: 90px; resize: vertical; font-family: inherit; }
-
+ 
   /* Fotos */
   .foto-zone {
     border: 2px dashed var(--border); border-radius: var(--radius);
@@ -229,7 +229,7 @@
     line-height: 1;
   }
   .foto-count-label { font-size: 12px; color: var(--teal); font-weight: 600; margin-top: 6px; }
-
+ 
   /* Submit */
   .submit-btn {
     width: 100%; padding: 15px; background: var(--teal);
@@ -240,10 +240,10 @@
   }
   .submit-btn:hover { background: var(--teal-dark); }
   .submit-btn:disabled { background: #9FE1CB; cursor: not-allowed; }
-
+ 
   /* Nota opcional */
   .optional-note { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
-
+ 
   /* Observaciones de placa */
   .placa-toggle {
     font-size: 12px; color: var(--teal); cursor: pointer; font-weight: 500;
@@ -252,22 +252,44 @@
   }
   .placa-fields { display: none; }
   .placa-fields.visible { display: block; }
-
+ 
   .required-star { color: #D85A30; margin-left: 2px; }
-
+ 
+  /* Bloques de circuito */
+  .circuito-block {
+    background: var(--surface);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-light);
+    padding: 12px 14px;
+  }
+  .circuito-header {
+    font-size: 12px; font-weight: 700; color: var(--teal);
+    text-transform: uppercase; letter-spacing: 0.04em;
+    margin-bottom: 8px;
+  }
+  .agregar-btn {
+    display: flex; align-items: center; gap: 6px;
+    background: transparent; border: 1.5px dashed var(--teal-mid);
+    border-radius: var(--radius-sm); padding: 9px 14px;
+    color: var(--teal); font-size: 13px; font-weight: 600;
+    cursor: pointer; width: 100%; justify-content: center;
+    transition: all 0.15s;
+  }
+  .agregar-btn:hover { background: var(--teal-light); }
+ 
   .bottom-space { height: 32px; }
 </style>
 </head>
 <body>
-
+ 
 <div class="top-bar">
   <div class="brand">Ingecord</div>
   <h1 id="pageTitle">Informe — Mini Split / DX</h1>
   <div class="subtitle" id="pageSubtitle">Cargando datos de la OT...</div>
 </div>
-
+ 
 <div class="container">
-
+ 
   <!-- Datos de la OT (pre-cargados) -->
   <div class="info-card" id="otInfoCard">
     <div class="badge-source">Datos cargados desde OT</div>
@@ -280,7 +302,7 @@
     <div class="info-row"><span class="info-lbl">Refrigerante</span><span class="info-val" id="infoRef">—</span></div>
     <div class="info-row" style="border-bottom:none"><span class="info-lbl">Técnico</span><span class="info-val" id="infoTecnico">—</span></div>
   </div>
-
+ 
   <!-- Tipo de mantenimiento -->
   <div class="section">
     <div class="section-title">
@@ -293,7 +315,7 @@
       <button class="tipo-btn" id="btnInspeccion" onclick="setTipo('Inspección')">Inspección</button>
     </div>
   </div>
-
+ 
   <!-- Checklist -->
   <div class="section">
     <div class="section-title">
@@ -312,82 +334,237 @@
       <tbody id="checklistBody"></tbody>
     </table>
   </div>
-
+ 
   <!-- Parámetros eléctricos -->
   <div class="section">
     <div class="section-title">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
       Parámetros eléctricos
     </div>
-
-    <button class="placa-toggle" onclick="togglePlaca(this)" id="placaToggleBtn">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-      Ingresar valores de placa (opcional)
-    </button>
-
-    <div class="placa-fields" id="placaFields">
-      <span class="field-label">Voltaje de placa (V)</span>
-      <div class="params-grid">
-        <div class="param-field"><label>A-B</label><input type="number" class="placa" placeholder="220" id="pVoltAB"></div>
-        <div class="param-field"><label>B-C</label><input type="number" class="placa" placeholder="220" id="pVoltBC"></div>
-        <div class="param-field"><label>A-C</label><input type="number" class="placa" placeholder="220" id="pVoltAC"></div>
+ 
+    <!-- Evaporador -->
+    <div class="circuito-block">
+      <div class="circuito-header">Evaporador</div>
+      <button class="placa-toggle" onclick="togglePlacaBloque('evap')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        Valores de placa (opcional)
+      </button>
+      <div class="placa-fields" id="placaEvap">
+        <span class="field-label">Voltaje placa (V)</span>
+        <div class="params-grid">
+          <div class="param-field"><label>A-B</label><input type="number" class="placa" id="pEvapVoltAB" placeholder="220"></div>
+          <div class="param-field"><label>B-C</label><input type="number" class="placa" id="pEvapVoltBC" placeholder="220"></div>
+          <div class="param-field"><label>A-C</label><input type="number" class="placa" id="pEvapVoltAC" placeholder="220"></div>
+        </div>
+        <span class="field-label" style="margin-top:10px">Amperaje placa (A)</span>
+        <div class="params-grid">
+          <div class="param-field"><label>Fase A</label><input type="number" class="placa" id="pEvapAmpA" placeholder="—"></div>
+          <div class="param-field"><label>Fase B</label><input type="number" class="placa" id="pEvapAmpB" placeholder="—"></div>
+          <div class="param-field"><label>Fase C</label><input type="number" class="placa" id="pEvapAmpC" placeholder="—"></div>
+        </div>
+        <div style="height:8px"></div>
       </div>
-      <span class="field-label" style="margin-top:12px">Amperaje de placa (A)</span>
+      <span class="field-label">Voltaje medido (V)</span>
       <div class="params-grid">
-        <div class="param-field"><label>Fase A</label><input type="number" class="placa" placeholder="—" id="pAmpA"></div>
-        <div class="param-field"><label>Fase B</label><input type="number" class="placa" placeholder="—" id="pAmpB"></div>
-        <div class="param-field"><label>Fase C</label><input type="number" class="placa" placeholder="—" id="pAmpC"></div>
+        <div class="param-field"><label>A-B</label><input type="number" id="rEvapVoltAB" placeholder="221"></div>
+        <div class="param-field"><label>B-C</label><input type="number" id="rEvapVoltBC" placeholder="223"></div>
+        <div class="param-field"><label>A-C</label><input type="number" id="rEvapVoltAC" placeholder="222"></div>
       </div>
-      <div style="height:12px"></div>
+      <span class="field-label" style="margin-top:12px">Amperaje medido (A)</span>
+      <div class="params-grid">
+        <div class="param-field"><label>Fase A</label><input type="number" id="rEvapAmpA" placeholder="33"></div>
+        <div class="param-field"><label>Fase B</label><input type="number" id="rEvapAmpB" placeholder="32"></div>
+        <div class="param-field"><label>Fase C</label><input type="number" id="rEvapAmpC" placeholder="34"></div>
+      </div>
     </div>
-
-    <span class="field-label">Voltaje medido (V) <span class="required-star">*</span></span>
-    <div class="params-grid">
-      <div class="param-field"><label>A-B</label><input type="number" placeholder="221" id="rVoltAB" onchange="checkAmp()"></div>
-      <div class="param-field"><label>B-C</label><input type="number" placeholder="223" id="rVoltBC"></div>
-      <div class="param-field"><label>A-C</label><input type="number" placeholder="222" id="rVoltAC"></div>
+ 
+    <!-- Circuito 1 -->
+    <div class="circuito-block" style="margin-top:14px">
+      <div class="circuito-header">Circuito 1 <span class="required-star">*</span></div>
+      <button class="placa-toggle" onclick="togglePlacaBloque('c1')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        Valores de placa (opcional)
+      </button>
+      <div class="placa-fields" id="placaC1">
+        <span class="field-label">Voltaje placa (V)</span>
+        <div class="params-grid">
+          <div class="param-field"><label>A-B</label><input type="number" class="placa" id="pC1VoltAB" placeholder="220"></div>
+          <div class="param-field"><label>B-C</label><input type="number" class="placa" id="pC1VoltBC" placeholder="220"></div>
+          <div class="param-field"><label>A-C</label><input type="number" class="placa" id="pC1VoltAC" placeholder="220"></div>
+        </div>
+        <span class="field-label" style="margin-top:10px">Amperaje placa (A)</span>
+        <div class="params-grid">
+          <div class="param-field"><label>Fase A</label><input type="number" class="placa" id="pC1AmpA" placeholder="—"></div>
+          <div class="param-field"><label>Fase B</label><input type="number" class="placa" id="pC1AmpB" placeholder="—"></div>
+          <div class="param-field"><label>Fase C</label><input type="number" class="placa" id="pC1AmpC" placeholder="—"></div>
+        </div>
+        <div style="height:8px"></div>
+      </div>
+      <span class="field-label">Voltaje medido (V) <span class="required-star">*</span></span>
+      <div class="params-grid">
+        <div class="param-field"><label>A-B</label><input type="number" id="rC1VoltAB" placeholder="221"></div>
+        <div class="param-field"><label>B-C</label><input type="number" id="rC1VoltBC" placeholder="223"></div>
+        <div class="param-field"><label>A-C</label><input type="number" id="rC1VoltAC" placeholder="222"></div>
+      </div>
+      <span class="field-label" style="margin-top:12px">Amperaje medido (A) <span class="required-star">*</span></span>
+      <div class="params-grid">
+        <div class="param-field"><label>Fase A</label><input type="number" id="rC1AmpA" placeholder="33" oninput="checkAmpCircuito(1)"></div>
+        <div class="param-field"><label>Fase B</label><input type="number" id="rC1AmpB" placeholder="32"></div>
+        <div class="param-field"><label>Fase C</label><input type="number" id="rC1AmpC" placeholder="34"></div>
+      </div>
+      <div id="ampAlertaC1" style="display:none; margin-top:10px; background:var(--amber-bg); border-radius:6px; padding:8px 10px; font-size:12px; color:var(--amber-text);">⚠️ Amperaje Circuito 1 supera el valor de placa — verificar.</div>
     </div>
-
-    <span class="field-label" style="margin-top:14px">Amperaje medido (A) <span class="required-star">*</span></span>
-    <div class="params-grid">
-      <div class="param-field"><label>Fase A</label><input type="number" placeholder="33" id="rAmpA" onchange="checkAmp()"></div>
-      <div class="param-field"><label>Fase B</label><input type="number" placeholder="32" id="rAmpB" onchange="checkAmp()"></div>
-      <div class="param-field"><label>Fase C</label><input type="number" placeholder="34" id="rAmpC" onchange="checkAmp()"></div>
+ 
+    <!-- Botón agregar Circuito 2 (oculto en Mini Split) -->
+    <div id="btnAgregarC2Elec" style="margin-top:12px">
+      <button class="agregar-btn" onclick="agregarCircuitoElec(2)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        Agregar Circuito 2
+      </button>
     </div>
-
-    <div id="ampAlerta" style="display:none; margin-top:10px; background:var(--amber-bg); border-radius:6px; padding:8px 10px; font-size:12px; color:var(--amber-text);">
-      ⚠️ Amperaje medido supera el valor de placa — verificar.
+ 
+    <!-- Circuito 2 (oculto por defecto) -->
+    <div class="circuito-block" id="bloqueC2Elec" style="display:none; margin-top:14px">
+      <div class="circuito-header" style="display:flex;justify-content:space-between;align-items:center">
+        Circuito 2
+        <button onclick="quitarCircuitoElec(2)" style="background:none;border:none;color:var(--text-muted);font-size:18px;cursor:pointer;line-height:1">×</button>
+      </div>
+      <button class="placa-toggle" onclick="togglePlacaBloque('c2')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        Valores de placa (opcional)
+      </button>
+      <div class="placa-fields" id="placaC2">
+        <span class="field-label">Voltaje placa (V)</span>
+        <div class="params-grid">
+          <div class="param-field"><label>A-B</label><input type="number" class="placa" id="pC2VoltAB" placeholder="220"></div>
+          <div class="param-field"><label>B-C</label><input type="number" class="placa" id="pC2VoltBC" placeholder="220"></div>
+          <div class="param-field"><label>A-C</label><input type="number" class="placa" id="pC2VoltAC" placeholder="220"></div>
+        </div>
+        <span class="field-label" style="margin-top:10px">Amperaje placa (A)</span>
+        <div class="params-grid">
+          <div class="param-field"><label>Fase A</label><input type="number" class="placa" id="pC2AmpA" placeholder="—"></div>
+          <div class="param-field"><label>Fase B</label><input type="number" class="placa" id="pC2AmpB" placeholder="—"></div>
+          <div class="param-field"><label>Fase C</label><input type="number" class="placa" id="pC2AmpC" placeholder="—"></div>
+        </div>
+        <div style="height:8px"></div>
+      </div>
+      <span class="field-label">Voltaje medido (V)</span>
+      <div class="params-grid">
+        <div class="param-field"><label>A-B</label><input type="number" id="rC2VoltAB" placeholder="221"></div>
+        <div class="param-field"><label>B-C</label><input type="number" id="rC2VoltBC" placeholder="223"></div>
+        <div class="param-field"><label>A-C</label><input type="number" id="rC2VoltAC" placeholder="222"></div>
+      </div>
+      <span class="field-label" style="margin-top:12px">Amperaje medido (A)</span>
+      <div class="params-grid">
+        <div class="param-field"><label>Fase A</label><input type="number" id="rC2AmpA" placeholder="33" oninput="checkAmpCircuito(2)"></div>
+        <div class="param-field"><label>Fase B</label><input type="number" id="rC2AmpB" placeholder="32"></div>
+        <div class="param-field"><label>Fase C</label><input type="number" id="rC2AmpC" placeholder="34"></div>
+      </div>
+      <div id="ampAlertaC2" style="display:none; margin-top:10px; background:var(--amber-bg); border-radius:6px; padding:8px 10px; font-size:12px; color:var(--amber-text);">⚠️ Amperaje Circuito 2 supera el valor de placa — verificar.</div>
+    </div>
+ 
+    <!-- Botón agregar Circuito 3 (aparece tras agregar C2) -->
+    <div id="btnAgregarC3Elec" style="display:none; margin-top:12px">
+      <button class="agregar-btn" onclick="agregarCircuitoElec(3)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        Agregar Circuito 3
+      </button>
+    </div>
+ 
+    <!-- Circuito 3 (oculto por defecto) -->
+    <div class="circuito-block" id="bloqueC3Elec" style="display:none; margin-top:14px">
+      <div class="circuito-header" style="display:flex;justify-content:space-between;align-items:center">
+        Circuito 3
+        <button onclick="quitarCircuitoElec(3)" style="background:none;border:none;color:var(--text-muted);font-size:18px;cursor:pointer;line-height:1">×</button>
+      </div>
+      <span class="field-label">Voltaje medido (V)</span>
+      <div class="params-grid">
+        <div class="param-field"><label>A-B</label><input type="number" id="rC3VoltAB" placeholder="221"></div>
+        <div class="param-field"><label>B-C</label><input type="number" id="rC3VoltBC" placeholder="223"></div>
+        <div class="param-field"><label>A-C</label><input type="number" id="rC3VoltAC" placeholder="222"></div>
+      </div>
+      <span class="field-label" style="margin-top:12px">Amperaje medido (A)</span>
+      <div class="params-grid">
+        <div class="param-field"><label>Fase A</label><input type="number" id="rC3AmpA" placeholder="33"></div>
+        <div class="param-field"><label>Fase B</label><input type="number" id="rC3AmpB" placeholder="32"></div>
+        <div class="param-field"><label>Fase C</label><input type="number" id="rC3AmpC" placeholder="34"></div>
+      </div>
     </div>
   </div>
-
+ 
   <!-- Presiones y temperaturas -->
   <div class="section">
     <div class="section-title">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 14.76V3.5a2.5 2.5 0 00-5 0v11.26a4.5 4.5 0 105 0z"/></svg>
       Presiones y temperaturas
     </div>
-
-    <span class="field-label">Presiones del refrigerante</span>
-    <div class="params-grid">
-      <div class="param-field"><label>Presión alta (PSI)</label><input type="number" placeholder="388" id="presAlta"></div>
-      <div class="param-field"><label>Presión baja (PSI)</label><input type="number" placeholder="124" id="presBaja"></div>
-    </div>
-
-    <span class="field-label" style="margin-top:14px">Temperaturas de aire</span>
-    <div class="params-grid">
-      <div class="param-field"><label>Temperatura suministro (°F)</label><input type="number" placeholder="54" id="tempSum" oninput="calcDelta()"></div>
-      <div class="param-field"><label>Temperatura retorno (°F)</label><input type="number" placeholder="75" id="tempRet" oninput="calcDelta()"></div>
-    </div>
-
-    <div class="delta-display" id="deltaDisplay" style="display:none">
-      <div>
-        <div class="delta-label">Delta T calculado</div>
-        <div class="delta-status" id="deltaStatus"></div>
+ 
+    <!-- Temperaturas evaporador -->
+    <div class="circuito-block">
+      <div class="circuito-header">Temperaturas de aire (evaporador)</div>
+      <div class="params-grid" style="margin-top:10px">
+        <div class="param-field"><label>Suministro (°F)</label><input type="number" placeholder="54" id="tempSum" oninput="calcDelta()"></div>
+        <div class="param-field"><label>Retorno (°F)</label><input type="number" placeholder="75" id="tempRet" oninput="calcDelta()"></div>
       </div>
-      <div class="delta-value" id="deltaVal">—</div>
+      <div class="delta-display" id="deltaDisplay" style="display:none; margin-top:10px">
+        <div>
+          <div class="delta-label">Delta T calculado</div>
+          <div class="delta-status" id="deltaStatus"></div>
+        </div>
+        <div class="delta-value" id="deltaVal">—</div>
+      </div>
+    </div>
+ 
+    <!-- Presiones Circuito 1 -->
+    <div class="circuito-block" style="margin-top:14px">
+      <div class="circuito-header">Presiones — Circuito 1 <span class="required-star">*</span></div>
+      <div class="params-grid" style="margin-top:10px">
+        <div class="param-field"><label>Presión alta (PSI)</label><input type="number" placeholder="388" id="presAltaC1"></div>
+        <div class="param-field"><label>Presión baja (PSI)</label><input type="number" placeholder="124" id="presBajaC1"></div>
+      </div>
+    </div>
+ 
+    <!-- Botón agregar Circuito 2 presiones -->
+    <div id="btnAgregarC2Pres" style="margin-top:12px">
+      <button class="agregar-btn" onclick="agregarCircuitoPres(2)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        Agregar Circuito 2
+      </button>
+    </div>
+ 
+    <!-- Presiones Circuito 2 -->
+    <div class="circuito-block" id="bloqueC2Pres" style="display:none; margin-top:14px">
+      <div class="circuito-header" style="display:flex;justify-content:space-between;align-items:center">
+        Presiones — Circuito 2
+        <button onclick="quitarCircuitoPres(2)" style="background:none;border:none;color:var(--text-muted);font-size:18px;cursor:pointer;line-height:1">×</button>
+      </div>
+      <div class="params-grid" style="margin-top:10px">
+        <div class="param-field"><label>Presión alta (PSI)</label><input type="number" placeholder="388" id="presAltaC2"></div>
+        <div class="param-field"><label>Presión baja (PSI)</label><input type="number" placeholder="124" id="presBajaC2"></div>
+      </div>
+    </div>
+ 
+    <!-- Botón agregar Circuito 3 presiones -->
+    <div id="btnAgregarC3Pres" style="display:none; margin-top:12px">
+      <button class="agregar-btn" onclick="agregarCircuitoPres(3)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        Agregar Circuito 3
+      </button>
+    </div>
+ 
+    <!-- Presiones Circuito 3 -->
+    <div class="circuito-block" id="bloqueC3Pres" style="display:none; margin-top:14px">
+      <div class="circuito-header" style="display:flex;justify-content:space-between;align-items:center">
+        Presiones — Circuito 3
+        <button onclick="quitarCircuitoPres(3)" style="background:none;border:none;color:var(--text-muted);font-size:18px;cursor:pointer;line-height:1">×</button>
+      </div>
+      <div class="params-grid" style="margin-top:10px">
+        <div class="param-field"><label>Presión alta (PSI)</label><input type="number" placeholder="388" id="presAltaC3"></div>
+        <div class="param-field"><label>Presión baja (PSI)</label><input type="number" placeholder="124" id="presBajaC3"></div>
+      </div>
     </div>
   </div>
-
+ 
   <!-- Estado del equipo -->
   <div class="section">
     <div class="section-title">
@@ -400,7 +577,7 @@
       <button class="estado-btn accesible" style="grid-column:1/-1" onclick="setEstado(this,'No accesible')">✕ No accesible</button>
     </div>
   </div>
-
+ 
   <!-- Trabajo adicional -->
   <div class="section">
     <div class="section-title">
@@ -416,7 +593,7 @@
       <textarea id="trabajoDesc" placeholder="Describa el trabajo adicional observado..."></textarea>
     </div>
   </div>
-
+ 
   <!-- Observaciones del técnico -->
   <div class="section">
     <div class="section-title">
@@ -424,9 +601,9 @@
       Observaciones del técnico
     </div>
     <textarea id="observaciones" placeholder="Describa en sus propias palabras el trabajo realizado, condiciones del equipo y cualquier observación relevante..."></textarea>
-
+ 
   </div>
-
+ 
   <!-- Fotos -->
   <div class="section">
     <div class="section-title">
@@ -442,31 +619,31 @@
     <div class="foto-grid" id="fotoGrid"></div>
     <p class="foto-count-label" id="fotoCount"></p>
   </div>
-
+ 
   <!-- Submit -->
   <button class="submit-btn" id="submitBtn" onclick="enviarInforme()">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
     Enviar informe
   </button>
-
+ 
   <div class="bottom-space"></div>
 </div>
-
+ 
 <script>
 // ─── Datos de la OT (simulados — en producción llegan por URL params o Power Automate) ───
 const OT_DATA = {
   ot: 'OT-2026-045',
   cliente: 'Puma Energy Bahamas',
   sucursal: 'Chorrera',
-  equipo: 'Split Sala Cajeros',
-  ubicacion: 'Área de cajas',
-  marca: 'LG / LS-Q122C4A0',
+  equipo: 'Central DX Tienda',
+  ubicacion: 'Cuarto de máquinas',
+  marca: 'LG / ARUM100LTE5',
   refrigerante: 'R-410A',
   tecnico: 'Jorge González',
-  tipoEquipo: 'Split',
-  equipoOT_ID: 'EOT-2026-0312'  // ID del registro Equipos_OT a actualizar
+  tipoEquipo: 'DX',
+  equipoOT_ID: 'EOT-2026-0312'
 };
-
+ 
 // ─── Checklist ───
 const CHECKLIST = [
   { group: 'Limpieza', items: [
@@ -495,9 +672,9 @@ const CHECKLIST = [
     'Carga de gas refrigerante',
   ]},
 ];
-
+ 
 const checklistState = {};
-
+ 
 function buildChecklist() {
   const tbody = document.getElementById('checklistBody');
   let html = '';
@@ -516,7 +693,7 @@ function buildChecklist() {
   });
   tbody.innerHTML = html;
 }
-
+ 
 function setCheck(btn) {
   const key = btn.dataset.key;
   const val = btn.dataset.val;
@@ -524,7 +701,7 @@ function setCheck(btn) {
   document.querySelectorAll(`.radio-sn[data-key="${key}"]`).forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
 }
-
+ 
 // ─── Tipo mantenimiento ───
 let tipoSelected = null;
 function setTipo(tipo) {
@@ -533,29 +710,56 @@ function setTipo(tipo) {
     document.getElementById('btn' + t).classList.toggle('active', t === tipo);
   });
 }
-
-// ─── Placa toggle ───
-function togglePlaca(btn) {
-  const fields = document.getElementById('placaFields');
-  const isVisible = fields.classList.contains('visible');
-  fields.classList.toggle('visible', !isVisible);
-  btn.innerHTML = isVisible
-    ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> Ingresar valores de placa (opcional)'
-    : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg> Ocultar valores de placa';
+ 
+// ─── Placa toggle por bloque ───
+function togglePlacaBloque(id) {
+  const fields = document.getElementById('placa' + id.charAt(0).toUpperCase() + id.slice(1));
+  if (!fields) return;
+  fields.classList.toggle('visible');
 }
-
-// ─── Alerta amperaje vs placa ───
-function checkAmp() {
-  const pA = parseFloat(document.getElementById('pAmpA').value);
-  const rA = parseFloat(document.getElementById('rAmpA').value);
-  const alerta = document.getElementById('ampAlerta');
-  if (!isNaN(pA) && !isNaN(rA) && rA > pA * 1.05) {
+ 
+// ─── Alerta amperaje vs placa por circuito ───
+function checkAmpCircuito(n) {
+  const pVal = parseFloat(document.getElementById('pC' + n + 'AmpA')?.value);
+  const rVal = parseFloat(document.getElementById('rC' + n + 'AmpA')?.value);
+  const alerta = document.getElementById('ampAlertaC' + n);
+  if (!isNaN(pVal) && !isNaN(rVal) && rVal > pVal * 1.05) {
     alerta.style.display = 'block';
-  } else {
+  } else if (alerta) {
     alerta.style.display = 'none';
   }
 }
-
+ 
+// ─── Agregar / quitar circuitos eléctricos ───
+function agregarCircuitoElec(n) {
+  document.getElementById('bloqueC' + n + 'Elec').style.display = 'block';
+  document.getElementById('btnAgregarC' + n + 'Elec').style.display = 'none';
+  if (n === 2) document.getElementById('btnAgregarC3Elec').style.display = 'block';
+}
+function quitarCircuitoElec(n) {
+  document.getElementById('bloqueC' + n + 'Elec').style.display = 'none';
+  document.getElementById('btnAgregarC' + n + 'Elec').style.display = 'block';
+  if (n === 2) {
+    document.getElementById('bloqueC3Elec').style.display = 'none';
+    document.getElementById('btnAgregarC3Elec').style.display = 'none';
+  }
+}
+ 
+// ─── Agregar / quitar circuitos de presión ───
+function agregarCircuitoPres(n) {
+  document.getElementById('bloqueC' + n + 'Pres').style.display = 'block';
+  document.getElementById('btnAgregarC' + n + 'Pres').style.display = 'none';
+  if (n === 2) document.getElementById('btnAgregarC3Pres').style.display = 'block';
+}
+function quitarCircuitoPres(n) {
+  document.getElementById('bloqueC' + n + 'Pres').style.display = 'none';
+  document.getElementById('btnAgregarC' + n + 'Pres').style.display = 'block';
+  if (n === 2) {
+    document.getElementById('bloqueC3Pres').style.display = 'none';
+    document.getElementById('btnAgregarC3Pres').style.display = 'none';
+  }
+}
+ 
 // ─── Delta T ───
 function calcDelta() {
   const ret = parseFloat(document.getElementById('tempRet').value);
@@ -581,7 +785,7 @@ function calcDelta() {
     display.style.display = 'none';
   }
 }
-
+ 
 // ─── Estado equipo ───
 let estadoSelected = null;
 function setEstado(btn, val) {
@@ -589,7 +793,7 @@ function setEstado(btn, val) {
   document.querySelectorAll('.estado-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
 }
-
+ 
 // ─── Trabajo adicional ───
 let trabajoAdicional = null;
 function setTrabajo(si) {
@@ -598,11 +802,11 @@ function setTrabajo(si) {
   document.getElementById('btnTrabSi').className = 'toggle-btn' + (si ? ' active-si' : '');
   document.getElementById('trabajoDescWrap').classList.toggle('visible', si);
 }
-
+ 
 // ─── Fotos ───
 let fotosFiles = [];
 let fotosBase64 = [];
-
+ 
 function handleFotos(input) {
   const nuevas = Array.from(input.files);
   fotosFiles = [...fotosFiles, ...nuevas].slice(0, 5);
@@ -611,14 +815,14 @@ function handleFotos(input) {
     fotosFiles.length >= 5 ? 'Máximo alcanzado (5 fotos)' : 'Agregar más fotos';
   input.value = '';
 }
-
+ 
 function removeFoto(idx) {
   fotosFiles.splice(idx, 1);
   renderFotos();
   if (fotosFiles.length < 5)
     document.getElementById('fotoZone').querySelector('p').textContent = 'Seleccionar fotos de la galería';
 }
-
+ 
 function renderFotos() {
   const grid = document.getElementById('fotoGrid');
   const count = document.getElementById('fotoCount');
@@ -630,7 +834,7 @@ function renderFotos() {
   `).join('');
   count.textContent = fotosFiles.length > 0 ? `${fotosFiles.length} foto(s) seleccionada(s)` : '';
 }
-
+ 
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -643,7 +847,7 @@ function fileToBase64(file) {
     reader.readAsDataURL(file);
   });
 }
-
+ 
 // ─── Cargar datos OT ───
 function loadOTData() {
   // En producción: leer URL params (?ot=OT-2026-045&eqot=EOT-xxx)
@@ -658,21 +862,21 @@ function loadOTData() {
   document.getElementById('infoTecnico').textContent = OT_DATA.tecnico;
   document.getElementById('pageSubtitle').textContent = `${OT_DATA.cliente} — ${OT_DATA.sucursal}`;
 }
-
+ 
 // ─── URL del Power Automate HTTP trigger ───
 // Reemplazar con la URL real al publicar el flujo
 const POWER_AUTOMATE_URL = 'REEMPLAZAR_CON_URL_POWER_AUTOMATE';
-
+ 
 // ─── Enviar informe ───
 async function enviarInforme() {
   if (!tipoSelected) { alert('Selecciona el tipo de mantenimiento.'); return; }
   if (!estadoSelected) { alert('Selecciona el estado del equipo.'); return; }
   if (trabajoAdicional === null) { alert('Indica si se detectó trabajo adicional.'); return; }
-
+ 
   const btn = document.getElementById('submitBtn');
   btn.disabled = true;
   btn.innerHTML = '⏳ Enviando informe...';
-
+ 
   // Convertir fotos a base64
   let fotosData = [];
   if (fotosFiles.length > 0) {
@@ -682,7 +886,7 @@ async function enviarInforme() {
       console.error('Error convirtiendo fotos:', e);
     }
   }
-
+ 
   const payload = {
     // Identificadores
     ot: OT_DATA.ot,
@@ -727,7 +931,7 @@ async function enviarInforme() {
     // Fotos en base64
     fotos: fotosData,
   };
-
+ 
   try {
     const resp = await fetch(POWER_AUTOMATE_URL, {
       method: 'POST',
@@ -754,10 +958,22 @@ async function enviarInforme() {
     }
   }
 }
-
+ 
 // ─── Init ───
 buildChecklist();
 loadOTData();
+ 
+// Ajustes según tipo de equipo
+if (OT_DATA.tipoEquipo === 'Split') {
+  // Mini Split: sin evaporador separado, sin circuitos adicionales
+  document.getElementById('btnAgregarC2Elec').style.display = 'none';
+  document.getElementById('btnAgregarC2Pres').style.display = 'none';
+  // Renombrar "Circuito 1" a solo "Compresor" para que tenga sentido en Split
+  document.querySelector('#bloqueC1Elec .circuito-header') &&
+    (document.querySelector('.circuito-header').textContent = 'Compresor');
+}
+ 
 </script>
 </body>
 </html>
+ 
