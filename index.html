@@ -706,9 +706,9 @@ function setCheck(btn) {
 let tipoSelected = null;
 function setTipo(tipo) {
   tipoSelected = tipo;
-  ['Preventivo','Correctivo','Inspección'].forEach(t => {
-    document.getElementById('btn' + t).classList.toggle('active', t === tipo);
-  });
+  document.querySelectorAll('.tipo-btn').forEach(b => b.classList.remove('active'));
+  const map = {'Preventivo':'btnPreventivo','Correctivo':'btnCorrectivo','Inspección':'btnInspeccion'};
+  if (map[tipo]) document.getElementById(map[tipo]).classList.add('active');
 }
  
 // ─── Placa toggle por bloque ───
@@ -865,7 +865,8 @@ function loadOTData() {
  
 // ─── URL del Power Automate HTTP trigger ───
 // Reemplazar con la URL real al publicar el flujo
-const POWER_AUTOMATE_URL = 'https://cors-anywhere.herokuapp.com/https://defaulteb43a9912a5742808a56db939741fe.ce.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/b123519a5b7f45609a11d83b0763ced6/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=y7IlSRrEkgy_YghtBqoZ5vfalROrXGJU6AFZF6m16hk';
+const POWER_AUTOMATE_URL = 'https://defaulteb43a9912a5742808a56db939741fe.ce.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/b123519a5b7f45609a11d83b0763ced6/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=y7IlSRrEkgy_YghtBqoZ5vfalROrXGJU6AFZF6m16hk';
+ 
 // ─── Enviar informe ───
 async function enviarInforme() {
   if (!tipoSelected) { alert('Selecciona el tipo de mantenimiento.'); return; }
@@ -902,26 +903,37 @@ async function enviarInforme() {
     tipoMantenimiento: tipoSelected,
     fechaInforme: new Date().toISOString(),
     checklist: checklistState,
-    // Placa (opcional)
-    placaVoltAB: document.getElementById('pVoltAB').value || null,
-    placaVoltBC: document.getElementById('pVoltBC').value || null,
-    placaVoltAC: document.getElementById('pVoltAC').value || null,
-    placaAmpA: document.getElementById('pAmpA').value || null,
-    placaAmpB: document.getElementById('pAmpB').value || null,
-    placaAmpC: document.getElementById('pAmpC').value || null,
-    // Mediciones reales
-    voltAB: document.getElementById('rVoltAB').value || null,
-    voltBC: document.getElementById('rVoltBC').value || null,
-    voltAC: document.getElementById('rVoltAC').value || null,
-    ampA: document.getElementById('rAmpA').value || null,
-    ampB: document.getElementById('rAmpB').value || null,
-    ampC: document.getElementById('rAmpC').value || null,
-    // Presiones y temperaturas
-    presionAlta: document.getElementById('presAlta').value || null,
-    presionBaja: document.getElementById('presBaja').value || null,
-    tempSuministro: document.getElementById('tempSum').value || null,
-    tempRetorno: document.getElementById('tempRet').value || null,
-    deltaT: document.getElementById('deltaVal').textContent !== '—' ? document.getElementById('deltaVal').textContent : null,
+    // Evaporador
+    evapVoltAB: document.getElementById('rEvapVoltAB')?.value || null,
+    evapVoltBC: document.getElementById('rEvapVoltBC')?.value || null,
+    evapVoltAC: document.getElementById('rEvapVoltAC')?.value || null,
+    evapAmpA: document.getElementById('rEvapAmpA')?.value || null,
+    evapAmpB: document.getElementById('rEvapAmpB')?.value || null,
+    evapAmpC: document.getElementById('rEvapAmpC')?.value || null,
+    // Circuito 1
+    c1VoltAB: document.getElementById('rC1VoltAB')?.value || null,
+    c1VoltBC: document.getElementById('rC1VoltBC')?.value || null,
+    c1VoltAC: document.getElementById('rC1VoltAC')?.value || null,
+    c1AmpA: document.getElementById('rC1AmpA')?.value || null,
+    c1AmpB: document.getElementById('rC1AmpB')?.value || null,
+    c1AmpC: document.getElementById('rC1AmpC')?.value || null,
+    // Circuito 2 (opcional)
+    c2VoltAB: document.getElementById('rC2VoltAB')?.value || null,
+    c2AmpA: document.getElementById('rC2AmpA')?.value || null,
+    // Circuito 3 (opcional)
+    c3VoltAB: document.getElementById('rC3VoltAB')?.value || null,
+    c3AmpA: document.getElementById('rC3AmpA')?.value || null,
+    // Presiones
+    presAltaC1: document.getElementById('presAltaC1')?.value || null,
+    presBajaC1: document.getElementById('presBajaC1')?.value || null,
+    presAltaC2: document.getElementById('presAltaC2')?.value || null,
+    presBajaC2: document.getElementById('presBajaC2')?.value || null,
+    presAltaC3: document.getElementById('presAltaC3')?.value || null,
+    presBajaC3: document.getElementById('presBajaC3')?.value || null,
+    // Temperaturas
+    tempSuministro: document.getElementById('tempSum')?.value || null,
+    tempRetorno: document.getElementById('tempRet')?.value || null,
+    deltaT: document.getElementById('deltaVal')?.textContent !== '—' ? document.getElementById('deltaVal')?.textContent : null,
     // Estado
     estadoEquipo: estadoSelected,
     trabajoAdicionalDetectado: trabajoAdicional,
@@ -932,12 +944,11 @@ async function enviarInforme() {
   };
  
   try {
- const resp = await fetch(POWER_AUTOMATE_URL, {
-  method: 'POST',
-  mode: 'no-cors',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify(payload)
-});
+    const resp = await fetch(POWER_AUTOMATE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
     if (resp.ok || resp.status === 202) {
       btn.innerHTML = '✓ Informe enviado correctamente';
       btn.style.background = 'var(--teal-mid)';
