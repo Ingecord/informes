@@ -312,7 +312,7 @@
     <div class="tipo-group">
       <button class="tipo-btn" id="btnPreventivo" onclick="setTipo('Preventivo')">Preventivo</button>
       <button class="tipo-btn" id="btnCorrectivo" onclick="setTipo('Correctivo')">Correctivo</button>
-      <button class="tipo-btn" id="btnInspeccion" onclick="setTipo('Inspección')">Inspección</button>
+      <button class="tipo-btn" id="btnInspeccion" onclick="setTipo('Inspeccion')">Inspección</button>
     </div>
   </div>
  
@@ -707,7 +707,7 @@ let tipoSelected = null;
 function setTipo(tipo) {
   tipoSelected = tipo;
   document.querySelectorAll('.tipo-btn').forEach(b => b.classList.remove('active'));
-  const map = {'Preventivo':'btnPreventivo','Correctivo':'btnCorrectivo','Inspección':'btnInspeccion'};
+  const map = {'Preventivo':'btnPreventivo','Correctivo':'btnCorrectivo','Inspeccion':'btnInspeccion'};
   if (map[tipo]) document.getElementById(map[tipo]).classList.add('active');
 }
  
