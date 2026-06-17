@@ -932,11 +932,12 @@ async function enviarInforme() {
   };
  
   try {
-    const resp = await fetch(POWER_AUTOMATE_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
+ const resp = await fetch(POWER_AUTOMATE_URL, {
+  method: 'POST',
+  mode: 'no-cors',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(payload)
+});
     if (resp.ok || resp.status === 202) {
       btn.innerHTML = '✓ Informe enviado correctamente';
       btn.style.background = 'var(--teal-mid)';
