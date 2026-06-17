@@ -865,8 +865,7 @@ function loadOTData() {
  
 // ─── URL del Power Automate HTTP trigger ───
 // Reemplazar con la URL real al publicar el flujo
-const POWER_AUTOMATE_URL = 'https://defaulteb43a9912a5742808a56db939741fe.ce.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/b123519a5b7f45609a11d83b0763ced6/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=y7IlSRrEkgy_YghtBqoZ5vfalROrXGJU6AFZF6m16hk';
- 
+const POWER_AUTOMATE_URL = 'https://cors-anywhere.herokuapp.com/https://defaulteb43a9912a5742808a56db939741fe.ce.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/b123519a5b7f45609a11d83b0763ced6/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=y7IlSRrEkgy_YghtBqoZ5vfalROrXGJU6AFZF6m16hk';
 // ─── Enviar informe ───
 async function enviarInforme() {
   if (!tipoSelected) { alert('Selecciona el tipo de mantenimiento.'); return; }
