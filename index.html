@@ -282,6 +282,45 @@
 </head>
 <body>
  
+<!-- ═══════════ PANTALLA DE SELECCIÓN INICIAL ═══════════ -->
+<div class="top-bar" id="topBarSeleccion">
+  <div class="brand">Ingecord</div>
+  <h1>Nuevo informe técnico</h1>
+  <div class="subtitle">Selecciona técnico, OT y equipo</div>
+</div>
+ 
+<div class="container" id="seleccionScreen">
+  <div class="section">
+    <div class="section-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>
+      Iniciar informe
+    </div>
+ 
+    <span class="field-label">Técnico responsable <span class="required-star">*</span></span>
+    <select id="selTecnico" onchange="onTecnicoChange()">
+      <option value="">Cargando técnicos...</option>
+    </select>
+ 
+    <span class="field-label">Orden de trabajo (OT) <span class="required-star">*</span></span>
+    <select id="selOT" onchange="onOTChange()" disabled>
+      <option value="">Primero selecciona un técnico</option>
+    </select>
+ 
+    <span class="field-label">Equipo <span class="required-star">*</span></span>
+    <select id="selEquipo" disabled>
+      <option value="">Primero selecciona una OT</option>
+    </select>
+ 
+    <button class="submit-btn" id="btnContinuar" onclick="continuarAFormulario()" disabled style="margin-top:18px">
+      Continuar
+    </button>
+  </div>
+  <div class="bottom-space"></div>
+</div>
+ 
+<!-- ═══════════ FORMULARIO DE INFORME (oculto hasta seleccionar) ═══════════ -->
+<div id="formularioScreen" style="display:none">
+ 
 <div class="top-bar">
   <div class="brand">Ingecord</div>
   <h1 id="pageTitle">Informe — Mini Split / DX</h1>
@@ -629,20 +668,153 @@
   <div class="bottom-space"></div>
 </div>
  
+</div>
+<!-- ═══════════ FIN formularioScreen ═══════════ -->
+ 
 <script>
-// ─── Datos de la OT (simulados — en producción llegan por URL params o Power Automate) ───
+// ─── Datos de la OT (se llenan dinámicamente al elegir Técnico → OT → Equipo) ───
 const OT_DATA = {
-  ot: 'COR-2606-0026',
-  cliente: 'Cliente Prueba',
-  sucursal: 'Sucursal Prueba',
-  equipo: 'Fan Coil #2',
-  ubicacion: 'Prueba',
-  marca: 'LG / Prueba',
-  refrigerante: 'R-410A',
-  tecnico: 'Jorge González',
-  tipoEquipo: 'DX',
-  equipoOT_ID: '1'
+  ot: '',
+  cliente: '',
+  sucursal: '',
+  equipo: '',
+  ubicacion: '',
+  marca: '',
+  refrigerante: '',
+  tecnico: '',
+  tipoEquipo: '',
+  equipoOT_ID: ''
 };
+ 
+// ─── Selección dinámica: Técnico → OT → Equipo ───
+const CONSULTA_URL = 'https://hook.us2.make.com/apdlfnasi6d3hxdgj4f3l4wyr6lndip4';
+ 
+let tecnicosCache = [];
+let otsCache = [];
+let equiposCache = [];
+ 
+async function cargarTecnicos() {
+  const sel = document.getElementById('selTecnico');
+  try {
+    const resp = await fetch(`${CONSULTA_URL}?accion=listar_tecnicos`);
+    const data = await resp.json();
+    tecnicosCache = data;
+    sel.innerHTML = '<option value="">Selecciona tu rol</option>' +
+      data.map(t => `<option value="${t.fields.ID}">${t.fields.Título}</option>`).join('');
+  } catch (e) {
+    sel.innerHTML = '<option value="">Error al cargar — recarga la página</option>';
+    console.error('Error cargando técnicos:', e);
+  }
+}
+ 
+async function onTecnicoChange() {
+  const tecnicoId = document.getElementById('selTecnico').value;
+  const selOT = document.getElementById('selOT');
+  const selEquipo = document.getElementById('selEquipo');
+ 
+  selEquipo.innerHTML = '<option value="">Primero selecciona una OT</option>';
+  selEquipo.disabled = true;
+  document.getElementById('btnContinuar').disabled = true;
+ 
+  if (!tecnicoId) {
+    selOT.innerHTML = '<option value="">Primero selecciona un técnico</option>';
+    selOT.disabled = true;
+    return;
+  }
+ 
+  selOT.innerHTML = '<option value="">Cargando OTs...</option>';
+  selOT.disabled = true;
+ 
+  try {
+    const resp = await fetch(`${CONSULTA_URL}?accion=listar_ots&tecnicoId=${tecnicoId}`);
+    const data = await resp.json();
+    otsCache = data;
+    if (data.length === 0) {
+      selOT.innerHTML = '<option value="">No hay OTs pendientes para este técnico</option>';
+      return;
+    }
+    selOT.innerHTML = '<option value="">Selecciona una OT</option>' +
+      data.map(o => `<option value="${o.fields.ID}">${o.fields.Título}${o.fields.Descripcion ? ' — ' + o.fields.Descripcion.substring(0,40) : ''}</option>`).join('');
+    selOT.disabled = false;
+  } catch (e) {
+    selOT.innerHTML = '<option value="">Error al cargar OTs</option>';
+    console.error('Error cargando OTs:', e);
+  }
+}
+ 
+async function onOTChange() {
+  const otId = document.getElementById('selOT').value;
+  const selEquipo = document.getElementById('selEquipo');
+  document.getElementById('btnContinuar').disabled = true;
+ 
+  if (!otId) {
+    selEquipo.innerHTML = '<option value="">Primero selecciona una OT</option>';
+    selEquipo.disabled = true;
+    return;
+  }
+ 
+  selEquipo.innerHTML = '<option value="">Cargando equipos...</option>';
+  selEquipo.disabled = true;
+ 
+  try {
+    const resp = await fetch(`${CONSULTA_URL}?accion=listar_equipos&otId=${otId}`);
+    const data = await resp.json();
+    equiposCache = data;
+    if (data.length === 0) {
+      selEquipo.innerHTML = '<option value="">No hay equipos pendientes en esta OT</option>';
+      return;
+    }
+    selEquipo.innerHTML = '<option value="">Selecciona un equipo</option>' +
+      data.map(eq => `<option value="${eq.equipoID}">${eq.equipoTitulo}</option>`).join('');
+    selEquipo.disabled = false;
+    selEquipo.onchange = () => {
+      document.getElementById('btnContinuar').disabled = !selEquipo.value;
+    };
+  } catch (e) {
+    selEquipo.innerHTML = '<option value="">Error al cargar equipos</option>';
+    console.error('Error cargando equipos:', e);
+  }
+}
+ 
+function continuarAFormulario() {
+  const tecnicoId = document.getElementById('selTecnico').value;
+  const otId = document.getElementById('selOT').value;
+  const equipoId = document.getElementById('selEquipo').value;
+ 
+  const tecnico = tecnicosCache.find(t => String(t.fields.ID) === String(tecnicoId));
+  const ot = otsCache.find(o => String(o.fields.ID) === String(otId));
+  const equipo = equiposCache.find(e => String(e.equipoID) === String(equipoId));
+ 
+  if (!tecnico || !ot || !equipo) {
+    alert('Por favor completa los tres campos antes de continuar.');
+    return;
+  }
+ 
+  OT_DATA.ot = ot.fields.Título;
+  OT_DATA.equipo = equipo.equipoTitulo;
+  OT_DATA.ubicacion = equipo.equipoUbicacion || '—';
+  OT_DATA.marca = `${equipo.equipoMarca || ''} / ${equipo.equipoModelo || ''}`;
+  OT_DATA.refrigerante = equipo.equipoRefrigerante || '—';
+  OT_DATA.tecnico = tecnico.fields.Título;
+  OT_DATA.tipoEquipo = equipo.equipoTipo || '—';
+  OT_DATA.equipoOT_ID = equipo.equipoID;
+  OT_DATA.cliente = equipo.clienteTitulo || '—';
+  OT_DATA.sucursal = equipo.sucursalTitulo || '—';
+ 
+  document.getElementById('topBarSeleccion').style.display = 'none';
+  document.getElementById('seleccionScreen').style.display = 'none';
+  document.getElementById('formularioScreen').style.display = 'block';
+ 
+  buildChecklist();
+  loadOTData();
+ 
+  if (OT_DATA.tipoEquipo === 'Split' || OT_DATA.tipoEquipo === 'DX') {
+    document.getElementById('btnAgregarC2Elec').style.display = 'none';
+    document.getElementById('btnAgregarC2Pres').style.display = 'none';
+    const header = document.querySelector('#bloqueC1Elec .circuito-header') || document.querySelector('.circuito-header');
+    if (header) header.textContent = 'Compresor';
+  }
+}
  
 // ─── Checklist ───
 const CHECKLIST = [
@@ -674,8 +846,11 @@ const CHECKLIST = [
 ];
  
 const checklistState = {};
+let checklistBuilt = false;
  
 function buildChecklist() {
+  if (checklistBuilt) return;
+  checklistBuilt = true;
   const tbody = document.getElementById('checklistBody');
   let html = '';
   CHECKLIST.forEach(group => {
@@ -805,7 +980,6 @@ function setTrabajo(si) {
  
 // ─── Fotos ───
 let fotosFiles = [];
-let fotosBase64 = [];
  
 function handleFotos(input) {
   const nuevas = Array.from(input.files);
@@ -848,10 +1022,8 @@ function fileToBase64(file) {
   });
 }
  
-// ─── Cargar datos OT ───
+// ─── Cargar datos OT en la pantalla del formulario ───
 function loadOTData() {
-  // En producción: leer URL params (?ot=OT-2026-045&eqot=EOT-xxx)
-  // y llamar a Power Automate para obtener datos completos
   document.getElementById('infoOT').textContent = OT_DATA.ot;
   document.getElementById('infoCliente').textContent = OT_DATA.cliente;
   document.getElementById('infoSucursal').textContent = OT_DATA.sucursal;
@@ -863,8 +1035,7 @@ function loadOTData() {
   document.getElementById('pageSubtitle').textContent = `${OT_DATA.cliente} — ${OT_DATA.sucursal}`;
 }
  
-// ─── URL del Power Automate HTTP trigger ───
-// Reemplazar con la URL real al publicar el flujo
+// ─── URL del webhook de envío de informes ───
 const POWER_AUTOMATE_URL = 'https://hook.us2.make.com/7ewyz9o2o108solu40zj6ovlz2pvjduq';
  
 // ─── Enviar informe ───
@@ -877,7 +1048,6 @@ async function enviarInforme() {
   btn.disabled = true;
   btn.innerHTML = '⏳ Enviando informe...';
  
-  // Convertir fotos a base64
   let fotosData = [];
   if (fotosFiles.length > 0) {
     try {
@@ -888,7 +1058,6 @@ async function enviarInforme() {
   }
  
   const payload = {
-    // Identificadores
     ot: OT_DATA.ot,
     equipoOT_ID: OT_DATA.equipoOT_ID,
     equipo: OT_DATA.equipo,
@@ -899,47 +1068,38 @@ async function enviarInforme() {
     refrigerante: OT_DATA.refrigerante,
     tecnico: OT_DATA.tecnico,
     tipoEquipo: OT_DATA.tipoEquipo,
-    // Formulario
     tipoMantenimiento: tipoSelected,
     fechaInforme: new Date().toISOString(),
     checklist: checklistState,
-    // Evaporador
     evapVoltAB: document.getElementById('rEvapVoltAB')?.value || null,
     evapVoltBC: document.getElementById('rEvapVoltBC')?.value || null,
     evapVoltAC: document.getElementById('rEvapVoltAC')?.value || null,
     evapAmpA: document.getElementById('rEvapAmpA')?.value || null,
     evapAmpB: document.getElementById('rEvapAmpB')?.value || null,
     evapAmpC: document.getElementById('rEvapAmpC')?.value || null,
-    // Circuito 1
     c1VoltAB: document.getElementById('rC1VoltAB')?.value || null,
     c1VoltBC: document.getElementById('rC1VoltBC')?.value || null,
     c1VoltAC: document.getElementById('rC1VoltAC')?.value || null,
     c1AmpA: document.getElementById('rC1AmpA')?.value || null,
     c1AmpB: document.getElementById('rC1AmpB')?.value || null,
     c1AmpC: document.getElementById('rC1AmpC')?.value || null,
-    // Circuito 2 (opcional)
     c2VoltAB: document.getElementById('rC2VoltAB')?.value || null,
     c2AmpA: document.getElementById('rC2AmpA')?.value || null,
-    // Circuito 3 (opcional)
     c3VoltAB: document.getElementById('rC3VoltAB')?.value || null,
     c3AmpA: document.getElementById('rC3AmpA')?.value || null,
-    // Presiones
     presAltaC1: document.getElementById('presAltaC1')?.value || null,
     presBajaC1: document.getElementById('presBajaC1')?.value || null,
     presAltaC2: document.getElementById('presAltaC2')?.value || null,
     presBajaC2: document.getElementById('presBajaC2')?.value || null,
     presAltaC3: document.getElementById('presAltaC3')?.value || null,
     presBajaC3: document.getElementById('presBajaC3')?.value || null,
-    // Temperaturas
     tempSuministro: document.getElementById('tempSum')?.value || null,
     tempRetorno: document.getElementById('tempRet')?.value || null,
     deltaT: document.getElementById('deltaVal')?.textContent !== '—' ? document.getElementById('deltaVal')?.textContent : null,
-    // Estado
     estadoEquipo: estadoSelected,
     trabajoAdicionalDetectado: trabajoAdicional,
     descripcionTrabajoAdicional: trabajoAdicional ? document.getElementById('trabajoDesc').value : null,
     observacionesTecnico: document.getElementById('observaciones').value,
-    // Fotos en base64
     fotosArray: fotosData,
   };
  
@@ -950,28 +1110,16 @@ async function enviarInforme() {
       body: JSON.stringify(payload)
     });
   } catch (e) {
-    // CORS bloquea la respuesta pero los datos SÍ llegan a Power Automate
     console.log('Enviado — respuesta bloqueada por CORS (normal)');
   }
-  // Mostrar éxito siempre
   btn.innerHTML = '✓ Informe enviado correctamente';
   btn.style.background = 'var(--teal-mid)';
 }
  
-// ─── Init ───
-buildChecklist();
-loadOTData();
- 
-// Ajustes según tipo de equipo
-if (OT_DATA.tipoEquipo === 'Split') {
-  // Mini Split: sin evaporador separado, sin circuitos adicionales
-  document.getElementById('btnAgregarC2Elec').style.display = 'none';
-  document.getElementById('btnAgregarC2Pres').style.display = 'none';
-  // Renombrar "Circuito 1" a solo "Compresor" para que tenga sentido en Split
-  document.querySelector('#bloqueC1Elec .circuito-header') &&
-    (document.querySelector('.circuito-header').textContent = 'Compresor');
-}
+// ─── Init: arranca la pantalla de selección ───
+cargarTecnicos();
  
 </script>
 </body>
 </html>
+ 
