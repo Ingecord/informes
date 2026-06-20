@@ -700,7 +700,7 @@ async function cargarTecnicos() {
     const data = await resp.json();
     tecnicosCache = data;
     sel.innerHTML = '<option value="">Selecciona tu rol</option>' +
-      data.map(t => `<option value="${t.fields.ID}">${t.fields.Título}</option>`).join('');
+      data.map(t => `<option value="${t.fields.id}">${t.fields.Title}</option>`).join('');
   } catch (e) {
     sel.innerHTML = '<option value="">Error al cargar — recarga la página</option>';
     console.error('Error cargando técnicos:', e);
@@ -734,7 +734,7 @@ async function onTecnicoChange() {
       return;
     }
     selOT.innerHTML = '<option value="">Selecciona una OT</option>' +
-      data.map(o => `<option value="${o.fields.ID}">${o.fields.Título}${o.fields.Descripcion ? ' — ' + o.fields.Descripcion.substring(0,40) : ''}</option>`).join('');
+      data.map(o => `<option value="${o.fields.id}">${o.fields.Title}${o.fields.Descripcion ? ' — ' + o.fields.Descripcion.substring(0,40) : ''}</option>`).join('');
     selOT.disabled = false;
   } catch (e) {
     selOT.innerHTML = '<option value="">Error al cargar OTs</option>';
@@ -781,8 +781,8 @@ function continuarAFormulario() {
   const otId = document.getElementById('selOT').value;
   const equipoId = document.getElementById('selEquipo').value;
  
-  const tecnico = tecnicosCache.find(t => String(t.fields.ID) === String(tecnicoId));
-  const ot = otsCache.find(o => String(o.fields.ID) === String(otId));
+  const tecnico = tecnicosCache.find(t => String(t.fields.id) === String(tecnicoId));
+  const ot = otsCache.find(o => String(o.fields.id) === String(otId));
   const equipo = equiposCache.find(e => String(e.equipoID) === String(equipoId));
  
   if (!tecnico || !ot || !equipo) {
@@ -790,12 +790,12 @@ function continuarAFormulario() {
     return;
   }
  
-  OT_DATA.ot = ot.fields.Título;
+  OT_DATA.ot = ot.fields.Title;
   OT_DATA.equipo = equipo.equipoTitulo;
   OT_DATA.ubicacion = equipo.equipoUbicacion || '—';
   OT_DATA.marca = `${equipo.equipoMarca || ''} / ${equipo.equipoModelo || ''}`;
   OT_DATA.refrigerante = equipo.equipoRefrigerante || '—';
-  OT_DATA.tecnico = tecnico.fields.Título;
+  OT_DATA.tecnico = tecnico.fields.Title;
   OT_DATA.tipoEquipo = equipo.equipoTipo || '—';
   OT_DATA.equipoOT_ID = equipo.equipoID;
   OT_DATA.cliente = equipo.clienteTitulo || '—';
