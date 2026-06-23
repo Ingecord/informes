@@ -816,14 +816,14 @@ function continuarAFormulario() {
  
   OT_DATA.ot = ot.fields.Title;
   OT_DATA.equipo = equipo.nombreEquipo;
-  OT_DATA.ubicacion = "—";
-  OT_DATA.marca = "—";
-  OT_DATA.refrigerante = "—";
+  OT_DATA.ubicacion = equipo.ubicacion || '—';
+  OT_DATA.marca = equipo.marcaModelo || '—';
+  OT_DATA.refrigerante = equipo.refrigerante || '—';
   OT_DATA.tecnico = tecnico.fields.Title;
-  OT_DATA.tipoEquipo = "DX";
+  OT_DATA.tipoEquipo = equipo.tipoEquipo || 'DX';
   OT_DATA.equipoOT_ID = equipo.equipoOT_ID;
-  OT_DATA.cliente = "—";
-  OT_DATA.sucursal = "—";
+  OT_DATA.cliente = equipo.clienteNombre || '—';
+  OT_DATA.sucursal = equipo.sucursalNombre || '—';
  
   document.getElementById('topBarSeleccion').style.display = 'none';
   document.getElementById('seleccionScreen').style.display = 'none';
@@ -1189,3 +1189,4 @@ function verificarPin() {
 </script>
 </body>
 </html>
+ 
