@@ -282,14 +282,35 @@
 </head>
 <body>
  
+<!-- ═══════════ PANTALLA DE PIN ═══════════ -->
+<div class="top-bar" id="topBarPin">
+  <div class="brand">Ingecord</div>
+  <h1>Acceso al sistema</h1>
+  <div class="subtitle">Ingresa tu PIN para continuar</div>
+</div>
+ 
+<div class="container" id="pinScreen">
+  <div class="section" style="margin-top:24px">
+    <div class="section-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+      Verificación de acceso
+    </div>
+    <span class="field-label">PIN de acceso <span class="required-star">*</span></span>
+    <input type="password" id="pinInput" maxlength="4" placeholder="••••" style="font-size:24px;letter-spacing:8px;text-align:center;" oninput="onPinInput()" onkeydown="if(event.key==='Enter') verificarPin()">
+    <div id="pinError" style="display:none;margin-top:10px;background:var(--red-bg);border-radius:6px;padding:10px 12px;font-size:13px;color:var(--red-text);"></div>
+    <button class="submit-btn" onclick="verificarPin()" style="margin-top:18px">Ingresar</button>
+  </div>
+  <div class="bottom-space"></div>
+</div>
+ 
 <!-- ═══════════ PANTALLA DE SELECCIÓN INICIAL ═══════════ -->
-<div class="top-bar" id="topBarSeleccion">
+<div class="top-bar" id="topBarSeleccion" style="display:none">
   <div class="brand">Ingecord</div>
   <h1>Nuevo informe técnico</h1>
   <div class="subtitle">Selecciona técnico, OT y equipo</div>
 </div>
  
-<div class="container" id="seleccionScreen">
+<div class="container" id="seleccionScreen" style="display:none">
   <div class="section">
     <div class="section-title">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>
@@ -1119,10 +1140,52 @@ async function enviarInforme() {
   btn.style.background = 'var(--teal-mid)';
 }
  
-// ─── Init: arranca la pantalla de selección ───
-cargarTecnicos();
+// ─── PIN de acceso ───
+const PIN_CORRECTO = '2410';
+let intentosFallidos = 0;
+let bloqueadoHasta = null;
+ 
+function onPinInput() {
+  const input = document.getElementById('pinInput');
+  if (input.value.length === 4) verificarPin();
+}
+ 
+function verificarPin() {
+  const input = document.getElementById('pinInput');
+  const errorDiv = document.getElementById('pinError');
+  const pin = input.value;
+ 
+  if (bloqueadoHasta && new Date() < bloqueadoHasta) {
+    const segundos = Math.ceil((bloqueadoHasta - new Date()) / 1000);
+    errorDiv.style.display = 'block';
+    errorDiv.textContent = 'Demasiados intentos. Espera ' + segundos + ' segundos.';
+    input.value = '';
+    return;
+  }
+ 
+  if (pin === PIN_CORRECTO) {
+    intentosFallidos = 0;
+    document.getElementById('topBarPin').style.display = 'none';
+    document.getElementById('pinScreen').style.display = 'none';
+    document.getElementById('topBarSeleccion').style.display = 'block';
+    document.getElementById('seleccionScreen').style.display = 'block';
+    cargarTecnicos();
+  } else {
+    intentosFallidos++;
+    input.value = '';
+    errorDiv.style.display = 'block';
+    if (intentosFallidos >= 3) {
+      bloqueadoHasta = new Date(new Date().getTime() + 5 * 60 * 1000);
+      intentosFallidos = 0;
+      errorDiv.textContent = 'Demasiados intentos fallidos. Bloqueado por 5 minutos.';
+    } else {
+      errorDiv.textContent = 'PIN incorrecto. ' + (3 - intentosFallidos) + ' intento(s) restante(s).';
+    }
+  }
+}
+ 
+// ─── Init: arranca en la pantalla de PIN ───
  
 </script>
 </body>
 </html>
- 
