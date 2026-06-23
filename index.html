@@ -757,7 +757,10 @@ async function onOTChange() {
   selEquipo.disabled = true;
  
   try {
-    const resp = await fetch(`${CONSULTA_URL}?accion=listar_equipos&otId=${otId}`);
+    const otSeleccionada = otsCache.find(o => String(o.fields.id) === String(otId));
+  const clienteId = otSeleccionada ? otSeleccionada.fields.ClienteLookupId : "";
+  const sucursalId = otSeleccionada ? otSeleccionada.fields.SucursalLookupId : "";
+  const resp = await fetch(`${CONSULTA_URL}?accion=listar_equipos&otId=${otId}&clienteId=${clienteId}&sucursalId=${sucursalId}`);
     const data = await resp.json();
     equiposCache = data;
     if (data.length === 0) {
@@ -765,7 +768,7 @@ async function onOTChange() {
       return;
     }
     selEquipo.innerHTML = '<option value="">Selecciona un equipo</option>' +
-      data.map(eq => `<option value="${eq.equipoID}">${eq.equipoTitulo}</option>`).join('');
+      data.map(eq => `<option value="${eq.equipoOT_ID}">${eq.nombreEquipo}</option>`).join('');
     selEquipo.disabled = false;
     selEquipo.onchange = () => {
       document.getElementById('btnContinuar').disabled = !selEquipo.value;
@@ -783,7 +786,7 @@ function continuarAFormulario() {
  
   const tecnico = tecnicosCache.find(t => String(t.fields.id) === String(tecnicoId));
   const ot = otsCache.find(o => String(o.fields.id) === String(otId));
-  const equipo = equiposCache.find(e => String(e.equipoID) === String(equipoId));
+  const equipo = equiposCache.find(e => String(e.equipoOT_ID) === String(equipoId));
  
   if (!tecnico || !ot || !equipo) {
     alert('Por favor completa los tres campos antes de continuar.');
@@ -791,15 +794,15 @@ function continuarAFormulario() {
   }
  
   OT_DATA.ot = ot.fields.Title;
-  OT_DATA.equipo = equipo.equipoTitulo;
-  OT_DATA.ubicacion = equipo.equipoUbicacion || '—';
-  OT_DATA.marca = `${equipo.equipoMarca || ''} / ${equipo.equipoModelo || ''}`;
-  OT_DATA.refrigerante = equipo.equipoRefrigerante || '—';
+  OT_DATA.equipo = equipo.nombreEquipo;
+  OT_DATA.ubicacion = "—";
+  OT_DATA.marca = "—";
+  OT_DATA.refrigerante = "—";
   OT_DATA.tecnico = tecnico.fields.Title;
-  OT_DATA.tipoEquipo = equipo.equipoTipo || '—';
-  OT_DATA.equipoOT_ID = equipo.equipoID;
-  OT_DATA.cliente = equipo.clienteTitulo || '—';
-  OT_DATA.sucursal = equipo.sucursalTitulo || '—';
+  OT_DATA.tipoEquipo = "DX";
+  OT_DATA.equipoOT_ID = equipo.equipoOT_ID;
+  OT_DATA.cliente = "—";
+  OT_DATA.sucursal = "—";
  
   document.getElementById('topBarSeleccion').style.display = 'none';
   document.getElementById('seleccionScreen').style.display = 'none';
