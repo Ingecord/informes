@@ -850,6 +850,7 @@ const OT_DATA = {
   refrigerante: '',
   tecnico: '',
   tipoEquipo: '',
+  tipoSistema: '',
   equipoOT_ID: ''
 };
  
@@ -967,6 +968,7 @@ function continuarAFormulario() {
   OT_DATA.refrigerante = equipo.refrigerante || '—';
   OT_DATA.tecnico = tecnico.fields.Title;
   OT_DATA.tipoEquipo = equipo.tipoEquipo || 'DX';
+  OT_DATA.tipoSistema = equipo.tipoSistema || '';
   OT_DATA.equipoOT_ID = equipo.equipoOT_ID;
   OT_DATA.cliente = equipo.clienteNombre || '—';
   OT_DATA.sucursal = equipo.sucursalNombre || '—';
@@ -974,7 +976,7 @@ function continuarAFormulario() {
   document.getElementById('topBarSeleccion').style.display = 'none';
   document.getElementById('seleccionScreen').style.display = 'none';
  
-  const esVRF = OT_DATA.tipoEquipo && OT_DATA.tipoEquipo.toLowerCase().includes('vrf');
+  const esVRF = OT_DATA.tipoSistema && OT_DATA.tipoSistema.toLowerCase().includes('vrf');
  
   if (esVRF) {
     document.getElementById('formularioVRFScreen').style.display = 'block';
