@@ -692,6 +692,152 @@
 </div>
 <!-- ═══════════ FIN formularioScreen ═══════════ -->
  
+<!-- ═══════════ FORMULARIO VRF ═══════════ -->
+<div id="formularioVRFScreen" style="display:none">
+ 
+<div class="top-bar">
+  <div class="brand">Ingecord</div>
+  <h1>Informe — Sistema VRF</h1>
+  <div class="subtitle" id="vrfPageSubtitle">Cargando datos de la OT...</div>
+</div>
+ 
+<div class="container">
+ 
+  <!-- Info de la OT -->
+  <div class="info-card" id="vrfOtInfoCard">
+    <div class="badge-source">Datos cargados desde OT</div>
+    <div class="info-row"><span class="info-lbl">OT</span><span class="info-val" id="vrfInfoOT">—</span></div>
+    <div class="info-row"><span class="info-lbl">Cliente</span><span class="info-val" id="vrfInfoCliente">—</span></div>
+    <div class="info-row"><span class="info-lbl">Sucursal</span><span class="info-val" id="vrfInfoSucursal">—</span></div>
+    <div class="info-row"><span class="info-lbl">Sistema VRF</span><span class="info-val" id="vrfInfoSistema">—</span></div>
+    <div class="info-row"><span class="info-lbl">Refrigerante</span><span class="info-val" id="vrfInfoRef">—</span></div>
+    <div class="info-row" style="border-bottom:none"><span class="info-lbl">Técnico</span><span class="info-val" id="vrfInfoTecnico">—</span></div>
+  </div>
+ 
+  <!-- Tipo de mantenimiento -->
+  <div class="section">
+    <div class="section-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+      Tipo de mantenimiento <span class="required-star">*</span>
+    </div>
+    <div class="tipo-group">
+      <button class="tipo-btn" id="vrfBtnPreventivo" onclick="vrfSetTipo('Preventivo')">Preventivo</button>
+      <button class="tipo-btn" id="vrfBtnCorrectivo" onclick="vrfSetTipo('Correctivo')">Correctivo</button>
+      <button class="tipo-btn" id="vrfBtnInspeccion" onclick="vrfSetTipo('Inspeccion')">Inspección</button>
+    </div>
+  </div>
+ 
+  <!-- Checklist -->
+  <div class="section">
+    <div class="section-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+      Checklist de actividades
+    </div>
+    <table class="checklist-table">
+      <thead>
+        <tr>
+          <th style="width:52%">Actividad</th>
+          <th style="width:16%">Sí</th>
+          <th style="width:16%">No</th>
+          <th style="width:16%">NA</th>
+        </tr>
+      </thead>
+      <tbody id="vrfChecklistBody"></tbody>
+    </table>
+  </div>
+ 
+  <!-- EVAPORADORES -->
+  <div class="section">
+    <div class="section-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+      Unidades interiores (evaporadores)
+    </div>
+    <div id="vrfEvaporadoresContainer"></div>
+    <button class="agregar-btn" onclick="vrfAgregarEvaporador()" id="vrfBtnAgregarEvap" style="margin-top:8px">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+      Agregar evaporador
+    </button>
+  </div>
+ 
+  <!-- CONDENSADORES -->
+  <div class="section">
+    <div class="section-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      Unidades exteriores (condensadores)
+    </div>
+    <div id="vrfCondensadoresContainer"></div>
+    <button class="agregar-btn" onclick="vrfAgregarCondensador()" id="vrfBtnAgregarCond" style="margin-top:8px">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+      Agregar condensador
+    </button>
+  </div>
+ 
+  <!-- Estado del sistema -->
+  <div class="section">
+    <div class="section-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+      Estado del sistema <span class="required-star">*</span>
+    </div>
+    <div class="estado-group">
+      <button class="estado-btn atendido" onclick="vrfSetEstado(this,'Atendido')">✓ Atendido</button>
+      <button class="estado-btn seguimiento" onclick="vrfSetEstado(this,'Requiere seguimiento')">⚠ Requiere seguimiento</button>
+      <button class="estado-btn accesible" style="grid-column:1/-1" onclick="vrfSetEstado(this,'No accesible')">✕ No accesible</button>
+    </div>
+  </div>
+ 
+  <!-- Trabajo adicional -->
+  <div class="section">
+    <div class="section-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      Trabajo adicional detectado <span class="required-star">*</span>
+    </div>
+    <div class="trabajo-toggle">
+      <button class="toggle-btn" id="vrfBtnTrabNo" onclick="vrfSetTrabajo(false)">No detectado</button>
+      <button class="toggle-btn" id="vrfBtnTrabSi" onclick="vrfSetTrabajo(true)">Sí detectado</button>
+    </div>
+    <div class="trabajo-desc" id="vrfTrabajoDescWrap">
+      <label style="font-size:13px;color:var(--text-muted);display:block;margin-bottom:6px">Descripción del trabajo adicional</label>
+      <textarea id="vrfTrabajoDesc" placeholder="Describa el trabajo adicional observado..."></textarea>
+    </div>
+  </div>
+ 
+  <!-- Observaciones generales -->
+  <div class="section">
+    <div class="section-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      Observaciones generales del sistema
+    </div>
+    <textarea id="vrfObservaciones" placeholder="Describa el estado general del sistema VRF, condiciones observadas y cualquier comentario relevante..."></textarea>
+  </div>
+ 
+  <!-- Fotos -->
+  <div class="section">
+    <div class="section-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      Fotos del sistema
+    </div>
+    <div class="foto-zone" id="vrfFotoZone">
+      <input type="file" accept="image/*" multiple id="vrfFotoInput" onchange="vrfHandleFotos(this)">
+      <div class="foto-zone-icon">📷</div>
+      <p>Seleccionar fotos de la galería</p>
+      <small>Máximo 5 fotos</small>
+    </div>
+    <div class="foto-grid" id="vrfFotoGrid"></div>
+    <p class="foto-count-label" id="vrfFotoCount"></p>
+  </div>
+ 
+  <!-- Submit -->
+  <button class="submit-btn" id="vrfSubmitBtn" onclick="vrfEnviarInforme()">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    Enviar informe VRF
+  </button>
+ 
+  <div class="bottom-space"></div>
+</div>
+</div>
+<!-- ═══════════ FIN formularioVRFScreen ═══════════ -->
+ 
+ 
 <script>
 // ─── Datos de la OT (se llenan dinámicamente al elegir Técnico → OT → Equipo) ───
 const OT_DATA = {
@@ -827,16 +973,33 @@ function continuarAFormulario() {
  
   document.getElementById('topBarSeleccion').style.display = 'none';
   document.getElementById('seleccionScreen').style.display = 'none';
-  document.getElementById('formularioScreen').style.display = 'block';
  
-  buildChecklist();
-  loadOTData();
+  const esVRF = OT_DATA.tipoEquipo && OT_DATA.tipoEquipo.toLowerCase().includes('vrf');
  
-  if (OT_DATA.tipoEquipo === 'Split' || OT_DATA.tipoEquipo === 'DX') {
-    document.getElementById('btnAgregarC2Elec').style.display = 'none';
-    document.getElementById('btnAgregarC2Pres').style.display = 'none';
-    const header = document.querySelector('#bloqueC1Elec .circuito-header') || document.querySelector('.circuito-header');
-    if (header) header.textContent = 'Compresor';
+  if (esVRF) {
+    document.getElementById('formularioVRFScreen').style.display = 'block';
+    vrfBuildChecklist();
+    vrfLoadOTData();
+    // Resetear contadores VRF
+    vrfTipoSelected = null;
+    vrfEstadoSelected = null;
+    vrfTrabajo = null;
+    vrfFotosFiles = [];
+    vrfEvapCount = 0;
+    vrfCondCount = 0;
+    document.getElementById('vrfEvaporadoresContainer').innerHTML = '';
+    document.getElementById('vrfCondensadoresContainer').innerHTML = '';
+    document.getElementById('vrfTrabajoDescWrap').style.display = 'none';
+  } else {
+    document.getElementById('formularioScreen').style.display = 'block';
+    buildChecklist();
+    loadOTData();
+    if (OT_DATA.tipoEquipo === 'Split' || OT_DATA.tipoEquipo === 'DX') {
+      document.getElementById('btnAgregarC2Elec').style.display = 'none';
+      document.getElementById('btnAgregarC2Pres').style.display = 'none';
+      const header = document.querySelector('#bloqueC1Elec .circuito-header') || document.querySelector('.circuito-header');
+      if (header) header.textContent = 'Compresor';
+    }
   }
 }
  
@@ -1195,6 +1358,361 @@ function verificarPin() {
     }
   }
 }
+ 
+ 
+// ══════════════════════════════════════════════════
+// ─── LÓGICA DEL FORMULARIO VRF ───
+// ══════════════════════════════════════════════════
+ 
+let vrfTipoSelected = null;
+let vrfEstadoSelected = null;
+let vrfTrabajo = null;
+let vrfFotosFiles = [];
+let vrfChecklistState = {};
+let vrfEvaporadores = []; // array de datos de evaporadores
+let vrfCondensadores = []; // array de datos de condensadores
+let vrfEvapCount = 0;
+let vrfCondCount = 0;
+ 
+// Lista de evaporadores y condensadores disponibles de la OT
+let vrfEquiposDisponibles = [];
+ 
+function vrfLoadOTData() {
+  document.getElementById('vrfInfoOT').textContent = OT_DATA.ot || '—';
+  document.getElementById('vrfInfoCliente').textContent = OT_DATA.cliente || '—';
+  document.getElementById('vrfInfoSucursal').textContent = OT_DATA.sucursal || '—';
+  document.getElementById('vrfInfoSistema').textContent = OT_DATA.equipo || '—';
+  document.getElementById('vrfInfoRef').textContent = OT_DATA.refrigerante || '—';
+  document.getElementById('vrfInfoTecnico').textContent = OT_DATA.tecnico || '—';
+  document.getElementById('vrfPageSubtitle').textContent = `${OT_DATA.ot} · ${OT_DATA.equipo}`;
+}
+ 
+function vrfSetTipo(tipo) {
+  vrfTipoSelected = tipo;
+  document.querySelectorAll('#formularioVRFScreen .tipo-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('vrfBtn' + tipo).classList.add('active');
+}
+ 
+function vrfSetEstado(btn, estado) {
+  vrfEstadoSelected = estado;
+  document.querySelectorAll('#formularioVRFScreen .estado-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+ 
+function vrfSetTrabajo(val) {
+  vrfTrabajo = val;
+  document.getElementById('vrfBtnTrabNo').classList.toggle('active', !val);
+  document.getElementById('vrfBtnTrabSi').classList.toggle('active', val);
+  document.getElementById('vrfTrabajoDescWrap').style.display = val ? 'block' : 'none';
+}
+ 
+function vrfBuildChecklist() {
+  const tbody = document.getElementById('vrfChecklistBody');
+  tbody.innerHTML = '';
+  vrfChecklistState = {};
+  CHECKLIST.forEach(group => {
+    const groupRow = document.createElement('tr');
+    groupRow.innerHTML = `<td colspan="4" style="background:var(--teal-pale);font-size:11px;font-weight:700;color:var(--teal-dark);text-transform:uppercase;letter-spacing:0.05em;padding:6px 12px;">${group.group}</td>`;
+    tbody.appendChild(groupRow);
+    group.items.forEach(item => {
+      vrfChecklistState[item] = null;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td style="font-size:13px;padding:8px 12px;">${item}</td>
+        <td style="text-align:center"><input type="radio" name="vrfCk_${item.replace(/\s/g,'_')}" value="Si" onchange="vrfChecklistState['${item}']='Si'"></td>
+        <td style="text-align:center"><input type="radio" name="vrfCk_${item.replace(/\s/g,'_')}" value="No" onchange="vrfChecklistState['${item}']='No'"></td>
+        <td style="text-align:center"><input type="radio" name="vrfCk_${item.replace(/\s/g,'_')}" value="NA" onchange="vrfChecklistState['${item}']='NA'"></td>`;
+      tbody.appendChild(tr);
+    });
+  });
+}
+ 
+// ─── Agregar evaporador ───
+function vrfAgregarEvaporador() {
+  vrfEvapCount++;
+  const id = vrfEvapCount;
+  const container = document.getElementById('vrfEvaporadoresContainer');
+  
+  // Obtener equipos disponibles que sean evaporadores (no condensadores)
+  const evapsDisponibles = equiposCache.filter(e => 
+    !e.nombreEquipo.toLowerCase().includes('condensador')
+  );
+  
+  const opcionesEvap = evapsDisponibles.map(e => 
+    `<option value="${e.equipoOT_ID}">${e.nombreEquipo}</option>`
+  ).join('');
+ 
+  const div = document.createElement('div');
+  div.className = 'circuito-block';
+  div.style.marginBottom = '14px';
+  div.id = `vrfEvap_${id}`;
+  div.innerHTML = `
+    <div class="circuito-header" style="display:flex;justify-content:space-between;align-items:center">
+      Evaporador ${id}
+      <button onclick="vrfQuitarEvaporador(${id})" style="background:none;border:none;color:var(--text-muted);font-size:18px;cursor:pointer;line-height:1">×</button>
+    </div>
+    
+    <span class="field-label" style="margin-top:10px">Seleccionar evaporador <span class="required-star">*</span></span>
+    <select id="vrfEvapSel_${id}" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;background:white;margin-bottom:10px;">
+      <option value="">Selecciona el evaporador</option>
+      ${opcionesEvap}
+    </select>
+ 
+    <span class="field-label">Voltaje medido (V)</span>
+    <div class="params-grid">
+      <div class="param-field"><label>A-B</label><input type="number" id="vrfEvap_${id}_voltAB" placeholder="220"></div>
+      <div class="param-field"><label>B-C</label><input type="number" id="vrfEvap_${id}_voltBC" placeholder="220"></div>
+      <div class="param-field"><label>A-C</label><input type="number" id="vrfEvap_${id}_voltAC" placeholder="220"></div>
+    </div>
+    <span class="field-label" style="margin-top:12px">Amperaje medido (A)</span>
+    <div class="params-grid">
+      <div class="param-field"><label>Fase A</label><input type="number" id="vrfEvap_${id}_ampA" placeholder="10"></div>
+      <div class="param-field"><label>Fase B</label><input type="number" id="vrfEvap_${id}_ampB" placeholder="10"></div>
+      <div class="param-field"><label>Fase C</label><input type="number" id="vrfEvap_${id}_ampC" placeholder="10"></div>
+    </div>
+    <div class="params-grid" style="margin-top:12px">
+      <div class="param-field"><label>Suministro (°F)</label><input type="number" id="vrfEvap_${id}_tempSum" placeholder="54" oninput="vrfCalcDelta(${id})"></div>
+      <div class="param-field"><label>Retorno (°F)</label><input type="number" id="vrfEvap_${id}_tempRet" placeholder="75" oninput="vrfCalcDelta(${id})"></div>
+    </div>
+    <div class="delta-display" id="vrfEvap_${id}_deltaDisplay" style="display:none;margin-top:10px">
+      <div>
+        <div class="delta-label">Delta T calculado</div>
+        <div class="delta-status" id="vrfEvap_${id}_deltaStatus"></div>
+      </div>
+      <div class="delta-value" id="vrfEvap_${id}_deltaVal">—</div>
+    </div>
+    <span class="field-label" style="margin-top:12px">Observaciones del evaporador</span>
+    <textarea id="vrfEvap_${id}_obs" placeholder="Estado del evaporador, filtros, serpentín, drenaje..." style="margin-top:4px"></textarea>
+  `;
+  container.appendChild(div);
+}
+ 
+function vrfQuitarEvaporador(id) {
+  const el = document.getElementById(`vrfEvap_${id}`);
+  if (el) el.remove();
+}
+ 
+function vrfCalcDelta(id) {
+  const sum = parseFloat(document.getElementById(`vrfEvap_${id}_tempSum`)?.value);
+  const ret = parseFloat(document.getElementById(`vrfEvap_${id}_tempRet`)?.value);
+  const display = document.getElementById(`vrfEvap_${id}_deltaDisplay`);
+  const val = document.getElementById(`vrfEvap_${id}_deltaVal`);
+  const status = document.getElementById(`vrfEvap_${id}_deltaStatus`);
+  if (!isNaN(sum) && !isNaN(ret)) {
+    const delta = Math.abs(ret - sum).toFixed(1);
+    display.style.display = 'flex';
+    val.textContent = delta + '°F';
+    if (delta >= 15 && delta <= 22) {
+      status.textContent = 'Normal'; status.style.color = 'var(--teal-dark)';
+    } else if (delta < 15) {
+      status.textContent = 'Bajo — revisar'; status.style.color = 'var(--amber-text)';
+    } else {
+      status.textContent = 'Alto — revisar'; status.style.color = '#c0392b';
+    }
+  } else {
+    display.style.display = 'none';
+  }
+}
+ 
+// ─── Agregar condensador ───
+function vrfAgregarCondensador() {
+  vrfCondCount++;
+  const id = vrfCondCount;
+  const container = document.getElementById('vrfCondensadoresContainer');
+  
+  const condsDisponibles = equiposCache.filter(e => 
+    e.nombreEquipo.toLowerCase().includes('condensador')
+  );
+  
+  const opcionesCond = condsDisponibles.map(e => 
+    `<option value="${e.equipoOT_ID}">${e.nombreEquipo}</option>`
+  ).join('');
+ 
+  const div = document.createElement('div');
+  div.className = 'circuito-block';
+  div.style.marginBottom = '14px';
+  div.id = `vrfCond_${id}`;
+  div.innerHTML = `
+    <div class="circuito-header" style="display:flex;justify-content:space-between;align-items:center">
+      Condensador ${id}
+      <button onclick="vrfQuitarCondensador(${id})" style="background:none;border:none;color:var(--text-muted);font-size:18px;cursor:pointer;line-height:1">×</button>
+    </div>
+    
+    <span class="field-label" style="margin-top:10px">Seleccionar condensador <span class="required-star">*</span></span>
+    <select id="vrfCondSel_${id}" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;background:white;margin-bottom:10px;">
+      <option value="">Selecciona el condensador</option>
+      ${opcionesCond}
+    </select>
+ 
+    <span class="field-label">Voltaje medido (V)</span>
+    <div class="params-grid">
+      <div class="param-field"><label>A-B</label><input type="number" id="vrfCond_${id}_voltAB" placeholder="220"></div>
+      <div class="param-field"><label>B-C</label><input type="number" id="vrfCond_${id}_voltBC" placeholder="220"></div>
+      <div class="param-field"><label>A-C</label><input type="number" id="vrfCond_${id}_voltAC" placeholder="220"></div>
+    </div>
+    <span class="field-label" style="margin-top:12px">Amperaje medido (A)</span>
+    <div class="params-grid">
+      <div class="param-field"><label>Fase A</label><input type="number" id="vrfCond_${id}_ampA" placeholder="15"></div>
+      <div class="param-field"><label>Fase B</label><input type="number" id="vrfCond_${id}_ampB" placeholder="15"></div>
+      <div class="param-field"><label>Fase C</label><input type="number" id="vrfCond_${id}_ampC" placeholder="15"></div>
+    </div>
+    <span class="field-label" style="margin-top:12px">Presiones</span>
+    <div class="params-grid">
+      <div class="param-field"><label>Presión alta (PSI)</label><input type="number" id="vrfCond_${id}_presAlta" placeholder="388"></div>
+      <div class="param-field"><label>Presión baja (PSI)</label><input type="number" id="vrfCond_${id}_presBaja" placeholder="124"></div>
+    </div>
+    <span class="field-label" style="margin-top:12px">Observaciones del condensador</span>
+    <textarea id="vrfCond_${id}_obs" placeholder="Estado del condensador, serpentín, ventiladores..." style="margin-top:4px"></textarea>
+  `;
+  container.appendChild(div);
+}
+ 
+function vrfQuitarCondensador(id) {
+  const el = document.getElementById(`vrfCond_${id}`);
+  if (el) el.remove();
+}
+ 
+// ─── Fotos VRF ───
+function vrfHandleFotos(input) {
+  const files = Array.from(input.files);
+  vrfFotosFiles = files.slice(0, 5);
+  const grid = document.getElementById('vrfFotoGrid');
+  grid.innerHTML = '';
+  vrfFotosFiles.forEach(f => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = document.createElement('img');
+      img.src = e.target.result;
+      img.style.cssText = 'width:100%;height:80px;object-fit:cover;border-radius:6px;';
+      grid.appendChild(img);
+    };
+    reader.readAsDataURL(f);
+  });
+  document.getElementById('vrfFotoCount').textContent = vrfFotosFiles.length > 0 ? `${vrfFotosFiles.length} foto(s) seleccionada(s)` : '';
+}
+ 
+// ─── Recolectar datos de evaporadores ───
+function vrfRecolectarEvaporadores() {
+  const result = [];
+  for (let i = 1; i <= vrfEvapCount; i++) {
+    const el = document.getElementById(`vrfEvap_${i}`);
+    if (!el) continue;
+    const equipoOT_ID = document.getElementById(`vrfEvap_${i}_sel`)?.value || document.getElementById(`vrfEvapSel_${i}`)?.value || '';
+    const nombreEquipo = equiposCache.find(e => String(e.equipoOT_ID) === String(equipoOT_ID))?.nombreEquipo || '';
+    const deltaVal = document.getElementById(`vrfEvap_${i}_deltaVal`)?.textContent;
+    result.push({
+      equipoOT_ID,
+      nombreEquipo,
+      voltAB: document.getElementById(`vrfEvap_${i}_voltAB`)?.value || null,
+      voltBC: document.getElementById(`vrfEvap_${i}_voltBC`)?.value || null,
+      voltAC: document.getElementById(`vrfEvap_${i}_voltAC`)?.value || null,
+      ampA: document.getElementById(`vrfEvap_${i}_ampA`)?.value || null,
+      ampB: document.getElementById(`vrfEvap_${i}_ampB`)?.value || null,
+      ampC: document.getElementById(`vrfEvap_${i}_ampC`)?.value || null,
+      tempSuministro: document.getElementById(`vrfEvap_${i}_tempSum`)?.value || null,
+      tempRetorno: document.getElementById(`vrfEvap_${i}_tempRet`)?.value || null,
+      deltaT: (deltaVal && deltaVal !== '—') ? deltaVal : null,
+      observaciones: document.getElementById(`vrfEvap_${i}_obs`)?.value || null,
+    });
+  }
+  return result;
+}
+ 
+// ─── Recolectar datos de condensadores ───
+function vrfRecolectarCondensadores() {
+  const result = [];
+  for (let i = 1; i <= vrfCondCount; i++) {
+    const el = document.getElementById(`vrfCond_${i}`);
+    if (!el) continue;
+    const equipoOT_ID = document.getElementById(`vrfCondSel_${i}`)?.value || '';
+    const nombreEquipo = equiposCache.find(e => String(e.equipoOT_ID) === String(equipoOT_ID))?.nombreEquipo || '';
+    result.push({
+      equipoOT_ID,
+      nombreEquipo,
+      voltAB: document.getElementById(`vrfCond_${i}_voltAB`)?.value || null,
+      voltBC: document.getElementById(`vrfCond_${i}_voltBC`)?.value || null,
+      voltAC: document.getElementById(`vrfCond_${i}_voltAC`)?.value || null,
+      ampA: document.getElementById(`vrfCond_${i}_ampA`)?.value || null,
+      ampB: document.getElementById(`vrfCond_${i}_ampB`)?.value || null,
+      ampC: document.getElementById(`vrfCond_${i}_ampC`)?.value || null,
+      presAlta: document.getElementById(`vrfCond_${i}_presAlta`)?.value || null,
+      presBaja: document.getElementById(`vrfCond_${i}_presBaja`)?.value || null,
+      observaciones: document.getElementById(`vrfCond_${i}_obs`)?.value || null,
+    });
+  }
+  return result;
+}
+ 
+// ─── Enviar informe VRF ───
+async function vrfEnviarInforme() {
+  if (!vrfTipoSelected) { alert('Selecciona el tipo de mantenimiento.'); return; }
+  if (!vrfEstadoSelected) { alert('Selecciona el estado del sistema.'); return; }
+  if (vrfTrabajo === null) { alert('Indica si se detectó trabajo adicional.'); return; }
+ 
+  const evaporadores = vrfRecolectarEvaporadores();
+  const condensadores = vrfRecolectarCondensadores();
+ 
+  if (evaporadores.length === 0 && condensadores.length === 0) {
+    alert('Agrega al menos un evaporador o condensador.');
+    return;
+  }
+ 
+  const btn = document.getElementById('vrfSubmitBtn');
+  btn.disabled = true;
+  btn.innerHTML = '⏳ Enviando informe...';
+ 
+  let fotosData = [];
+  if (vrfFotosFiles.length > 0) {
+    try {
+      fotosData = await Promise.all(vrfFotosFiles.map(fileToBase64));
+    } catch (e) {
+      console.error('Error convirtiendo fotos:', e);
+    }
+  }
+ 
+  const payload = {
+    tipoFormulario: 'VRF',
+    ot: OT_DATA.ot,
+    equipoOT_ID: OT_DATA.equipoOT_ID,
+    sistemaNombre: OT_DATA.equipo,
+    cliente: OT_DATA.cliente,
+    sucursal: OT_DATA.sucursal,
+    refrigerante: OT_DATA.refrigerante,
+    tecnico: OT_DATA.tecnico,
+    tipoEquipo: OT_DATA.tipoEquipo,
+    tipoMantenimiento: vrfTipoSelected,
+    fechaInforme: new Date().toISOString(),
+    checklist: vrfChecklistState,
+    evaporadores: evaporadores,
+    condensadores: condensadores,
+    estadoEquipo: vrfEstadoSelected,
+    trabajoAdicionalDetectado: vrfTrabajo,
+    descripcionTrabajoAdicional: vrfTrabajo ? document.getElementById('vrfTrabajoDesc').value : null,
+    observacionesTecnico: document.getElementById('vrfObservaciones').value,
+    fotosArray: fotosData,
+  };
+ 
+  try {
+    const resp = await fetch(POWER_AUTOMATE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+ 
+    btn.style.background = 'var(--teal-mid)';
+    btn.innerHTML = '✓ Informe enviado correctamente';
+    setTimeout(() => {
+      location.reload();
+    }, 3000);
+  } catch (e) {
+    btn.disabled = false;
+    btn.innerHTML = 'Enviar informe VRF';
+    alert('Error al enviar. Verifica tu conexión.');
+    console.error(e);
+  }
+}
+// ══════════════════════════════════════════════════
+// ─── FIN LÓGICA VRF ───
+// ══════════════════════════════════════════════════
  
 // ─── Init: arranca en la pantalla de PIN ───
  
