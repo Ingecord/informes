@@ -1752,9 +1752,12 @@ function irAServicioGeneral() {
   const ot = otsCache.find(o => String(o.fields.id) === String(selOT.value));
   const tecnico = tecnicosCache.find(t => String(t.fields.id) === String(selTecnico.value));
 
+  // Obtener cliente y sucursal del cache de equipos si está disponible
+  const primerEquipo = equiposCache && equiposCache.length > 0 ? equiposCache[0] : null;
+
   document.getElementById('sgInfoOT').textContent = ot ? ot.fields.Title : '—';
-  document.getElementById('sgInfoCliente').textContent = '—';
-  document.getElementById('sgInfoSucursal').textContent = '—';
+  document.getElementById('sgInfoCliente').textContent = primerEquipo ? (primerEquipo.clienteNombre || '—') : '—';
+  document.getElementById('sgInfoSucursal').textContent = primerEquipo ? (primerEquipo.sucursalNombre || '—') : '—';
   document.getElementById('sgInfoTecnico').textContent = tecnico ? tecnico.fields.Title : '—';
   document.getElementById('sgPageSubtitle').textContent = (ot ? ot.fields.Title : '') + ' · Servicio general';
 
