@@ -28,9 +28,9 @@
     --radius: 10px;
     --radius-sm: 6px;
   }
- 
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
- 
+
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background: var(--surface);
@@ -39,7 +39,7 @@
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
   }
- 
+
   .top-bar {
     background: var(--teal);
     padding: 16px 20px 14px;
@@ -50,9 +50,9 @@
   .top-bar .brand { font-size: 11px; color: rgba(255,255,255,0.7); letter-spacing: 0.08em; text-transform: uppercase; }
   .top-bar h1 { font-size: 17px; font-weight: 600; color: #fff; margin-top: 2px; }
   .top-bar .subtitle { font-size: 12px; color: rgba(255,255,255,0.75); margin-top: 2px; }
- 
+
   .container { max-width: 600px; margin: 0 auto; padding: 16px; }
- 
+
   /* Info card (datos pre-cargados) */
   .info-card {
     background: var(--white);
@@ -70,7 +70,7 @@
   .info-row:last-child { border-bottom: none; }
   .info-lbl { font-size: 12px; color: var(--text-muted); }
   .info-val { font-size: 13px; font-weight: 600; color: var(--text); text-align: right; max-width: 60%; }
- 
+
   /* Secciones */
   .section {
     background: var(--white);
@@ -85,7 +85,7 @@
     border-bottom: 1px solid var(--border-light); padding-bottom: 10px; margin-bottom: 14px;
   }
   .section-title svg { width: 16px; height: 16px; flex-shrink: 0; }
- 
+
   /* Labels */
   .field-label {
     font-size: 12px; font-weight: 600; color: var(--text-muted);
@@ -93,7 +93,7 @@
     margin-bottom: 8px; margin-top: 14px; display: block;
   }
   .field-label:first-child { margin-top: 0; }
- 
+
   /* Tipo mantenimiento */
   .tipo-group { display: flex; gap: 8px; }
   .tipo-btn {
@@ -103,7 +103,7 @@
     cursor: pointer; text-align: center; transition: all 0.15s;
   }
   .tipo-btn.active { border-color: var(--teal); background: var(--teal-light); color: var(--teal-dark); }
- 
+
   /* Checklist Si/No/NA */
   .checklist-table { width: 100%; border-collapse: collapse; }
   .checklist-table th {
@@ -132,7 +132,7 @@
   .radio-sn.si.selected { border-color: var(--teal); background: var(--teal-light); color: var(--teal-dark); }
   .radio-sn.no.selected { border-color: #D85A30; background: #FAECE7; color: #712B13; }
   .radio-sn.na.selected { border-color: #888780; background: var(--gray-bg); color: #444441; }
- 
+
   /* Mediciones eléctricas */
   .medicion-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .medicion-group { background: var(--surface); border-radius: var(--radius-sm); padding: 10px 12px; }
@@ -163,7 +163,7 @@
   }
   input.placa { background: var(--surface); color: var(--text-muted); font-size: 13px; }
   .unit { font-size: 11px; color: var(--text-muted); white-space: nowrap; }
- 
+
   /* Presiones y temperaturas */
   .params-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 4px; }
   .param-field label { font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px; }
@@ -175,7 +175,7 @@
   .delta-display .delta-label { font-size: 12px; color: var(--blue-text); font-weight: 600; }
   .delta-display .delta-value { font-size: 18px; font-weight: 700; color: var(--blue-text); }
   .delta-display .delta-status { font-size: 11px; margin-top: 2px; }
- 
+
   /* Estado equipo */
   .estado-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .estado-btn {
@@ -187,7 +187,7 @@
   .estado-btn.atendido.active { border-color: var(--teal-mid); background: var(--green-bg); color: var(--green-text); }
   .estado-btn.seguimiento.active { border-color: #BA7517; background: var(--amber-bg); color: var(--amber-text); }
   .estado-btn.accesible.active { border-color: #D85A30; background: #FAECE7; color: #712B13; }
- 
+
   /* Trabajo adicional */
   .trabajo-toggle { display: flex; gap: 8px; margin-bottom: 10px; }
   .toggle-btn {
@@ -200,10 +200,10 @@
   .toggle-btn.active-si { border-color: #BA7517; background: var(--amber-bg); color: var(--amber-text); }
   .trabajo-desc { display: none; }
   .trabajo-desc.visible { display: block; }
- 
+
   /* Textarea */
   textarea { min-height: 90px; resize: vertical; font-family: inherit; }
- 
+
   /* Fotos */
   .foto-zone {
     border: 2px dashed var(--border); border-radius: var(--radius);
@@ -229,7 +229,7 @@
     line-height: 1;
   }
   .foto-count-label { font-size: 12px; color: var(--teal); font-weight: 600; margin-top: 6px; }
- 
+
   /* Submit */
   .submit-btn {
     width: 100%; padding: 15px; background: var(--teal);
@@ -240,10 +240,10 @@
   }
   .submit-btn:hover { background: var(--teal-dark); }
   .submit-btn:disabled { background: #9FE1CB; cursor: not-allowed; }
- 
+
   /* Nota opcional */
   .optional-note { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
- 
+
   /* Observaciones de placa */
   .placa-toggle {
     font-size: 12px; color: var(--teal); cursor: pointer; font-weight: 500;
@@ -252,9 +252,9 @@
   }
   .placa-fields { display: none; }
   .placa-fields.visible { display: block; }
- 
+
   .required-star { color: #D85A30; margin-left: 2px; }
- 
+
   /* Bloques de circuito */
   .circuito-block {
     background: var(--surface);
@@ -276,19 +276,19 @@
     transition: all 0.15s;
   }
   .agregar-btn:hover { background: var(--teal-light); }
- 
+
   .bottom-space { height: 32px; }
 </style>
 </head>
 <body>
- 
+
 <!-- ═══════════ PANTALLA DE PIN ═══════════ -->
 <div class="top-bar" id="topBarPin">
   <div class="brand">Ingecord</div>
   <h1>Acceso al sistema</h1>
   <div class="subtitle">Ingresa tu PIN para continuar</div>
 </div>
- 
+
 <div class="container" id="pinScreen">
   <div class="section" style="margin-top:24px">
     <div class="section-title">
@@ -302,54 +302,54 @@
   </div>
   <div class="bottom-space"></div>
 </div>
- 
+
 <!-- ═══════════ PANTALLA DE SELECCIÓN INICIAL ═══════════ -->
 <div class="top-bar" id="topBarSeleccion" style="display:none">
   <div class="brand">Ingecord</div>
   <h1>Nuevo informe técnico</h1>
   <div class="subtitle">Selecciona técnico, OT y equipo</div>
 </div>
- 
+
 <div class="container" id="seleccionScreen" style="display:none">
   <div class="section">
     <div class="section-title">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>
       Iniciar informe
     </div>
- 
+
     <span class="field-label">Técnico responsable <span class="required-star">*</span></span>
     <select id="selTecnico" onchange="onTecnicoChange()">
       <option value="">Cargando técnicos...</option>
     </select>
- 
+
     <span class="field-label">Orden de trabajo (OT) <span class="required-star">*</span></span>
     <select id="selOT" onchange="onOTChange()" disabled>
       <option value="">Primero selecciona un técnico</option>
     </select>
- 
+
     <span class="field-label">Equipo <span class="required-star">*</span></span>
     <select id="selEquipo" disabled>
       <option value="">Primero selecciona una OT</option>
     </select>
- 
+
     <button class="submit-btn" id="btnContinuar" onclick="continuarAFormulario()" disabled style="margin-top:18px">
       Continuar
     </button>
   </div>
   <div class="bottom-space"></div>
 </div>
- 
+
 <!-- ═══════════ FORMULARIO DE INFORME (oculto hasta seleccionar) ═══════════ -->
 <div id="formularioScreen" style="display:none">
- 
+
 <div class="top-bar">
   <div class="brand">Ingecord</div>
   <h1 id="pageTitle">Informe — Mini Split / DX</h1>
   <div class="subtitle" id="pageSubtitle">Cargando datos de la OT...</div>
 </div>
- 
+
 <div class="container">
- 
+
   <!-- Datos de la OT (pre-cargados) -->
   <div class="info-card" id="otInfoCard">
     <div class="badge-source">Datos cargados desde OT</div>
@@ -362,7 +362,7 @@
     <div class="info-row"><span class="info-lbl">Refrigerante</span><span class="info-val" id="infoRef">—</span></div>
     <div class="info-row" style="border-bottom:none"><span class="info-lbl">Técnico</span><span class="info-val" id="infoTecnico">—</span></div>
   </div>
- 
+
   <!-- Tipo de mantenimiento -->
   <div class="section">
     <div class="section-title">
@@ -375,7 +375,7 @@
       <button class="tipo-btn" id="btnInspeccion" onclick="setTipo('Inspeccion')">Inspección</button>
     </div>
   </div>
- 
+
   <!-- Checklist -->
   <div class="section">
     <div class="section-title">
@@ -394,14 +394,14 @@
       <tbody id="checklistBody"></tbody>
     </table>
   </div>
- 
+
   <!-- Parámetros eléctricos -->
   <div class="section">
     <div class="section-title">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
       Parámetros eléctricos
     </div>
- 
+
     <!-- Evaporador -->
     <div class="circuito-block">
       <div class="circuito-header">Evaporador</div>
@@ -437,7 +437,7 @@
         <div class="param-field"><label>Fase C</label><input type="number" id="rEvapAmpC" placeholder="34"></div>
       </div>
     </div>
- 
+
     <!-- Circuito 1 -->
     <div class="circuito-block" style="margin-top:14px">
       <div class="circuito-header">Circuito 1 <span class="required-star">*</span></div>
@@ -474,7 +474,7 @@
       </div>
       <div id="ampAlertaC1" style="display:none; margin-top:10px; background:var(--amber-bg); border-radius:6px; padding:8px 10px; font-size:12px; color:var(--amber-text);">⚠️ Amperaje Circuito 1 supera el valor de placa — verificar.</div>
     </div>
- 
+
     <!-- Botón agregar Circuito 2 (oculto en Mini Split) -->
     <div id="btnAgregarC2Elec" style="margin-top:12px">
       <button class="agregar-btn" onclick="agregarCircuitoElec(2)">
@@ -482,7 +482,7 @@
         Agregar Circuito 2
       </button>
     </div>
- 
+
     <!-- Circuito 2 (oculto por defecto) -->
     <div class="circuito-block" id="bloqueC2Elec" style="display:none; margin-top:14px">
       <div class="circuito-header" style="display:flex;justify-content:space-between;align-items:center">
@@ -522,7 +522,7 @@
       </div>
       <div id="ampAlertaC2" style="display:none; margin-top:10px; background:var(--amber-bg); border-radius:6px; padding:8px 10px; font-size:12px; color:var(--amber-text);">⚠️ Amperaje Circuito 2 supera el valor de placa — verificar.</div>
     </div>
- 
+
     <!-- Botón agregar Circuito 3 (aparece tras agregar C2) -->
     <div id="btnAgregarC3Elec" style="display:none; margin-top:12px">
       <button class="agregar-btn" onclick="agregarCircuitoElec(3)">
@@ -530,7 +530,7 @@
         Agregar Circuito 3
       </button>
     </div>
- 
+
     <!-- Circuito 3 (oculto por defecto) -->
     <div class="circuito-block" id="bloqueC3Elec" style="display:none; margin-top:14px">
       <div class="circuito-header" style="display:flex;justify-content:space-between;align-items:center">
@@ -551,14 +551,14 @@
       </div>
     </div>
   </div>
- 
+
   <!-- Presiones y temperaturas -->
   <div class="section">
     <div class="section-title">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 14.76V3.5a2.5 2.5 0 00-5 0v11.26a4.5 4.5 0 105 0z"/></svg>
       Presiones y temperaturas
     </div>
- 
+
     <!-- Temperaturas evaporador -->
     <div class="circuito-block">
       <div class="circuito-header">Temperaturas de aire (evaporador)</div>
@@ -574,7 +574,7 @@
         <div class="delta-value" id="deltaVal">—</div>
       </div>
     </div>
- 
+
     <!-- Presiones Circuito 1 -->
     <div class="circuito-block" style="margin-top:14px">
       <div class="circuito-header">Presiones — Circuito 1 <span class="required-star">*</span></div>
@@ -583,7 +583,7 @@
         <div class="param-field"><label>Presión baja (PSI)</label><input type="number" placeholder="124" id="presBajaC1"></div>
       </div>
     </div>
- 
+
     <!-- Botón agregar Circuito 2 presiones -->
     <div id="btnAgregarC2Pres" style="margin-top:12px">
       <button class="agregar-btn" onclick="agregarCircuitoPres(2)">
@@ -591,7 +591,7 @@
         Agregar Circuito 2
       </button>
     </div>
- 
+
     <!-- Presiones Circuito 2 -->
     <div class="circuito-block" id="bloqueC2Pres" style="display:none; margin-top:14px">
       <div class="circuito-header" style="display:flex;justify-content:space-between;align-items:center">
@@ -603,7 +603,7 @@
         <div class="param-field"><label>Presión baja (PSI)</label><input type="number" placeholder="124" id="presBajaC2"></div>
       </div>
     </div>
- 
+
     <!-- Botón agregar Circuito 3 presiones -->
     <div id="btnAgregarC3Pres" style="display:none; margin-top:12px">
       <button class="agregar-btn" onclick="agregarCircuitoPres(3)">
@@ -611,7 +611,7 @@
         Agregar Circuito 3
       </button>
     </div>
- 
+
     <!-- Presiones Circuito 3 -->
     <div class="circuito-block" id="bloqueC3Pres" style="display:none; margin-top:14px">
       <div class="circuito-header" style="display:flex;justify-content:space-between;align-items:center">
@@ -624,7 +624,7 @@
       </div>
     </div>
   </div>
- 
+
   <!-- Estado del equipo -->
   <div class="section">
     <div class="section-title">
@@ -637,7 +637,7 @@
       <button class="estado-btn accesible" style="grid-column:1/-1" onclick="setEstado(this,'No accesible')">✕ No accesible</button>
     </div>
   </div>
- 
+
   <!-- Trabajo adicional -->
   <div class="section">
     <div class="section-title">
@@ -653,7 +653,7 @@
       <textarea id="trabajoDesc" placeholder="Describa el trabajo adicional observado..."></textarea>
     </div>
   </div>
- 
+
   <!-- Observaciones del técnico -->
   <div class="section">
     <div class="section-title">
@@ -661,9 +661,9 @@
       Observaciones del técnico
     </div>
     <textarea id="observaciones" placeholder="Describa en sus propias palabras el trabajo realizado, condiciones del equipo y cualquier observación relevante..."></textarea>
- 
+
   </div>
- 
+
   <!-- Fotos -->
   <div class="section">
     <div class="section-title">
@@ -679,30 +679,30 @@
     <div class="foto-grid" id="fotoGrid"></div>
     <p class="foto-count-label" id="fotoCount"></p>
   </div>
- 
+
   <!-- Submit -->
   <button class="submit-btn" id="submitBtn" onclick="enviarInforme()">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
     Enviar informe
   </button>
- 
+
   <div class="bottom-space"></div>
 </div>
- 
+
 </div>
 <!-- ═══════════ FIN formularioScreen ═══════════ -->
- 
+
 <!-- ═══════════ FORMULARIO VRF ═══════════ -->
 <div id="formularioVRFScreen" style="display:none">
- 
+
 <div class="top-bar">
   <div class="brand">Ingecord</div>
   <h1>Informe — Sistema VRF</h1>
   <div class="subtitle" id="vrfPageSubtitle">Cargando datos de la OT...</div>
 </div>
- 
+
 <div class="container">
- 
+
   <!-- Info de la OT -->
   <div class="info-card" id="vrfOtInfoCard">
     <div class="badge-source">Datos cargados desde OT</div>
@@ -713,7 +713,7 @@
     <div class="info-row"><span class="info-lbl">Refrigerante</span><span class="info-val" id="vrfInfoRef">—</span></div>
     <div class="info-row" style="border-bottom:none"><span class="info-lbl">Técnico</span><span class="info-val" id="vrfInfoTecnico">—</span></div>
   </div>
- 
+
   <!-- Tipo de mantenimiento -->
   <div class="section">
     <div class="section-title">
@@ -726,7 +726,7 @@
       <button class="tipo-btn" id="vrfBtnInspeccion" onclick="vrfSetTipo('Inspeccion')">Inspección</button>
     </div>
   </div>
- 
+
   <!-- Checklist -->
   <div class="section">
     <div class="section-title">
@@ -745,7 +745,7 @@
       <tbody id="vrfChecklistBody"></tbody>
     </table>
   </div>
- 
+
   <!-- EVAPORADORES -->
   <div class="section">
     <div class="section-title">
@@ -758,7 +758,7 @@
       Agregar evaporador
     </button>
   </div>
- 
+
   <!-- CONDENSADORES -->
   <div class="section">
     <div class="section-title">
@@ -771,7 +771,7 @@
       Agregar condensador
     </button>
   </div>
- 
+
   <!-- Estado del sistema -->
   <div class="section">
     <div class="section-title">
@@ -784,7 +784,7 @@
       <button class="estado-btn accesible" style="grid-column:1/-1" onclick="vrfSetEstado(this,'No accesible')">✕ No accesible</button>
     </div>
   </div>
- 
+
   <!-- Trabajo adicional -->
   <div class="section">
     <div class="section-title">
@@ -800,7 +800,7 @@
       <textarea id="vrfTrabajoDesc" placeholder="Describa el trabajo adicional observado..."></textarea>
     </div>
   </div>
- 
+
   <!-- Observaciones generales -->
   <div class="section">
     <div class="section-title">
@@ -809,7 +809,7 @@
     </div>
     <textarea id="vrfObservaciones" placeholder="Describa el estado general del sistema VRF, condiciones observadas y cualquier comentario relevante..."></textarea>
   </div>
- 
+
   <!-- Fotos -->
   <div class="section">
     <div class="section-title">
@@ -825,19 +825,19 @@
     <div class="foto-grid" id="vrfFotoGrid"></div>
     <p class="foto-count-label" id="vrfFotoCount"></p>
   </div>
- 
+
   <!-- Submit -->
   <button class="submit-btn" id="vrfSubmitBtn" onclick="vrfEnviarInforme()">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
     Enviar informe VRF
   </button>
- 
+
   <div class="bottom-space"></div>
 </div>
 </div>
 <!-- ═══════════ FIN formularioVRFScreen ═══════════ -->
- 
- 
+
+
 <script>
 // ─── Datos de la OT (se llenan dinámicamente al elegir Técnico → OT → Equipo) ───
 const OT_DATA = {
@@ -853,14 +853,14 @@ const OT_DATA = {
   tipoSistema: '',
   equipoOT_ID: ''
 };
- 
+
 // ─── Selección dinámica: Técnico → OT → Equipo ───
 const CONSULTA_URL = 'https://hook.us2.make.com/apdlfnasi6d3hxdgj4f3l4wyr6lndip4';
- 
+
 let tecnicosCache = [];
 let otsCache = [];
 let equiposCache = [];
- 
+
 async function cargarTecnicos() {
   const sel = document.getElementById('selTecnico');
   try {
@@ -874,25 +874,25 @@ async function cargarTecnicos() {
     console.error('Error cargando técnicos:', e);
   }
 }
- 
+
 async function onTecnicoChange() {
   const tecnicoId = document.getElementById('selTecnico').value;
   const selOT = document.getElementById('selOT');
   const selEquipo = document.getElementById('selEquipo');
- 
+
   selEquipo.innerHTML = '<option value="">Primero selecciona una OT</option>';
   selEquipo.disabled = true;
   document.getElementById('btnContinuar').disabled = true;
- 
+
   if (!tecnicoId) {
     selOT.innerHTML = '<option value="">Primero selecciona un técnico</option>';
     selOT.disabled = true;
     return;
   }
- 
+
   selOT.innerHTML = '<option value="">Cargando OTs...</option>';
   selOT.disabled = true;
- 
+
   try {
     const resp = await fetch(`${CONSULTA_URL}?accion=listar_ots&tecnicoId=${tecnicoId}`);
     const data = await resp.json();
@@ -909,21 +909,21 @@ async function onTecnicoChange() {
     console.error('Error cargando OTs:', e);
   }
 }
- 
+
 async function onOTChange() {
   const otId = document.getElementById('selOT').value;
   const selEquipo = document.getElementById('selEquipo');
   document.getElementById('btnContinuar').disabled = true;
- 
+
   if (!otId) {
     selEquipo.innerHTML = '<option value="">Primero selecciona una OT</option>';
     selEquipo.disabled = true;
     return;
   }
- 
+
   selEquipo.innerHTML = '<option value="">Cargando equipos...</option>';
   selEquipo.disabled = true;
- 
+
   try {
     const otSeleccionada = otsCache.find(o => String(o.fields.id) === String(otId));
   const clienteId = otSeleccionada ? otSeleccionada.fields.ClienteLookupId : "";
@@ -946,21 +946,21 @@ async function onOTChange() {
     console.error('Error cargando equipos:', e);
   }
 }
- 
+
 function continuarAFormulario() {
   const tecnicoId = document.getElementById('selTecnico').value;
   const otId = document.getElementById('selOT').value;
   const equipoId = document.getElementById('selEquipo').value;
- 
+
   const tecnico = tecnicosCache.find(t => String(t.fields.id) === String(tecnicoId));
   const ot = otsCache.find(o => String(o.fields.id) === String(otId));
   const equipo = equiposCache.find(e => String(e.equipoOT_ID) === String(equipoId));
- 
+
   if (!tecnico || !ot || !equipo) {
     alert('Por favor completa los tres campos antes de continuar.');
     return;
   }
- 
+
   OT_DATA.ot = ot.fields.Title;
   OT_DATA.equipo = equipo.nombreEquipo;
   OT_DATA.ubicacion = equipo.ubicacion || '—';
@@ -972,12 +972,12 @@ function continuarAFormulario() {
   OT_DATA.equipoOT_ID = equipo.equipoOT_ID;
   OT_DATA.cliente = equipo.clienteNombre || '—';
   OT_DATA.sucursal = equipo.sucursalNombre || '—';
- 
+
   document.getElementById('topBarSeleccion').style.display = 'none';
   document.getElementById('seleccionScreen').style.display = 'none';
- 
+
   const esVRF = OT_DATA.tipoSistema && OT_DATA.tipoSistema.toLowerCase().includes('vrf');
- 
+
   if (esVRF) {
     document.getElementById('formularioVRFScreen').style.display = 'block';
     vrfBuildChecklist();
@@ -1004,7 +1004,7 @@ function continuarAFormulario() {
     }
   }
 }
- 
+
 // ─── Checklist ───
 const CHECKLIST = [
   { group: 'Limpieza', items: [
@@ -1033,10 +1033,10 @@ const CHECKLIST = [
     'Carga de gas refrigerante',
   ]},
 ];
- 
+
 const checklistState = {};
 let checklistBuilt = false;
- 
+
 function buildChecklist() {
   if (checklistBuilt) return;
   checklistBuilt = true;
@@ -1057,7 +1057,7 @@ function buildChecklist() {
   });
   tbody.innerHTML = html;
 }
- 
+
 function setCheck(btn) {
   const key = btn.dataset.key;
   const val = btn.dataset.val;
@@ -1065,7 +1065,7 @@ function setCheck(btn) {
   document.querySelectorAll(`.radio-sn[data-key="${key}"]`).forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
 }
- 
+
 // ─── Tipo mantenimiento ───
 let tipoSelected = null;
 function setTipo(tipo) {
@@ -1074,14 +1074,14 @@ function setTipo(tipo) {
   const map = {'Preventivo':'btnPreventivo','Correctivo':'btnCorrectivo','Inspeccion':'btnInspeccion'};
   if (map[tipo]) document.getElementById(map[tipo]).classList.add('active');
 }
- 
+
 // ─── Placa toggle por bloque ───
 function togglePlacaBloque(id) {
   const fields = document.getElementById('placa' + id.charAt(0).toUpperCase() + id.slice(1));
   if (!fields) return;
   fields.classList.toggle('visible');
 }
- 
+
 // ─── Alerta amperaje vs placa por circuito ───
 function checkAmpCircuito(n) {
   const pVal = parseFloat(document.getElementById('pC' + n + 'AmpA')?.value);
@@ -1093,7 +1093,7 @@ function checkAmpCircuito(n) {
     alerta.style.display = 'none';
   }
 }
- 
+
 // ─── Agregar / quitar circuitos eléctricos ───
 function agregarCircuitoElec(n) {
   document.getElementById('bloqueC' + n + 'Elec').style.display = 'block';
@@ -1108,7 +1108,7 @@ function quitarCircuitoElec(n) {
     document.getElementById('btnAgregarC3Elec').style.display = 'none';
   }
 }
- 
+
 // ─── Agregar / quitar circuitos de presión ───
 function agregarCircuitoPres(n) {
   document.getElementById('bloqueC' + n + 'Pres').style.display = 'block';
@@ -1123,7 +1123,7 @@ function quitarCircuitoPres(n) {
     document.getElementById('btnAgregarC3Pres').style.display = 'none';
   }
 }
- 
+
 // ─── Delta T ───
 function calcDelta() {
   const ret = parseFloat(document.getElementById('tempRet').value);
@@ -1149,7 +1149,7 @@ function calcDelta() {
     display.style.display = 'none';
   }
 }
- 
+
 // ─── Estado equipo ───
 let estadoSelected = null;
 function setEstado(btn, val) {
@@ -1157,7 +1157,7 @@ function setEstado(btn, val) {
   document.querySelectorAll('.estado-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
 }
- 
+
 // ─── Trabajo adicional ───
 let trabajoAdicional = null;
 function setTrabajo(si) {
@@ -1166,10 +1166,10 @@ function setTrabajo(si) {
   document.getElementById('btnTrabSi').className = 'toggle-btn' + (si ? ' active-si' : '');
   document.getElementById('trabajoDescWrap').classList.toggle('visible', si);
 }
- 
+
 // ─── Fotos ───
 let fotosFiles = [];
- 
+
 function handleFotos(input) {
   const nuevas = Array.from(input.files);
   fotosFiles = [...fotosFiles, ...nuevas].slice(0, 5);
@@ -1178,14 +1178,14 @@ function handleFotos(input) {
     fotosFiles.length >= 5 ? 'Máximo alcanzado (5 fotos)' : 'Agregar más fotos';
   input.value = '';
 }
- 
+
 function removeFoto(idx) {
   fotosFiles.splice(idx, 1);
   renderFotos();
   if (fotosFiles.length < 5)
     document.getElementById('fotoZone').querySelector('p').textContent = 'Seleccionar fotos de la galería';
 }
- 
+
 function renderFotos() {
   const grid = document.getElementById('fotoGrid');
   const count = document.getElementById('fotoCount');
@@ -1197,7 +1197,7 @@ function renderFotos() {
   `).join('');
   count.textContent = fotosFiles.length > 0 ? `${fotosFiles.length} foto(s) seleccionada(s)` : '';
 }
- 
+
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -1210,7 +1210,7 @@ function fileToBase64(file) {
     reader.readAsDataURL(file);
   });
 }
- 
+
 // ─── Cargar datos OT en la pantalla del formulario ───
 function loadOTData() {
   document.getElementById('infoOT').textContent = OT_DATA.ot;
@@ -1223,20 +1223,20 @@ function loadOTData() {
   document.getElementById('infoTecnico').textContent = OT_DATA.tecnico;
   document.getElementById('pageSubtitle').textContent = `${OT_DATA.cliente} — ${OT_DATA.sucursal}`;
 }
- 
+
 // ─── URL del webhook de envío de informes ───
 const POWER_AUTOMATE_URL = 'https://hook.us2.make.com/7ewyz9o2o108solu40zj6ovlz2pvjduq';
- 
+
 // ─── Enviar informe ───
 async function enviarInforme() {
   if (!tipoSelected) { alert('Selecciona el tipo de mantenimiento.'); return; }
   if (!estadoSelected) { alert('Selecciona el estado del equipo.'); return; }
   if (trabajoAdicional === null) { alert('Indica si se detectó trabajo adicional.'); return; }
- 
+
   const btn = document.getElementById('submitBtn');
   btn.disabled = true;
   btn.innerHTML = '⏳ Enviando informe...';
- 
+
   let fotosData = [];
   if (fotosFiles.length > 0) {
     try {
@@ -1245,7 +1245,7 @@ async function enviarInforme() {
       console.error('Error convirtiendo fotos:', e);
     }
   }
- 
+
   const payload = {
     tipoFormulario: OT_DATA.tipoSistema || 'Expansión Directa',
     ot: OT_DATA.ot,
@@ -1304,7 +1304,7 @@ async function enviarInforme() {
     observacionesTecnico: document.getElementById('observaciones').value,
     fotosArray: fotosData,
   };
- 
+
   try {
     await fetch(POWER_AUTOMATE_URL, {
       method: 'POST',
@@ -1317,22 +1317,22 @@ async function enviarInforme() {
   btn.innerHTML = '✓ Informe enviado correctamente';
   btn.style.background = 'var(--teal-mid)';
 }
- 
+
 // ─── PIN de acceso ───
 const PIN_CORRECTO = '2410';
 let intentosFallidos = 0;
 let bloqueadoHasta = null;
- 
+
 function onPinInput() {
   const input = document.getElementById('pinInput');
   if (input.value.length === 4) verificarPin();
 }
- 
+
 function verificarPin() {
   const input = document.getElementById('pinInput');
   const errorDiv = document.getElementById('pinError');
   const pin = input.value;
- 
+
   if (bloqueadoHasta && new Date() < bloqueadoHasta) {
     const segundos = Math.ceil((bloqueadoHasta - new Date()) / 1000);
     errorDiv.style.display = 'block';
@@ -1340,7 +1340,7 @@ function verificarPin() {
     input.value = '';
     return;
   }
- 
+
   if (pin === PIN_CORRECTO) {
     intentosFallidos = 0;
     document.getElementById('topBarPin').style.display = 'none';
@@ -1361,12 +1361,12 @@ function verificarPin() {
     }
   }
 }
- 
- 
+
+
 // ══════════════════════════════════════════════════
 // ─── LÓGICA DEL FORMULARIO VRF ───
 // ══════════════════════════════════════════════════
- 
+
 let vrfTipoSelected = null;
 let vrfEstadoSelected = null;
 let vrfTrabajo = null;
@@ -1376,10 +1376,10 @@ let vrfEvaporadores = []; // array de datos de evaporadores
 let vrfCondensadores = []; // array de datos de condensadores
 let vrfEvapCount = 0;
 let vrfCondCount = 0;
- 
+
 // Lista de evaporadores y condensadores disponibles de la OT
 let vrfEquiposDisponibles = [];
- 
+
 function vrfLoadOTData() {
   document.getElementById('vrfInfoOT').textContent = OT_DATA.ot || '—';
   document.getElementById('vrfInfoCliente').textContent = OT_DATA.cliente || '—';
@@ -1389,26 +1389,26 @@ function vrfLoadOTData() {
   document.getElementById('vrfInfoTecnico').textContent = OT_DATA.tecnico || '—';
   document.getElementById('vrfPageSubtitle').textContent = `${OT_DATA.ot} · ${OT_DATA.equipo}`;
 }
- 
+
 function vrfSetTipo(tipo) {
   vrfTipoSelected = tipo;
   document.querySelectorAll('#formularioVRFScreen .tipo-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('vrfBtn' + tipo).classList.add('active');
 }
- 
+
 function vrfSetEstado(btn, estado) {
   vrfEstadoSelected = estado;
   document.querySelectorAll('#formularioVRFScreen .estado-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
 }
- 
+
 function vrfSetTrabajo(val) {
   vrfTrabajo = val;
   document.getElementById('vrfBtnTrabNo').classList.toggle('active', !val);
   document.getElementById('vrfBtnTrabSi').classList.toggle('active', val);
   document.getElementById('vrfTrabajoDescWrap').style.display = val ? 'block' : 'none';
 }
- 
+
 function vrfBuildChecklist() {
   const tbody = document.getElementById('vrfChecklistBody');
   tbody.innerHTML = '';
@@ -1428,7 +1428,7 @@ function vrfBuildChecklist() {
     });
   });
 }
- 
+
 // ─── Agregar evaporador ───
 function vrfAgregarEvaporador() {
   vrfEvapCount++;
@@ -1443,7 +1443,7 @@ function vrfAgregarEvaporador() {
   const opcionesEvap = evapsDisponibles.map(e => 
     `<option value="${e.equipoOT_ID}">${e.nombreEquipo}</option>`
   ).join('');
- 
+
   const div = document.createElement('div');
   div.className = 'circuito-block';
   div.style.marginBottom = '14px';
@@ -1459,7 +1459,7 @@ function vrfAgregarEvaporador() {
       <option value="">Selecciona el evaporador</option>
       ${opcionesEvap}
     </select>
- 
+
     <span class="field-label">Voltaje medido (V)</span>
     <div class="params-grid">
       <div class="param-field"><label>A-B</label><input type="number" id="vrfEvap_${id}_voltAB" placeholder="220"></div>
@@ -1488,12 +1488,12 @@ function vrfAgregarEvaporador() {
   `;
   container.appendChild(div);
 }
- 
+
 function vrfQuitarEvaporador(id) {
   const el = document.getElementById(`vrfEvap_${id}`);
   if (el) el.remove();
 }
- 
+
 function vrfCalcDelta(id) {
   const sum = parseFloat(document.getElementById(`vrfEvap_${id}_tempSum`)?.value);
   const ret = parseFloat(document.getElementById(`vrfEvap_${id}_tempRet`)?.value);
@@ -1515,7 +1515,7 @@ function vrfCalcDelta(id) {
     display.style.display = 'none';
   }
 }
- 
+
 // ─── Agregar condensador ───
 function vrfAgregarCondensador() {
   vrfCondCount++;
@@ -1529,7 +1529,7 @@ function vrfAgregarCondensador() {
   const opcionesCond = condsDisponibles.map(e => 
     `<option value="${e.equipoOT_ID}">${e.nombreEquipo}</option>`
   ).join('');
- 
+
   const div = document.createElement('div');
   div.className = 'circuito-block';
   div.style.marginBottom = '14px';
@@ -1545,7 +1545,7 @@ function vrfAgregarCondensador() {
       <option value="">Selecciona el condensador</option>
       ${opcionesCond}
     </select>
- 
+
     <span class="field-label">Voltaje medido (V)</span>
     <div class="params-grid">
       <div class="param-field"><label>A-B</label><input type="number" id="vrfCond_${id}_voltAB" placeholder="220"></div>
@@ -1568,12 +1568,12 @@ function vrfAgregarCondensador() {
   `;
   container.appendChild(div);
 }
- 
+
 function vrfQuitarCondensador(id) {
   const el = document.getElementById(`vrfCond_${id}`);
   if (el) el.remove();
 }
- 
+
 // ─── Fotos VRF ───
 function vrfHandleFotos(input) {
   const files = Array.from(input.files);
@@ -1592,7 +1592,7 @@ function vrfHandleFotos(input) {
   });
   document.getElementById('vrfFotoCount').textContent = vrfFotosFiles.length > 0 ? `${vrfFotosFiles.length} foto(s) seleccionada(s)` : '';
 }
- 
+
 // ─── Recolectar datos de evaporadores ───
 function vrfRecolectarEvaporadores() {
   const result = [];
@@ -1619,7 +1619,7 @@ function vrfRecolectarEvaporadores() {
   }
   return result;
 }
- 
+
 // ─── Recolectar datos de condensadores ───
 function vrfRecolectarCondensadores() {
   const result = [];
@@ -1644,25 +1644,25 @@ function vrfRecolectarCondensadores() {
   }
   return result;
 }
- 
+
 // ─── Enviar informe VRF ───
 async function vrfEnviarInforme() {
   if (!vrfTipoSelected) { alert('Selecciona el tipo de mantenimiento.'); return; }
   if (!vrfEstadoSelected) { alert('Selecciona el estado del sistema.'); return; }
   if (vrfTrabajo === null) { alert('Indica si se detectó trabajo adicional.'); return; }
- 
+
   const evaporadores = vrfRecolectarEvaporadores();
   const condensadores = vrfRecolectarCondensadores();
- 
+
   if (evaporadores.length === 0 && condensadores.length === 0) {
     alert('Agrega al menos un evaporador o condensador.');
     return;
   }
- 
+
   const btn = document.getElementById('vrfSubmitBtn');
   btn.disabled = true;
   btn.innerHTML = '⏳ Enviando informe...';
- 
+
   let fotosData = [];
   if (vrfFotosFiles.length > 0) {
     try {
@@ -1671,10 +1671,9 @@ async function vrfEnviarInforme() {
       console.error('Error convirtiendo fotos:', e);
     }
   }
- 
+
   const payload = {
     tipoFormulario: OT_DATA.tipoSistema || 'VRF',
-    tipoFormulario: OT_DATA.tipoSistema || 'Expansión Directa',
     ot: OT_DATA.ot,
     equipoOT_ID: OT_DATA.equipoOT_ID,
     sistemaNombre: OT_DATA.equipo,
@@ -1694,14 +1693,14 @@ async function vrfEnviarInforme() {
     observacionesTecnico: document.getElementById('vrfObservaciones').value,
     fotosArray: fotosData,
   };
- 
+
   try {
     const resp = await fetch(POWER_AUTOMATE_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
- 
+
     btn.style.background = 'var(--teal-mid)';
     btn.innerHTML = '✓ Informe enviado correctamente';
     setTimeout(() => {
@@ -1717,9 +1716,9 @@ async function vrfEnviarInforme() {
 // ══════════════════════════════════════════════════
 // ─── FIN LÓGICA VRF ───
 // ══════════════════════════════════════════════════
- 
+
 // ─── Init: arranca en la pantalla de PIN ───
- 
+
 </script>
 </body>
 </html>
