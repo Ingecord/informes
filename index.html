@@ -1247,6 +1247,7 @@ async function enviarInforme() {
   }
  
   const payload = {
+    tipoFormulario: OT_DATA.tipoSistema || 'Expansión Directa',
     ot: OT_DATA.ot,
     equipoOT_ID: OT_DATA.equipoOT_ID,
     equipo: OT_DATA.equipo,
@@ -1672,7 +1673,8 @@ async function vrfEnviarInforme() {
   }
  
   const payload = {
-    tipoFormulario: 'VRF',
+    tipoFormulario: OT_DATA.tipoSistema || 'VRF',
+    tipoFormulario: OT_DATA.tipoSistema || 'Expansión Directa',
     ot: OT_DATA.ot,
     equipoOT_ID: OT_DATA.equipoOT_ID,
     sistemaNombre: OT_DATA.equipo,
