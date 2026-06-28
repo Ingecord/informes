@@ -305,7 +305,7 @@ function backToLobby(){
 }
 function fullLogout(){
   session={nombre:null,rol:null};pinBuffer='';
-  var screens=['screenPin','screenDashboard','topBarSeleccion','seleccionScreen','formularioScreen','formularioVRFScreen','formularioSGScreen'];
+  var screens=['screenPin','screenDashboard','screenModulos','topBarSeleccion','seleccionScreen','formularioScreen','formularioVRFScreen','formularioSGScreen'];
   for(var i=0;i<screens.length;i++) document.getElementById(screens[i]).style.display='none';
   document.getElementById('screenLobby').style.display='flex';
 }
@@ -337,7 +337,7 @@ function validatePin(){
     if(data&&data.valido){
       session.nombre=data.nombre;session.rol=data.rol;
       document.getElementById('screenPin').style.display='none';
-      launchDashboard();
+      routeByRole();
     }else{pinBuffer='';updateDots();errEl.textContent='PIN incorrecto. Intenta de nuevo.';}
   })
   .catch(function(){pinBuffer='';updateDots();errEl.textContent='Error de conexion. Intenta de nuevo.';});
@@ -694,6 +694,75 @@ function sgEnviarInforme(){
   }).then(function(){btn.style.background='var(--teal-mid)';btn.textContent='Informe enviado';setTimeout(volverAlDashboard,2500);})
   .catch(function(){btn.style.background='var(--teal-mid)';btn.textContent='Informe enviado';setTimeout(volverAlDashboard,2500);});
 }
+
+function routeByRole(){
+  var rol = session.rol;
+  var soloTecnico = ['Tecnico','Ayudante','ServiciosProfesionales'];
+  var ambos = ['Gerencia','Coordinador','Supervisor','Asistente'];
+  var soloAdmin = ['Administrativa'];
+  if(soloTecnico.indexOf(rol) !== -1){
+    launchDashboard();
+  } else if(soloAdmin.indexOf(rol) !== -1){
+    showModuleSelector('herramientas-only');
+  } else if(ambos.indexOf(rol) !== -1){
+    showModuleSelector('ambos');
+  } else {
+    launchDashboard();
+  }
+}
+function showModuleSelector(tipo){
+  var el = document.getElementById('screenModulos');
+  el.style.display = 'flex';
+  var ini = session.nombre.split(' ');
+  var init = '';
+  for(var i=0;i<Math.min(ini.length,2);i++) init+=ini[i][0];
+  document.getElementById('modAvatarInicial').textContent = init.toUpperCase();
+  document.getElementById('modNombre').textContent = session.nombre;
+  document.getElementById('modRol').textContent = session.rol;
+  var cardH = document.getElementById('cardHerramientas');
+  var cardI = document.getElementById('cardInformes');
+  if(tipo === 'herramientas-only'){
+    cardI.style.display = 'none';
+  } else {
+    cardH.style.display = 'flex';
+    cardI.style.display = 'flex';
+  }
+}
 </script>
+
+<div id="screenModulos" style="display:none;min-height:100vh;flex-direction:column">
+  <div style="background:var(--teal);padding:20px 20px 24px">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px">
+      <div id="modAvatarInicial" style="width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;color:white;flex-shrink:0">--</div>
+      <div>
+        <div id="modNombre" style="font-size:17px;font-weight:600;color:white">-</div>
+        <div id="modRol" style="font-size:12px;color:rgba(255,255,255,0.75);margin-top:2px">-</div>
+      </div>
+      <button onclick="fullLogout()" style="margin-left:auto;background:rgba(255,255,255,0.15);border:none;color:white;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit">Salir &#8617;</button>
+    </div>
+  </div>
+  <div style="padding:20px;flex:1;display:flex;flex-direction:column;gap:12px">
+    <div style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;font-weight:600;margin-bottom:4px">Selecciona un modulo</div>
+    <div id="cardHerramientas" onclick="abrirModulo('herramientas')" style="background:var(--white);border:1px solid #a8d4b8;border-radius:12px;padding:20px;cursor:pointer;display:flex;align-items:center;gap:16px">
+      <div style="width:48px;height:48px;border-radius:12px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">&#128295;</div>
+      <div>
+        <div style="font-size:15px;font-weight:600;color:var(--text)">Control de herramientas</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:3px">Inventario, checkout y devoluciones</div>
+      </div>
+      <div style="margin-left:auto;font-size:20px;color:var(--text-muted)">&#8250;</div>
+    </div>
+    <div id="cardInformes" onclick="abrirModulo('informes')" style="background:var(--white);border:1px solid #a8c0d8;border-radius:12px;padding:20px;cursor:pointer;display:flex;align-items:center;gap:16px">
+      <div style="width:48px;height:48px;border-radius:12px;background:var(--blue-bg);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">&#128203;</div>
+      <div>
+        <div style="font-size:15px;font-weight:600;color:var(--text)">Informes tecnicos</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:3px">Reportes de campo y servicio general</div>
+      </div>
+      <div style="margin-left:auto;font-size:20px;color:var(--text-muted)">&#8250;</div>
+    </div>
+    <div style="margin-top:8px;padding:14px 16px;background:var(--amber-bg);border-radius:10px;font-size:12px;color:var(--amber-text)">
+      &#128274; Control de herramientas es exclusivo del personal administrativo. Los tecnicos acceden directamente con su PIN.
+    </div>
+  </div>
+</div>
 </body>
 </html>
