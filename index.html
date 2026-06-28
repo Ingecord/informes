@@ -936,7 +936,17 @@ function vrfAgregarEvaporador() {
   div.className = 'circuito-block';
   div.style.marginBottom = '14px';
   div.id = 'vrfEvap_' + id;
-  div.innerHTML = '<div class="circuito-header" style="display:flex;justify-content:space-between;align-items:center">Evaporador ' + id + '<button onclick="document.getElementById('vrfEvap_' + id + '').remove()" style="background:none;border:none;color:var(--text-muted);font-size:18px;cursor:pointer">x</button></div><span class="field-label" style="margin-top:10px">Voltaje medido (V)</span><div class="params-grid"><div class="param-field"><label>A-B</label><input type="number" id="vrfEvap_' + id + '_voltAB"></div><div class="param-field"><label>B-C</label><input type="number" id="vrfEvap_' + id + '_voltBC"></div><div class="param-field"><label>A-C</label><input type="number" id="vrfEvap_' + id + '_voltAC"></div></div><span class="field-label" style="margin-top:12px">Amperaje medido (A)</span><div class="params-grid"><div class="param-field"><label>Fase A</label><input type="number" id="vrfEvap_' + id + '_ampA"></div><div class="param-field"><label>Fase B</label><input type="number" id="vrfEvap_' + id + '_ampB"></div><div class="param-field"><label>Fase C</label><input type="number" id="vrfEvap_' + id + '_ampC"></div></div><div class="params-grid" style="margin-top:12px"><div class="param-field"><label>Suministro (F)</label><input type="number" id="vrfEvap_' + id + '_tempSum"></div><div class="param-field"><label>Retorno (F)</label><input type="number" id="vrfEvap_' + id + '_tempRet"></div></div><span class="field-label" style="margin-top:12px">Observaciones</span><textarea id="vrfEvap_' + id + '_obs" style="margin-top:4px"></textarea>';
+  var eid = 'vrfEvap_' + id;
+  div.innerHTML = [
+    "<div class=\"circuito-header\" style=\"display:flex;justify-content:space-between;align-items:center\">Evaporador " + id + "<button onclick=\"document.getElementById('" + eid + "').remove()\" style=\"background:none;border:none;color:#6b6b67;font-size:18px;cursor:pointer\">x</button></div>",
+    "<span class=\"field-label\" style=\"margin-top:10px\">Voltaje medido (V)</span>",
+    "<div class=\"params-grid\"><div class=\"param-field\"><label>A-B</label><input type=\"number\" id=\"" + eid + "_voltAB\"></div><div class=\"param-field\"><label>B-C</label><input type=\"number\" id=\"" + eid + "_voltBC\"></div><div class=\"param-field\"><label>A-C</label><input type=\"number\" id=\"" + eid + "_voltAC\"></div></div>",
+    "<span class=\"field-label\" style=\"margin-top:12px\">Amperaje medido (A)</span>",
+    "<div class=\"params-grid\"><div class=\"param-field\"><label>Fase A</label><input type=\"number\" id=\"" + eid + "_ampA\"></div><div class=\"param-field\"><label>Fase B</label><input type=\"number\" id=\"" + eid + "_ampB\"></div><div class=\"param-field\"><label>Fase C</label><input type=\"number\" id=\"" + eid + "_ampC\"></div></div>",
+    "<div class=\"params-grid\" style=\"margin-top:12px\"><div class=\"param-field\"><label>Suministro (F)</label><input type=\"number\" id=\"" + eid + "_tempSum\"></div><div class=\"param-field\"><label>Retorno (F)</label><input type=\"number\" id=\"" + eid + "_tempRet\"></div></div>",
+    "<span class=\"field-label\" style=\"margin-top:12px\">Observaciones</span>",
+    "<textarea id=\"" + eid + "_obs\" style=\"margin-top:4px\"></textarea>"
+  ].join('');
   c.appendChild(div);
 }
 
@@ -948,7 +958,18 @@ function vrfAgregarCondensador() {
   div.className = 'circuito-block';
   div.style.marginBottom = '14px';
   div.id = 'vrfCond_' + id;
-  div.innerHTML = '<div class="circuito-header" style="display:flex;justify-content:space-between;align-items:center">Condensador ' + id + '<button onclick="document.getElementById('vrfCond_' + id + '').remove()" style="background:none;border:none;color:var(--text-muted);font-size:18px;cursor:pointer">x</button></div><span class="field-label" style="margin-top:10px">Voltaje medido (V)</span><div class="params-grid"><div class="param-field"><label>A-B</label><input type="number" id="vrfCond_' + id + '_voltAB"></div><div class="param-field"><label>B-C</label><input type="number" id="vrfCond_' + id + '_voltBC"></div><div class="param-field"><label>A-C</label><input type="number" id="vrfCond_' + id + '_voltAC"></div></div><span class="field-label" style="margin-top:12px">Amperaje medido (A)</span><div class="params-grid"><div class="param-field"><label>Fase A</label><input type="number" id="vrfCond_' + id + '_ampA"></div><div class="param-field"><label>Fase B</label><input type="number" id="vrfCond_' + id + '_ampB"></div><div class="param-field"><label>Fase C</label><input type="number" id="vrfCond_' + id + '_ampC"></div></div><span class="field-label" style="margin-top:12px">Presiones</span><div class="params-grid"><div class="param-field"><label>Presion alta (PSI)</label><input type="number" id="vrfCond_' + id + '_presAlta"></div><div class="param-field"><label>Presion baja (PSI)</label><input type="number" id="vrfCond_' + id + '_presBaja"></div></div><span class="field-label" style="margin-top:12px">Observaciones</span><textarea id="vrfCond_' + id + '_obs" style="margin-top:4px"></textarea>';
+  var cid = 'vrfCond_' + id;
+  div.innerHTML = [
+    "<div class=\"circuito-header\" style=\"display:flex;justify-content:space-between;align-items:center\">Condensador " + id + "<button onclick=\"document.getElementById('" + cid + "').remove()\" style=\"background:none;border:none;color:#6b6b67;font-size:18px;cursor:pointer\">x</button></div>",
+    "<span class=\"field-label\" style=\"margin-top:10px\">Voltaje medido (V)</span>",
+    "<div class=\"params-grid\"><div class=\"param-field\"><label>A-B</label><input type=\"number\" id=\"" + cid + "_voltAB\"></div><div class=\"param-field\"><label>B-C</label><input type=\"number\" id=\"" + cid + "_voltBC\"></div><div class=\"param-field\"><label>A-C</label><input type=\"number\" id=\"" + cid + "_voltAC\"></div></div>",
+    "<span class=\"field-label\" style=\"margin-top:12px\">Amperaje medido (A)</span>",
+    "<div class=\"params-grid\"><div class=\"param-field\"><label>Fase A</label><input type=\"number\" id=\"" + cid + "_ampA\"></div><div class=\"param-field\"><label>Fase B</label><input type=\"number\" id=\"" + cid + "_ampB\"></div><div class=\"param-field\"><label>Fase C</label><input type=\"number\" id=\"" + cid + "_ampC\"></div></div>",
+    "<span class=\"field-label\" style=\"margin-top:12px\">Presiones</span>",
+    "<div class=\"params-grid\"><div class=\"param-field\"><label>Presion alta (PSI)</label><input type=\"number\" id=\"" + cid + "_presAlta\"></div><div class=\"param-field\"><label>Presion baja (PSI)</label><input type=\"number\" id=\"" + cid + "_presBaja\"></div></div>",
+    "<span class=\"field-label\" style=\"margin-top:12px\">Observaciones</span>",
+    "<textarea id=\"" + cid + "_obs\" style=\"margin-top:4px\"></textarea>"
+  ].join('');
   c.appendChild(div);
 }
 
