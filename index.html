@@ -336,7 +336,10 @@ textarea{min-height:90px;resize:vertical}
       <div class="herr-kpi"><div class="herr-kpi-val amber" id="hKpiUso">-</div><div class="herr-kpi-lbl">En uso</div></div>
       <div class="herr-kpi"><div class="herr-kpi-val red" id="hKpiAlerta">-</div><div class="herr-kpi-lbl">Alertas</div></div>
     </div>
-    <input class="search-input" id="hSearch" placeholder="Buscar por codigo o nombre..." oninput="filtrarInventario()">
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <input class="search-input" id="hSearch" placeholder="Buscar por codigo o nombre..." oninput="filtrarInventario()" style="margin-bottom:0;flex:1">
+      <button onclick="abrirNuevaHerramienta()" style="background:var(--teal);color:white;border:none;border-radius:var(--radius-sm);padding:9px 14px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:inherit">+ Nueva</button>
+    </div>
     <div class="data-table-wrap"><table class="data-table"><thead><tr><th>Codigo</th><th>Herramienta</th><th>Categoria</th><th>Estado</th><th>Responsable</th><th></th></tr></thead><tbody id="hTablaInventario"><tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text-muted)">Cargando inventario...</td></tr></tbody></table></div>
   </div>
   <div id="hPanelCheckout" class="module-content module-panel">
@@ -478,7 +481,7 @@ var dxCkState={};
 var dxCkBuilt=false;
 var origenDashboard='tecnico';
 
-var SCREENS=['screenLobby','screenPin','screenModulos','screenDashboard','screenHerramientas','screenSeleccion','screenDX','screenVRF','screenSG','screenSolMedico','screenSolVacaciones','screenSolHerramienta','screenSolMateriales','screenSolSugerencia'];
+var SCREENS=['screenLobby','screenPin','screenModulos','screenDashboard','screenHerramientas','screenSeleccion','screenDX','screenVRF','screenSG','screenSolMedico','screenSolVacaciones','screenSolHerramienta','screenSolMateriales','screenSolSugerencia','screenNuevaHerramienta'];
 
 var MENSAJES_MOT=[
   'El trabajo bien hecho es la mejor forma de hablar por uno mismo.',
@@ -779,7 +782,7 @@ function fmt(d){if(!d)return '-';return new Date(d).toLocaleDateString('es-PA',{
 function badgeHTML(estado){
   var cls='badge-red';
   if(estado==='Disponible') cls='badge-green';
-  else if(estado==='En Uso') cls='badge-amber';
+  else if(estado==='En campo'||estado==='En Uso') cls='badge-amber';
   return '<span class="badge '+cls+'">'+estado+'</span>';
 }
 
@@ -815,22 +818,37 @@ function renderInventario(list){
     td.textContent='Sin herramientas registradas.';
     tr.appendChild(td);tbody.appendChild(tr);return;
   }
+  var rolesAdmin=['Gerencia','Coordinador','Supervisor','Asistente','Administrativa'];
+  var esAdmin=rolesAdmin.indexOf(session.rol)!==-1;
   for(var i=0;i<list.length;i++){
     var h=list[i];
     var tr=document.createElement('tr');
-    var vals=[h.CodigoID||'-',h.Title||'-',h.Categoria||'-'];
+    var codigo=h.codigo||h.CodigoID||'-';
+    var nombre=h.nombre||h.Title||'-';
+    var categoria=h.categoria||h.Categoria||'-';
+    var estado=h.estado||h.Estado_Actual||'Disponible';
+    var responsable=h.responsable||h.Responsable_Actual||'-';
+    var hid=h.id||h.ID||i;
+    var vals=[codigo,nombre,categoria];
     for(var v=0;v<vals.length;v++){var td=document.createElement('td');td.textContent=vals[v];tr.appendChild(td);}
-    var tdBadge=document.createElement('td');tdBadge.innerHTML=badgeHTML(h.Estado_Actual||'Disponible');tr.appendChild(tdBadge);
-    var tdResp=document.createElement('td');tdResp.textContent=h.Responsable_Actual||'-';tr.appendChild(tdResp);
+    var tdBadge=document.createElement('td');tdBadge.innerHTML=badgeHTML(estado);tr.appendChild(tdBadge);
+    var tdResp=document.createElement('td');tdResp.textContent=responsable;tr.appendChild(tdResp);
     var tdAccion=document.createElement('td');
-    if(h.Estado_Actual==='Disponible'){
+    if(estado==='Disponible'){
       var btn=document.createElement('button');
       btn.textContent='Checkout';
       btn.style.cssText='font-size:11px;padding:4px 10px;border-radius:5px;border:1px solid #a8d4b8;background:#EAF3DE;color:#154d30;cursor:pointer';
-      (function(idx){btn.onclick=function(){irACheckoutIdx(idx);};})(i);
+      (function(ix){btn.onclick=function(){irACheckoutIdx(ix);};})(i);
       tdAccion.appendChild(btn);
+      if(esAdmin){
+        var btnBaja=document.createElement('button');
+        btnBaja.textContent='Baja';
+        btnBaja.style.cssText='font-size:11px;padding:4px 8px;border-radius:5px;border:1px solid #f5a8a8;background:#FCEBEB;color:#791F1F;cursor:pointer;margin-left:4px';
+        (function(id,cod){btnBaja.onclick=function(){darDeBaja(id,cod);};})(hid,codigo);
+        tdAccion.appendChild(btnBaja);
+      }
     }else{
-      var sp=document.createElement('span');sp.style.cssText='font-size:11px;color:var(--text-muted)';sp.textContent='En campo';tdAccion.appendChild(sp);
+      var sp=document.createElement('span');sp.style.cssText='font-size:11px;color:var(--text-muted)';sp.textContent=estado;tdAccion.appendChild(sp);
     }
     tr.appendChild(tdAccion);tbody.appendChild(tr);
   }
@@ -838,16 +856,20 @@ function renderInventario(list){
 
 function actualizarKPIs(list){
   document.getElementById('hKpiTotal').textContent=list.length;
-  document.getElementById('hKpiDisp').textContent=list.filter(function(h){return h.Estado_Actual==='Disponible';}).length;
-  document.getElementById('hKpiUso').textContent=list.filter(function(h){return h.Estado_Actual==='En Uso';}).length;
-  document.getElementById('hKpiAlerta').textContent=list.filter(function(h){return h.Estado_Actual==='Sin devolver'||h.Estado_Actual==='Extraviado';}).length;
+  document.getElementById('hKpiDisp').textContent=list.filter(function(h){return h.estado==='Disponible'||h.Estado_Actual==='Disponible';}).length;
+  document.getElementById('hKpiUso').textContent=list.filter(function(h){return h.estado==='En campo'||h.Estado_Actual==='En campo'||h.estado==='En Uso'||h.Estado_Actual==='En Uso';}).length;
+  document.getElementById('hKpiAlerta').textContent=list.filter(function(h){var e=h.estado||h.Estado_Actual||'';return e==='Sin devolver'||e==='Extraviado'||e==='Perdido';}).length;
 }
 
 function poblarSelectCheckout(list){
   var sel=document.getElementById('coHerramienta');
   sel.innerHTML='<option value="">Seleccionar herramienta disponible...</option>';
-  list.filter(function(h){return h.Estado_Actual==='Disponible';}).forEach(function(h){
-    var opt=document.createElement('option');opt.value=h.ID;opt.textContent=(h.CodigoID||'-')+' - '+(h.Title||'-');opt.setAttribute('data-codigo',h.CodigoID||'');sel.appendChild(opt);
+  list.filter(function(h){return h.estado==='Disponible'||h.Estado_Actual==='Disponible';}).forEach(function(h){
+    var opt=document.createElement('option');
+    opt.value=h.id||h.ID;
+    opt.textContent=(h.codigo||h.CodigoID||'-')+' - '+(h.nombre||h.Title||'-');
+    opt.setAttribute('data-codigo',h.codigo||h.CodigoID||'');
+    sel.appendChild(opt);
   });
 }
 
@@ -1284,5 +1306,44 @@ function submitSolSugerencia(){
     </div>
   </div>
 </div>
+
+<div id="screenNuevaHerramienta" style="display:none">
+  <div class="inf-top-bar" style="display:flex;align-items:center;justify-content:space-between">
+    <div><div class="brand">Ingecord</div><h1>Nueva herramienta</h1></div>
+    <button onclick="volverAHerramientas()" style="background:rgba(255,255,255,0.15);border:none;color:white;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit">&#8592; Volver</button>
+  </div>
+  <div class="container">
+    <div class="section" style="margin-top:16px">
+      <div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>Datos de la herramienta</div>
+      <span class="field-label">Codigo ID <span class="required-star">*</span></span>
+      <input type="text" id="nhCodigo" placeholder="Ej: HRR-001, VAC-002...">
+      <span class="field-label" style="margin-top:12px">Nombre <span class="required-star">*</span></span>
+      <input type="text" id="nhNombre" placeholder="Ej: Multimetro Fluke 115">
+      <span class="field-label" style="margin-top:12px">Descripcion completa <span class="required-star">*</span></span>
+      <input type="text" id="nhDescripcion" placeholder="Ej: HRR-001 - Fluke - Multimetro">
+      <span class="field-label" style="margin-top:12px">Categoria <span class="required-star">*</span></span>
+      <select id="nhCategoria">
+        <option value="">Selecciona una categoria</option>
+        <option value="Electrica">Electrica</option>
+        <option value="Refrigeracion">Refrigeracion</option>
+        <option value="Mecanica">Mecanica</option>
+        <option value="Seguridad">Seguridad</option>
+        <option value="Medicion">Medicion</option>
+        <option value="General">General</option>
+      </select>
+      <span class="field-label" style="margin-top:12px">Marca</span>
+      <input type="text" id="nhMarca" placeholder="Ej: Fluke, Uniweld, Milwaukee...">
+      <span class="field-label" style="margin-top:12px">Modelo</span>
+      <input type="text" id="nhModelo" placeholder="Ej: 115, XYZ-12...">
+      <span class="field-label" style="margin-top:12px">Valor aproximado (B/.)</span>
+      <input type="number" id="nhValor" placeholder="0.00">
+      <span class="field-label" style="margin-top:12px">Notas</span>
+      <textarea id="nhNotas" placeholder="Observaciones adicionales..." style="min-height:70px"></textarea>
+      <button class="submit-btn" id="btnNuevaHerr" onclick="submitNuevaHerramienta()" style="margin-top:16px">Registrar herramienta</button>
+    </div>
+    <div class="bottom-space"></div>
+  </div>
+</div>
+
 </body>
 </html>
