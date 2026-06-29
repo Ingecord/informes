@@ -787,12 +787,22 @@ function badgeHTML(estado){
 function cargarInventario(){
   var tbody=document.getElementById('hTablaInventario');
   tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text-muted)">Cargando...</td></tr>';
-  post(WEBHOOK_HERR,{action:'GET_INVENTARIO'}).then(function(data){
-    inventarioCache=data.herramientas||[];
-    renderInventario(inventarioCache);actualizarKPIs(inventarioCache);poblarSelectCheckout(inventarioCache);
+  fetch(WEBHOOK_HERR,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_INVENTARIO'})})
+  .then(function(r){return r.text();})
+  .then(function(txt){
+    var fixed=txt.split('}}, {').join('}, {').split('}},\n{').join('},\n{');
+    var data={};
+    try{data=JSON.parse(fixed);}catch(e){try{data=JSON.parse(txt);}catch(e2){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text-muted)">Error al cargar.</td></tr>';return;}}
+    function toArr(val){if(!val)return[];if(Array.isArray(val))return val;if(typeof val==='object')return[val];return[];}
+    function flatten(arr){return arr.map(function(o){return(o&&o.fields)?o.fields:o;});}
+    inventarioCache=flatten(toArr(data.herramientas));
+    renderInventario(inventarioCache);
+    actualizarKPIs(inventarioCache);
+    poblarSelectCheckout(inventarioCache);
     var alertas=inventarioCache.filter(function(h){return h.Estado_Actual==='Sin devolver'||h.Estado_Actual==='Extraviado';});
     if(alertas.length>0){document.getElementById('hAlertaBanner').style.display='flex';document.getElementById('hAlertaTxt').textContent=alertas.length+' herramienta(s) sin devolver.';}
-  }).catch(function(){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text-muted)">Error al cargar.</td></tr>';});
+  })
+  .catch(function(){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text-muted)">Error al cargar.</td></tr>';});
 }
 
 function renderInventario(list){
@@ -890,13 +900,25 @@ function doDevolucion(){
 function cargarHistorial(){
   var tbody=document.getElementById('hTablaHistorial');
   tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text-muted)">Cargando...</td></tr>';
-  post(WEBHOOK_HERR,{action:'GET_HISTORIAL'}).then(function(data){
-    var list=data.movimientos||[];
+  fetch(WEBHOOK_HERR,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_HISTORIAL'})})
+  .then(function(r){return r.text();})
+  .then(function(txt){
+    var fixed=txt.split('}}, {').join('}, {').split('}},\n{').join('},\n{');
+    var data={};
+    try{data=JSON.parse(fixed);}catch(e){try{data=JSON.parse(txt);}catch(e2){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text-muted)">Error al cargar.</td></tr>';return;}}
+    function toArr(val){if(!val)return[];if(Array.isArray(val))return val;if(typeof val==='object')return[val];return[];}
+    function flatten(arr){return arr.map(function(o){return(o&&o.fields)?o.fields:o;});}
+    var list=flatten(toArr(data.movimientos||data));
     if(!list.length){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text-muted)">Sin movimientos.</td></tr>';return;}
     var html='';
-    for(var i=0;i<list.length;i++){var m=list[i];var est=m.Abierto?'<span class="badge badge-amber">Abierto</span>':'<span class="badge badge-green">Cerrado</span>';html+='<tr><td>'+(m.CodigoHerramienta||'-')+'</td><td>'+(m.Herramienta||'-')+'</td><td>'+(m.Responsable||'-')+'</td><td>'+(m.Cliente||'-')+'</td><td>'+fmt(m.FechaMovimiento)+'</td><td>'+est+'</td></tr>';}
+    for(var i=0;i<list.length;i++){
+      var m=list[i];
+      var est=m.Abierto?'<span class="badge badge-amber">Abierto</span>':'<span class="badge badge-green">Cerrado</span>';
+      html+='<tr><td>'+(m.CodigoHerramienta||m.Title||'-')+'</td><td>'+(m.Herramienta||m.HerramientaLookupValue||'-')+'</td><td>'+(m.Responsable||'-')+'</td><td>'+(m.Cliente||'-')+'</td><td>'+fmt(m.FechaMovimiento||m.Created||'')+'</td><td>'+est+'</td></tr>';
+    }
     tbody.innerHTML=html;
-  }).catch(function(){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text-muted)">Error al cargar.</td></tr>';});
+  })
+  .catch(function(){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text-muted)">Error al cargar.</td></tr>';});
 }
 
 function filtrarHistorial(){var q=document.getElementById('hSearchHist').value.toLowerCase();var rows=document.querySelectorAll('#hTablaHistorial tr');rows.forEach(function(r){r.style.display=r.textContent.toLowerCase().indexOf(q)!==-1?'':'none';});}
