@@ -248,19 +248,71 @@ textarea{min-height:90px;resize:vertical}
   <div class="dash-header">
     <div class="dash-header-top">
       <div class="dash-avatar" id="dashAvatar">--</div>
-      <div><div class="dash-name" id="dashNombre">-</div><div class="dash-role" id="dashRol">-</div></div>
+      <div>
+        <div class="dash-name" id="dashNombre">-</div>
+        <div class="dash-role" id="dashRol">-</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-top:2px" id="dashFecha"></div>
+      </div>
       <button class="dash-logout" onclick="fullLogout()">Salir &#8617;</button>
     </div>
-    <div class="kpi-row">
-      <div class="kpi"><div class="kpi-val" id="kpiOTs">-</div><div class="kpi-lbl">OTs este mes</div></div>
-      <div class="kpi"><div class="kpi-val" id="kpiInf">-</div><div class="kpi-lbl">Informes enviados</div></div>
-      <div class="kpi"><div class="kpi-val" id="kpiHerr">-</div><div class="kpi-lbl">Herramientas</div></div>
+    <div style="background:rgba(255,255,255,0.12);border-radius:10px;padding:10px 14px;display:flex;gap:10px;align-items:flex-start">
+      <div style="font-size:18px;flex-shrink:0">&#128172;</div>
+      <div style="font-size:13px;color:white;line-height:1.5;font-style:italic" id="dashMsgTxt">Cargando...</div>
     </div>
   </div>
   <div class="dash-body">
-    <div class="mensaje-box" id="dashMsg"><div class="mensaje-icon">&#128075;</div><div class="mensaje-texto" id="dashMsgTxt">Bienvenido al portal Ingecord.</div></div>
-    <div class="dash-section"><div class="dash-section-title">Mis OTs activas</div><div id="dashOTs"><div class="empty-state">Selecciona una OT para hacer un informe.</div></div></div>
-    <button class="btn-continuar" onclick="irASeleccion()">Seleccionar OT y hacer informe &#8594;</button>
+
+    <div class="dash-section">
+      <div class="dash-section-title">Tablon de anuncios</div>
+      <div style="padding:8px 0;border-bottom:1px solid var(--border-light)">
+        <div style="font-size:13px;color:var(--text)">Reunion de equipo — viernes 4 jul 8am <span style="font-size:9px;background:var(--blue-bg);color:var(--blue-text);padding:2px 7px;border-radius:99px;margin-left:4px;font-weight:600">Nuevo</span></div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Publicado 29 jun 2026</div>
+      </div>
+      <div style="padding:8px 0;border-bottom:1px solid var(--border-light)">
+        <div style="font-size:13px;color:var(--text)">Uniformes obligatorios en sitio de cliente <span style="font-size:9px;background:var(--red-bg);color:var(--red-text);padding:2px 7px;border-radius:99px;margin-left:4px;font-weight:600">Importante</span></div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Publicado 25 jun 2026</div>
+      </div>
+      <div style="padding:8px 0">
+        <div style="font-size:13px;color:var(--text)">Minimo 3 fotos por equipo atendido en cada informe</div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Publicado 20 jun 2026</div>
+      </div>
+    </div>
+
+    <div class="dash-section">
+      <div class="dash-section-title">Accesos rapidos</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <button onclick="irASeleccion()" style="background:var(--white);border:1px solid #a8d4b8;border-radius:10px;padding:14px 10px;cursor:pointer;text-align:center;font-family:inherit">
+          <div style="font-size:22px;margin-bottom:6px">&#128203;</div>
+          <div style="font-size:11px;font-weight:600;color:var(--text)">Informe tecnico</div>
+        </button>
+        <button onclick="abrirSolicitud('herramienta')" style="background:var(--white);border:1px solid #a8c0d8;border-radius:10px;padding:14px 10px;cursor:pointer;text-align:center;font-family:inherit">
+          <div style="font-size:22px;margin-bottom:6px">&#128295;</div>
+          <div style="font-size:11px;font-weight:600;color:var(--text)">Solicitar herramienta</div>
+        </button>
+        <button onclick="abrirSolicitud('materiales')" style="background:var(--white);border:1px solid #f5c88a;border-radius:10px;padding:14px 10px;cursor:pointer;text-align:center;font-family:inherit">
+          <div style="font-size:22px;margin-bottom:6px">&#128230;</div>
+          <div style="font-size:11px;font-weight:600;color:var(--text)">Solicitar materiales</div>
+        </button>
+        <button onclick="abrirSolicitud('medico')" style="background:var(--white);border:1px solid #f5a8a8;border-radius:10px;padding:14px 10px;cursor:pointer;text-align:center;font-family:inherit">
+          <div style="font-size:22px;margin-bottom:6px">&#127973;</div>
+          <div style="font-size:11px;font-weight:600;color:var(--text)">Permiso medico</div>
+        </button>
+        <button onclick="abrirSolicitud('vacaciones')" style="background:var(--white);border:1px solid #c4b5f5;border-radius:10px;padding:14px 10px;cursor:pointer;text-align:center;font-family:inherit">
+          <div style="font-size:22px;margin-bottom:6px">&#127958;</div>
+          <div style="font-size:11px;font-weight:600;color:var(--text)">Solicitar vacaciones</div>
+        </button>
+        <button onclick="abrirSolicitud('sugerencia')" style="background:var(--white);border:1px solid var(--border);border-radius:10px;padding:14px 10px;cursor:pointer;text-align:center;font-family:inherit">
+          <div style="font-size:22px;margin-bottom:6px">&#128172;</div>
+          <div style="font-size:11px;font-weight:600;color:var(--text)">Buzon de sugerencias</div>
+        </button>
+      </div>
+    </div>
+
+    <div class="dash-section">
+      <div class="dash-section-title">Mis OTs activas este mes</div>
+      <div id="dashOTs"><div class="empty-state">Cargando...</div></div>
+    </div>
+
     <div style="height:24px"></div>
   </div>
 </div>
@@ -423,7 +475,23 @@ var dxCkState={};
 var dxCkBuilt=false;
 var origenDashboard='tecnico';
 
-var SCREENS=['screenLobby','screenPin','screenModulos','screenDashboard','screenHerramientas','screenSeleccion','screenDX','screenVRF','screenSG'];
+var SCREENS=['screenLobby','screenPin','screenModulos','screenDashboard','screenHerramientas','screenSeleccion','screenDX','screenVRF','screenSG','screenSolMedico','screenSolVacaciones','screenSolHerramienta','screenSolMateriales','screenSolSugerencia'];
+
+var MENSAJES_MOT=[
+  'El trabajo bien hecho es la mejor forma de hablar por uno mismo.',
+  'Cada equipo que revisas es una familia que duerme tranquila esa noche.',
+  'La puntualidad y el orden son el reflejo de tu profesionalismo.',
+  'Un técnico preparado vale más que cualquier herramienta.',
+  'La excelencia no es un acto, es un hábito.',
+  'Tu trabajo en campo es el motor que mueve esta empresa.',
+  'Cada informe completo es un compromiso cumplido con el cliente.',
+  'La calidad de tu trabajo hoy define la reputación de mañana.'
+];
+function getMensajeMotivacional(){
+  var d=new Date();
+  var idx=(d.getDay()+d.getDate())%MENSAJES_MOT.length;
+  return MENSAJES_MOT[idx];
+}
 
 function showOnly(id){
   var all=document.querySelectorAll('body > div[id]');
@@ -497,7 +565,16 @@ function launchDashboard(){
   document.getElementById('kpiOTs').textContent='...';
   document.getElementById('kpiInf').textContent='...';
   document.getElementById('kpiHerr').textContent='...';
-  document.getElementById('dashMsgTxt').textContent='Cargando tu informacion...';
+  // Mensaje motivacional inmediato
+  var msg=getMensajeMotivacional();
+  document.getElementById('dashMsg').className='mensaje-box';
+  document.getElementById('dashMsgTxt').textContent=msg;
+  // Fecha actual
+  var hoy=new Date();
+  var dias=['domingo','lunes','martes','miercoles','jueves','viernes','sabado'];
+  var meses=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  var fechaTxt=dias[hoy.getDay()]+' '+hoy.getDate()+' '+meses[hoy.getMonth()]+' '+hoy.getFullYear();
+  document.getElementById('dashFecha').textContent=fechaTxt;
   cargarDashboard();
 }
 
@@ -505,37 +582,36 @@ function cargarDashboard(){
   fetch(WEBHOOK_DASH,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_DASHBOARD',tecnico:session.nombre})})
   .then(function(r){return r.text();})
   .then(function(txt){
-    // Normalizar el JSON que devuelve Make.com en distintos formatos
     var data={};
-    try{data=JSON.parse(txt);}catch(e){return;}
-    
-    // Extraer otsActivas — puede ser array, objeto con datos string, o directo
-    var ots=[];
-    var herrs=[];
-    
-    if(Array.isArray(data.otsActivas)){
-      ots=data.otsActivas;
-    } else if(data.otsActivas&&typeof data.otsActivas==='object'){
-      ots=[data.otsActivas];
+    try{
+      // Fix Make.com double-brace issue: }} , { becomes } , {
+      var fixed=txt.split('}}, {').join('}, {').split('}},\n{').join('},\n{');
+      data=JSON.parse(fixed);
+    }catch(e){
+      try{data=JSON.parse(txt);}catch(e2){
+        document.getElementById('dashMsgTxt').textContent='Bienvenido, '+session.nombre+'. Selecciona una OT para hacer tu informe.';
+        document.getElementById('kpiOTs').textContent='-';
+        document.getElementById('kpiInf').textContent='-';
+        document.getElementById('kpiHerr').textContent='-';
+        return;
+      }
     }
-    
-    if(Array.isArray(data.herramientas)){
-      herrs=data.herramientas;
-    } else if(data.herramientas&&typeof data.herramientas==='object'){
-      herrs=[data.herramientas];
+
+    function toArr(val){
+      if(!val) return [];
+      if(Array.isArray(val)) return val;
+      if(typeof val==='object') return [val];
+      return [];
     }
-    
-    // Normalizar estructura — Make.com devuelve campos planos sin wrapper fields
-    ots=ots.map(function(o){
-      if(o.fields) return o;
-      return {fields:o};
-    });
-    herrs=herrs.map(function(h){
-      if(h.fields) return h;
-      return {fields:h};
-    });
-    
-    renderDashboard({otsActivas:ots,herramientas:herrs});
+    function flatten(arr){
+      return arr.map(function(o){return (o&&o.fields)?o.fields:o;});
+    }
+
+    var ots=flatten(toArr(data.otsActivas));
+    var herrs=flatten(toArr(data.herramientas));
+    var eqs=flatten(toArr(data.equiposOT));
+
+    renderDashboard({otsActivas:ots,herramientas:herrs,equiposOT:eqs});
   })
   .catch(function(){
     document.getElementById('dashMsgTxt').textContent='Bienvenido, '+session.nombre+'. Selecciona una OT para hacer tu informe.';
@@ -548,6 +624,7 @@ function cargarDashboard(){
 function renderDashboard(data){
   var ots=data.otsActivas||[];
   var herrs=data.herramientas||[];
+  var eqs=data.equiposOT||[];
   var mes=new Date().getMonth();
   var anio=new Date().getFullYear();
   var nombre=session.nombre;
@@ -581,41 +658,61 @@ function renderDashboard(data){
 
   var otsTecnico=ots.filter(function(o){
     var fields=o.fields||o;
+    // Tecnico_Principal viene como texto "Tecnico 1 - Jorge Gonzalez"
+    // session.nombre tiene el mismo formato
     var esTecnico=false;
-    if(tecnicoId){
+    if(fields.Tecnico_Principal){
+      esTecnico=fields.Tecnico_Principal===nombre||
+                fields.Tecnico_Principal.indexOf(nombreReal)!==-1||
+                nombre.indexOf(fields.Tecnico_Principal)!==-1;
+    }
+    // Fallback por ID numerico si existe
+    if(!esTecnico&&tecnicoId&&fields.Tecnico_PrincipalLookupId){
       esTecnico=String(fields.Tecnico_PrincipalLookupId)===String(tecnicoId);
     }
-    // Fallback: mostrar todas las OTs del mes si no hay ID
-    if(!tecnicoId) esTecnico=true;
-    // Filtrar por mes
-    var fechaStr=fields.Fecha_Creacion||fields.Created||null;
+    // Filtrar por mes usando Fecha_Programada o Fecha_Creacion
+    var fechaStr=fields.Fecha_Programada||fields.Fecha_Creacion||fields.Created||null;
     var f=fechaStr?new Date(fechaStr):null;
-    var enMes=f&&f.getMonth()===mes&&f.getFullYear()===anio;
+    var enMes=f?f.getMonth()===mes&&f.getFullYear()===anio:true;
     return esTecnico&&enMes;
   });
 
   // OTs completadas
   var otsComp=otsTecnico.filter(function(o){
     var fields=o.fields||o;
-    return fields.Informes_Completos===true||fields.Informes_Completos==='true';
+    return fields.Informes_Completos===true||fields.Informes_Completos==='true'||
+           fields.Estado_OT==='Facturada'||fields.Estado_OT==='Cerrada';
   });
 
   // Herramientas del tecnico
   var herrTecnico=herrs.filter(function(h){
     var fields=h.fields||h;
-    var abierto=fields.Abierto===true||fields.Abierto==='true'||fields.Abierto===1;
-    var esTecnico=false;
-    if(session.id){
-      esTecnico=String(fields.ResponsableLookupId)===String(session.id)||
-                String(fields.Tecnico_PrincipalLookupId)===String(session.id);
+    var abierto=fields.Abierto===true||fields.Abierto==='true'||fields.Abierto===1||fields.Estado==='En Uso';
+    var esTecnico=fields.Responsable===nombre||
+                  fields.ResponsableLookupValue===nombre||
+                  (nombreReal&&fields.Responsable&&fields.Responsable.indexOf(nombreReal)!==-1);
+    if(!esTecnico&&tecnicoId){
+      esTecnico=String(fields.ResponsableLookupId)===String(tecnicoId);
     }
-    esTecnico=esTecnico||(fields.ResponsableLookupValue===nombre||fields.Responsable===nombre);
     return abierto&&esTecnico;
+  });
+
+  // Equipos del tecnico con y sin informe
+  var eqsTecnico=eqs.filter(function(e){
+    var otId=e.OT_ID||e.OTLookupId||e.OT||'';
+    // Buscar si la OT del equipo esta en las OTs del tecnico
+    var otIds=otsTecnico.map(function(o){return String(o.ID||o.id||o.Title||'');});
+    var otTitles=otsTecnico.map(function(o){return o.Title||'';});
+    return otTitles.indexOf(String(e.OT_ID||e.OTLookupValue||''))!==-1||
+           otIds.indexOf(String(e.OTLookupId||e.OT_ID||''))!==-1;
+  });
+  var eqsConInforme=eqsTecnico.filter(function(e){
+    return e.Informe_Recibido===true||e.Informe_Recibido==='true'||e.Informe_Recibido===1;
   });
 
   // KPIs
   document.getElementById('kpiOTs').textContent=otsTecnico.length;
-  document.getElementById('kpiInf').textContent=otsComp.length;
+  document.getElementById('kpiInf').textContent=eqsTecnico.length>0?eqsConInforme.length+'/'+eqsTecnico.length:otsComp.length;
   document.getElementById('kpiHerr').textContent=herrTecnico.length;
 
   // Mensaje motivacional
@@ -640,12 +737,14 @@ function renderDashboard(data){
     var html='';
     otsTecnico.forEach(function(o){
       var f=o.fields||o;
-      var comp=f.Informes_Completos===true||f.Informes_Completos==='true';
-      var badge=comp?'<span class="badge badge-green">Completada</span>':'<span class="badge badge-amber">Pendiente</span>';
+      var comp=f.Informes_Completos===true||f.Informes_Completos==='true'||f.Estado_OT==='Facturada'||f.Estado_OT==='Cerrada';
+      var estado=f.Estado_OT||f.Estado||'';
+      var badgeClass=comp?'badge-green':estado==='Pendiente cierre'?'badge-amber':'badge-amber';
+      var badge='<span class="badge '+badgeClass+'">'+(comp?'Completada':estado||'Pendiente')+'</span>';
       var titulo=f.Title||'-';
-      var cliente=f.ClienteLookupValue||f.Cliente||'';
-      var sucursal=f.SucursalLookupValue||f.Sucursal||'';
-      html+='<div class="ot-item"><div><div class="ot-name">'+titulo+'</div><div class="ot-sub">'+cliente+(sucursal?' - '+sucursal:'')+'</div></div>'+badge+'</div>';
+      var cliente=f.Cliente||f.ClienteLookupValue||'';
+      var sucursal=f.Sucursal||f.SucursalLookupValue||'';
+      html+='<div class="ot-item"><div><div class="ot-name">'+titulo+'</div><div class="ot-sub">'+cliente+(sucursal?' — '+sucursal:'')+'</div></div>'+badge+'</div>';
     });
     divOTs.innerHTML=html;
   }
@@ -988,7 +1087,165 @@ function enviarSG(){
   getFotos('sg').then(function(fd){p.fotosArray=fd;return fetch(PA_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});}).then(function(){btn.textContent='Informe enviado';btn.style.background='var(--teal-mid)';setTimeout(function(){volverAlOrigen();},2500);}).catch(function(){btn.textContent='Informe enviado';btn.style.background='var(--teal-mid)';setTimeout(function(){volverAlOrigen();},2500);});
 }
 
+var PA_SOLICITUDES='https://hook.us2.make.com/TU_WEBHOOK_SOLICITUDES';
+
+function abrirSolicitud(tipo){
+  var pantallas={
+    'medico':'screenSolMedico',
+    'vacaciones':'screenSolVacaciones',
+    'herramienta':'screenSolHerramienta',
+    'materiales':'screenSolMateriales',
+    'sugerencia':'screenSolSugerencia'
+  };
+  var pantalla=pantallas[tipo];
+  if(pantalla) showOnly(pantalla);
+}
+
+function volverAlDashboardDesdeSOL(){
+  showOnly('screenDashboard');
+}
+
+function enviarSolicitud(tipo,datos){
+  var payload=Object.assign({tipo:tipo,tecnico:session.nombre,rol:session.rol,fecha:new Date().toISOString()},datos);
+  fetch(PA_SOLICITUDES,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
+  .then(function(){
+    alert('Solicitud enviada correctamente. Recibiras una respuesta por correo.');
+    showOnly('screenDashboard');
+  })
+  .catch(function(){
+    alert('Solicitud enviada.');
+    showOnly('screenDashboard');
+  });
+}
+
+function submitSolMedico(){
+  var fecha=document.getElementById('solMedicoFecha').value;
+  var hora=document.getElementById('solMedicoHora').value;
+  var motivo=document.getElementById('solMedicoMotivo').value;
+  if(!fecha||!motivo.trim()){alert('Completa todos los campos.');return;}
+  enviarSolicitud('Permiso medico',{fecha_permiso:fecha,hora_estimada:hora,motivo:motivo});
+}
+
+function submitSolVacaciones(){
+  var desde=document.getElementById('solVacDesde').value;
+  var hasta=document.getElementById('solVacHasta').value;
+  var notas=document.getElementById('solVacNotas').value;
+  if(!desde||!hasta){alert('Selecciona las fechas.');return;}
+  enviarSolicitud('Solicitud vacaciones',{fecha_desde:desde,fecha_hasta:hasta,notas:notas});
+}
+
+function submitSolHerramienta(){
+  var herr=document.getElementById('solHerrNombre').value.trim();
+  var motivo=document.getElementById('solHerrMotivo').value.trim();
+  var ot=document.getElementById('solHerrOT').value.trim();
+  if(!herr||!motivo){alert('Completa todos los campos.');return;}
+  enviarSolicitud('Solicitud herramienta',{herramienta:herr,motivo:motivo,ot:ot});
+}
+
+function submitSolMateriales(){
+  var lista=document.getElementById('solMatLista').value.trim();
+  var ot=document.getElementById('solMatOT').value.trim();
+  var urgente=document.getElementById('solMatUrgente').checked;
+  if(!lista){alert('Describe los materiales necesarios.');return;}
+  enviarSolicitud('Solicitud materiales',{materiales:lista,ot:ot,urgente:urgente});
+}
+
+function submitSolSugerencia(){
+  var texto=document.getElementById('solSugTexto').value.trim();
+  var anonima=document.getElementById('solSugAnonima').checked;
+  if(!texto){alert('Escribe tu sugerencia.');return;}
+  var datos={sugerencia:texto};
+  if(anonima) datos.tecnico='Anonimo';
+  enviarSolicitud('Sugerencia',datos);
+}
 
 </script>
+
+<div id="screenSolMedico" style="display:none">
+  <div class="inf-top-bar"><div class="brand">Ingecord</div><h1>Permiso medico</h1><div class="subtitle">Solicitud de permiso</div></div>
+  <div class="container">
+    <div class="section" style="margin-top:16px">
+      <div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Detalles del permiso</div>
+      <span class="field-label">Fecha del permiso <span class="required-star">*</span></span>
+      <input type="date" id="solMedicoFecha">
+      <span class="field-label">Hora estimada de salida</span>
+      <input type="time" id="solMedicoHora">
+      <span class="field-label">Motivo <span class="required-star">*</span></span>
+      <textarea id="solMedicoMotivo" placeholder="Describe brevemente el motivo de la consulta..."></textarea>
+      <button class="submit-btn" onclick="submitSolMedico()" style="margin-top:16px">Enviar solicitud</button>
+      <div style="margin-top:10px;text-align:center"><button style="background:none;border:none;font-size:12px;color:var(--text-muted);cursor:pointer;font-family:inherit" onclick="volverAlDashboardDesdeSOL()">&#8592; Volver</button></div>
+    </div>
+  </div>
+</div>
+
+<div id="screenSolVacaciones" style="display:none">
+  <div class="inf-top-bar"><div class="brand">Ingecord</div><h1>Solicitud de vacaciones</h1><div class="subtitle">Solicitud de permiso</div></div>
+  <div class="container">
+    <div class="section" style="margin-top:16px">
+      <div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>Periodo solicitado</div>
+      <div class="params-grid">
+        <div class="param-field"><label>Fecha desde <span class="required-star">*</span></label><input type="date" id="solVacDesde"></div>
+        <div class="param-field"><label>Fecha hasta <span class="required-star">*</span></label><input type="date" id="solVacHasta"></div>
+      </div>
+      <span class="field-label" style="margin-top:12px">Notas adicionales</span>
+      <textarea id="solVacNotas" placeholder="Algun detalle adicional..." style="min-height:70px"></textarea>
+      <button class="submit-btn" onclick="submitSolVacaciones()" style="margin-top:16px">Enviar solicitud</button>
+      <div style="margin-top:10px;text-align:center"><button style="background:none;border:none;font-size:12px;color:var(--text-muted);cursor:pointer;font-family:inherit" onclick="volverAlDashboardDesdeSOL()">&#8592; Volver</button></div>
+    </div>
+  </div>
+</div>
+
+<div id="screenSolHerramienta" style="display:none">
+  <div class="inf-top-bar"><div class="brand">Ingecord</div><h1>Solicitar herramienta</h1><div class="subtitle">Solicitud de equipo</div></div>
+  <div class="container">
+    <div class="section" style="margin-top:16px">
+      <div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>Detalle de la solicitud</div>
+      <span class="field-label">Herramienta o equipo <span class="required-star">*</span></span>
+      <input type="text" id="solHerrNombre" placeholder="Ej: Multimetro, escalera 6m, detector de fugas...">
+      <span class="field-label" style="margin-top:12px">OT relacionada (opcional)</span>
+      <input type="text" id="solHerrOT" placeholder="Ej: PM-2606-0032">
+      <span class="field-label" style="margin-top:12px">Motivo de la solicitud <span class="required-star">*</span></span>
+      <textarea id="solHerrMotivo" placeholder="Por que necesitas esta herramienta..." style="min-height:70px"></textarea>
+      <button class="submit-btn" onclick="submitSolHerramienta()" style="margin-top:16px">Enviar solicitud</button>
+      <div style="margin-top:10px;text-align:center"><button style="background:none;border:none;font-size:12px;color:var(--text-muted);cursor:pointer;font-family:inherit" onclick="volverAlDashboardDesdeSOL()">&#8592; Volver</button></div>
+    </div>
+  </div>
+</div>
+
+<div id="screenSolMateriales" style="display:none">
+  <div class="inf-top-bar"><div class="brand">Ingecord</div><h1>Solicitar materiales</h1><div class="subtitle">Solicitud de insumos</div></div>
+  <div class="container">
+    <div class="section" style="margin-top:16px">
+      <div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>Lista de materiales</div>
+      <span class="field-label">Materiales necesarios <span class="required-star">*</span></span>
+      <textarea id="solMatLista" placeholder="Ej: 3m armaflex 1/2, 1 valvula schrader, 2 codos 3/4..." style="min-height:100px"></textarea>
+      <span class="field-label" style="margin-top:12px">OT relacionada (opcional)</span>
+      <input type="text" id="solMatOT" placeholder="Ej: COR-2606-0027">
+      <div style="display:flex;align-items:center;gap:8px;margin-top:14px">
+        <input type="checkbox" id="solMatUrgente" style="width:auto">
+        <label for="solMatUrgente" style="font-size:13px;color:var(--text)">Solicitud urgente</label>
+      </div>
+      <button class="submit-btn" onclick="submitSolMateriales()" style="margin-top:16px">Enviar solicitud</button>
+      <div style="margin-top:10px;text-align:center"><button style="background:none;border:none;font-size:12px;color:var(--text-muted);cursor:pointer;font-family:inherit" onclick="volverAlDashboardDesdeSOL()">&#8592; Volver</button></div>
+    </div>
+  </div>
+</div>
+
+<div id="screenSolSugerencia" style="display:none">
+  <div class="inf-top-bar"><div class="brand">Ingecord</div><h1>Buzon de sugerencias</h1><div class="subtitle">Tu opinion nos importa</div></div>
+  <div class="container">
+    <div class="section" style="margin-top:16px">
+      <div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Tu sugerencia</div>
+      <span class="field-label">Escribe tu sugerencia <span class="required-star">*</span></span>
+      <textarea id="solSugTexto" placeholder="Comparte tu idea o sugerencia para mejorar el equipo..." style="min-height:120px"></textarea>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:14px">
+        <input type="checkbox" id="solSugAnonima" style="width:auto">
+        <label for="solSugAnonima" style="font-size:13px;color:var(--text)">Enviar de forma anonima</label>
+      </div>
+      <button class="submit-btn" onclick="submitSolSugerencia()" style="margin-top:16px">Enviar sugerencia</button>
+      <div style="margin-top:10px;text-align:center"><button style="background:none;border:none;font-size:12px;color:var(--text-muted);cursor:pointer;font-family:inherit" onclick="volverAlDashboardDesdeSOL()">&#8592; Volver</button></div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
