@@ -403,6 +403,7 @@ textarea{min-height:90px;resize:vertical}
 
 <script>
 var WEBHOOK_AUTH='https://hook.us2.make.com/h39vw2abu22qydiy23hobjb5woc53qa7';
+var WEBHOOK_DASH='https://hook.us2.make.com/i5eda7jlcihhm5a2skuvdk1tas8o54gx';
 var WEBHOOK_HERR='https://hook.us2.make.com/TU_WEBHOOK_HERRAMIENTAS';
 var CONSULTA_URL='https://hook.us2.make.com/apdlfnasi6d3hxdgj4f3l4wyr6lndip4';
 var PA_URL='https://hook.us2.make.com/7ewyz9o2o108solu40zj6ovlz2pvjduq';
@@ -480,10 +481,87 @@ function launchDashboard(){
   document.getElementById('dashAvatar').textContent=ini.toUpperCase();
   document.getElementById('dashNombre').textContent=session.nombre;
   document.getElementById('dashRol').textContent=session.rol;
-  document.getElementById('kpiOTs').textContent='-';
-  document.getElementById('kpiInf').textContent='-';
-  document.getElementById('kpiHerr').textContent='-';
-  document.getElementById('dashMsgTxt').textContent='Bienvenido, '+session.nombre+'. Selecciona una OT para hacer tu informe.';
+  document.getElementById('kpiOTs').textContent='...';
+  document.getElementById('kpiInf').textContent='...';
+  document.getElementById('kpiHerr').textContent='...';
+  document.getElementById('dashMsgTxt').textContent='Cargando tu informacion...';
+  cargarDashboard();
+}
+
+function cargarDashboard(){
+  fetch(WEBHOOK_DASH,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_DASHBOARD',tecnico:session.nombre})})
+  .then(function(r){return r.json();})
+  .then(function(data){
+    renderDashboard(data);
+  })
+  .catch(function(){
+    document.getElementById('dashMsgTxt').textContent='Bienvenido, '+session.nombre+'. Selecciona una OT para hacer tu informe.';
+    document.getElementById('kpiOTs').textContent='-';
+    document.getElementById('kpiInf').textContent='-';
+    document.getElementById('kpiHerr').textContent='-';
+  });
+}
+
+function renderDashboard(data){
+  var ots=data.otsActivas||[];
+  var herrs=data.herramientas||[];
+  var mes=new Date().getMonth();
+  var anio=new Date().getFullYear();
+  var nombre=session.nombre;
+
+  // Filtrar OTs del tecnico este mes
+  var otsTecnico=ots.filter(function(o){
+    var f=o.fields&&o.fields.Fecha_Programada?new Date(o.fields.Fecha_Programada):null;
+    var esTecnico=o.fields&&(o.fields.Tecnico_PrincipalLookupValue===nombre||o.fields.Tecnico_Principal===nombre);
+    return esTecnico&&f&&f.getMonth()===mes&&f.getFullYear()===anio;
+  });
+
+  // OTs completadas (Informes_Completos = true)
+  var otsComp=otsTecnico.filter(function(o){
+    return o.fields&&(o.fields.Informes_Completos===true||o.fields.Informes_Completos==='true');
+  });
+
+  // Herramientas del tecnico
+  var herrTecnico=herrs.filter(function(h){
+    return h.fields&&(h.fields.Abierto===true||h.fields.Abierto==='true')&&
+      (h.fields.ResponsableLookupValue===nombre||h.fields.Responsable===nombre);
+  });
+
+  // KPIs
+  document.getElementById('kpiOTs').textContent=otsTecnico.length;
+  document.getElementById('kpiInf').textContent=otsComp.length;
+  document.getElementById('kpiHerr').textContent=herrTecnico.length;
+
+  // Mensaje motivacional
+  var msgBox=document.getElementById('dashMsg');
+  var primerNombre=nombre.split(' ')[0];
+  if(herrTecnico.length>0&&otsComp.length<otsTecnico.length){
+    msgBox.className='mensaje-box warn';
+    document.getElementById('dashMsgTxt').textContent='Tienes '+herrTecnico.length+' herramienta(s) en tu poder y '+(otsTecnico.length-otsComp.length)+' OT(s) pendiente(s) de informe.';
+  }else if(otsComp.length===otsTecnico.length&&otsTecnico.length>0){
+    msgBox.className='mensaje-box';
+    document.getElementById('dashMsgTxt').textContent='Excelente trabajo, '+primerNombre+'. Todas tus OTs tienen informe completo.';
+  }else{
+    msgBox.className='mensaje-box';
+    document.getElementById('dashMsgTxt').textContent='Bienvenido, '+primerNombre+'. Selecciona una OT para hacer tu informe.';
+  }
+
+  // Lista de OTs activas
+  var divOTs=document.getElementById('dashOTs');
+  if(!otsTecnico.length){
+    divOTs.innerHTML='<div class="empty-state">No tienes OTs asignadas este mes.</div>';
+  }else{
+    var html='';
+    otsTecnico.forEach(function(o){
+      var comp=o.fields&&(o.fields.Informes_Completos===true||o.fields.Informes_Completos==='true');
+      var badge=comp?'<span class="badge badge-green">Completada</span>':'<span class="badge badge-amber">Pendiente</span>';
+      var titulo=o.fields?o.fields.Title||'-':'-';
+      var cliente=o.fields?o.fields.ClienteLookupValue||'':'';
+      var sucursal=o.fields?o.fields.SucursalLookupValue||'':'';
+      html+='<div class="ot-item"><div><div class="ot-name">'+titulo+'</div><div class="ot-sub">'+cliente+(sucursal?' - '+sucursal:'')+'</div></div>'+badge+'</div>';
+    });
+    divOTs.innerHTML=html;
+  }
 }
 
 function launchModulos(){
