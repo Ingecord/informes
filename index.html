@@ -1219,6 +1219,39 @@ function submitSolSugerencia(){
   enviarSolicitud('Sugerencia',datos);
 }
 
+
+function abrirNuevaHerramienta(){showOnly('screenNuevaHerramienta');}
+function volverAHerramientas(){showOnly('screenHerramientas');}
+
+function submitNuevaHerramienta(){
+  var codigo=document.getElementById('nhCodigo').value.trim();
+  var nombre=document.getElementById('nhNombre').value.trim();
+  var descripcion=document.getElementById('nhDescripcion').value.trim();
+  var categoria=document.getElementById('nhCategoria').value;
+  if(!codigo||!nombre||!descripcion||!categoria){alert('Completa los campos obligatorios.');return;}
+  var btn=document.getElementById('btnNuevaHerr');btn.disabled=true;btn.textContent='Guardando...';
+  post(WEBHOOK_HERR,{action:'CREATE_HERRAMIENTA',payload:{
+    codigo:codigo,nombre:nombre,descripcion:descripcion,categoria:categoria,
+    marca:document.getElementById('nhMarca').value.trim(),
+    modelo:document.getElementById('nhModelo').value.trim(),
+    valor:document.getElementById('nhValor').value||0,
+    notas:document.getElementById('nhNotas').value.trim(),
+    registrado_por:session.nombre
+  }}).then(function(){
+    alert('Herramienta registrada correctamente.');
+    btn.disabled=false;btn.textContent='Registrar herramienta';
+    ['nhCodigo','nhNombre','nhDescripcion','nhMarca','nhModelo','nhValor','nhNotas'].forEach(function(id){document.getElementById(id).value='';});
+    document.getElementById('nhCategoria').value='';
+    volverAHerramientas();cargarInventario();
+  }).catch(function(){alert('Error al registrar.');btn.disabled=false;btn.textContent='Registrar herramienta';});
+}
+
+function darDeBaja(id,codigo){
+  if(!confirm('Dar de baja la herramienta '+codigo+'? Esta accion marca la herramienta como fuera de inventario.'))return;
+  post(WEBHOOK_HERR,{action:'BAJA_HERRAMIENTA',payload:{herramienta_id:id,registrado_por:session.nombre}})
+  .then(function(){alert('Herramienta dada de baja.');cargarInventario();})
+  .catch(function(){alert('Error al dar de baja.');});
+}
 </script>
 
 <div id="screenSolMedico" style="display:none">
