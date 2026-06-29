@@ -496,9 +496,43 @@ function launchDashboard(){
 
 function cargarDashboard(){
   fetch(WEBHOOK_DASH,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_DASHBOARD',tecnico:session.nombre})})
-  .then(function(r){return r.json();})
-  .then(function(data){
-    renderDashboard(data);
+  .then(function(r){return r.text();})
+  .then(function(txt){
+    // Normalizar el JSON que devuelve Make.com en distintos formatos
+    var data={};
+    try{data=JSON.parse(txt);}catch(e){return;}
+    
+    // Extraer otsActivas — puede ser array, objeto con datos string, o directo
+    var ots=[];
+    var herrs=[];
+    
+    if(Array.isArray(data.otsActivas)){
+      ots=data.otsActivas;
+    } else if(data.otsActivas&&data.otsActivas.datos){
+      try{
+        var d=JSON.parse(data.otsActivas.datos);
+        ots=Array.isArray(d)?d:[d];
+      }catch(e){ots=[];}
+    } else if(data.otsActivas&&typeof data.otsActivas==='object'){
+      ots=[data.otsActivas];
+    }
+    
+    if(Array.isArray(data.herramientas)){
+      herrs=data.herramientas;
+    } else if(data.herramientas&&data.herramientas.datos){
+      try{
+        var d2=JSON.parse(data.herramientas.datos);
+        herrs=Array.isArray(d2)?d2:[d2];
+      }catch(e){herrs=[];}
+    } else if(data.herramientas&&typeof data.herramientas==='object'){
+      herrs=[data.herramientas];
+    }
+    
+    // Normalizar estructura — cada item puede tener fields directo o anidado
+    ots=ots.map(function(o){return o.fields?o:{fields:o};});
+    herrs=herrs.map(function(h){return h.fields?h:{fields:h};});
+    
+    renderDashboard({otsActivas:ots,herramientas:herrs});
   })
   .catch(function(){
     document.getElementById('dashMsgTxt').textContent='Bienvenido, '+session.nombre+'. Selecciona una OT para hacer tu informe.';
