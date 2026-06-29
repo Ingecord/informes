@@ -408,7 +408,7 @@ var WEBHOOK_HERR='https://hook.us2.make.com/TU_WEBHOOK_HERRAMIENTAS';
 var CONSULTA_URL='https://hook.us2.make.com/apdlfnasi6d3hxdgj4f3l4wyr6lndip4';
 var PA_URL='https://hook.us2.make.com/7ewyz9o2o108solu40zj6ovlz2pvjduq';
 
-var session={nombre:null,rol:null};
+var session={nombre:null,rol:null,id:null};
 var pinBuffer='';
 var otsCache=[];
 var equiposCache=[];
@@ -459,13 +459,20 @@ function validatePin(){
   var errEl=document.getElementById('pinError');
   errEl.textContent='Verificando...';errEl.style.display='block';
   fetch(WEBHOOK_AUTH,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'VALIDATE_PIN',payload:{pin:pin}})})
-  .then(function(r){return r.json();})
-  .then(function(data){
+  .then(function(r){return r.text();})
+  .then(function(txt){
+    var data=null;
+    try{data=JSON.parse(txt);}catch(e){data=null;}
     if(data&&data.valido){
-      session.nombre=data.nombre;session.rol=data.rol;
+      session.nombre=data.nombre;
+      session.rol=data.rol;
+      session.id=data.id||null;
       errEl.style.display='none';
       routeByRole();
-    }else{pinBuffer='';updateDots();errEl.textContent='PIN incorrecto. Intenta de nuevo.';}
+    }else{
+      pinBuffer='';updateDots();
+      errEl.textContent='PIN incorrecto. Intenta de nuevo.';
+    }
   })
   .catch(function(){pinBuffer='';updateDots();errEl.textContent='Error de conexion. Intenta de nuevo.';});
 }
@@ -508,29 +515,25 @@ function cargarDashboard(){
     
     if(Array.isArray(data.otsActivas)){
       ots=data.otsActivas;
-    } else if(data.otsActivas&&data.otsActivas.datos){
-      try{
-        var d=JSON.parse(data.otsActivas.datos);
-        ots=Array.isArray(d)?d:[d];
-      }catch(e){ots=[];}
     } else if(data.otsActivas&&typeof data.otsActivas==='object'){
       ots=[data.otsActivas];
     }
     
     if(Array.isArray(data.herramientas)){
       herrs=data.herramientas;
-    } else if(data.herramientas&&data.herramientas.datos){
-      try{
-        var d2=JSON.parse(data.herramientas.datos);
-        herrs=Array.isArray(d2)?d2:[d2];
-      }catch(e){herrs=[];}
     } else if(data.herramientas&&typeof data.herramientas==='object'){
       herrs=[data.herramientas];
     }
     
-    // Normalizar estructura — cada item puede tener fields directo o anidado
-    ots=ots.map(function(o){return o.fields?o:{fields:o};});
-    herrs=herrs.map(function(h){return h.fields?h:{fields:h};});
+    // Normalizar estructura — Make.com devuelve campos planos sin wrapper fields
+    ots=ots.map(function(o){
+      if(o.fields) return o;
+      return {fields:o};
+    });
+    herrs=herrs.map(function(h){
+      if(h.fields) return h;
+      return {fields:h};
+    });
     
     renderDashboard({otsActivas:ots,herramientas:herrs});
   })
@@ -549,22 +552,65 @@ function renderDashboard(data){
   var anio=new Date().getFullYear();
   var nombre=session.nombre;
 
-  // Filtrar OTs del tecnico este mes
+  // Detectar ID del tecnico desde session o auto-detectar desde las OTs
+  var tecnicoId=session.id||null;
+
+  // Si no tenemos ID, detectarlo desde las OTs usando el nombre de session
+  // El nombre en session puede ser "Tecnico 2 - Jorge Gondola" 
+  // Buscamos la primera OT que tenga Ultimo_Tecnico_Notificado igual al nombre
+  if(!tecnicoId && ots.length > 0){
+    for(var i=0;i<ots.length;i++){
+      var f0=ots[i].fields||ots[i];
+      if(f0.Ultimo_Tecnico_Notificado&&
+         (f0.Ultimo_Tecnico_Notificado===nombre||
+          nombre.indexOf(f0.Ultimo_Tecnico_Notificado)!==-1||
+          f0.Ultimo_Tecnico_Notificado.indexOf(nombre)!==-1)){
+        tecnicoId=f0.Tecnico_PrincipalLookupId;
+        break;
+      }
+    }
+  }
+
+  // Si aún no hay ID, guardar el ID de la primera OT cuyo tecnico coincida por nombre parcial
+  // Nota: session.nombre puede ser "Tecnico 2 - Jorge Gondola"
+  // Extraemos el nombre real del formato "Tecnico X - NombreReal"
+  var nombreReal=nombre;
+  if(nombre.indexOf(' - ')!==-1){
+    nombreReal=nombre.split(' - ').slice(1).join(' - ');
+  }
+
   var otsTecnico=ots.filter(function(o){
-    var f=o.fields&&o.fields.Fecha_Programada?new Date(o.fields.Fecha_Programada):null;
-    var esTecnico=o.fields&&(o.fields.Tecnico_PrincipalLookupValue===nombre||o.fields.Tecnico_Principal===nombre);
-    return esTecnico&&f&&f.getMonth()===mes&&f.getFullYear()===anio;
+    var fields=o.fields||o;
+    var esTecnico=false;
+    if(tecnicoId){
+      esTecnico=String(fields.Tecnico_PrincipalLookupId)===String(tecnicoId);
+    }
+    // Fallback: mostrar todas las OTs del mes si no hay ID
+    if(!tecnicoId) esTecnico=true;
+    // Filtrar por mes
+    var fechaStr=fields.Fecha_Creacion||fields.Created||null;
+    var f=fechaStr?new Date(fechaStr):null;
+    var enMes=f&&f.getMonth()===mes&&f.getFullYear()===anio;
+    return esTecnico&&enMes;
   });
 
-  // OTs completadas (Informes_Completos = true)
+  // OTs completadas
   var otsComp=otsTecnico.filter(function(o){
-    return o.fields&&(o.fields.Informes_Completos===true||o.fields.Informes_Completos==='true');
+    var fields=o.fields||o;
+    return fields.Informes_Completos===true||fields.Informes_Completos==='true';
   });
 
   // Herramientas del tecnico
   var herrTecnico=herrs.filter(function(h){
-    return h.fields&&(h.fields.Abierto===true||h.fields.Abierto==='true')&&
-      (h.fields.ResponsableLookupValue===nombre||h.fields.Responsable===nombre);
+    var fields=h.fields||h;
+    var abierto=fields.Abierto===true||fields.Abierto==='true'||fields.Abierto===1;
+    var esTecnico=false;
+    if(session.id){
+      esTecnico=String(fields.ResponsableLookupId)===String(session.id)||
+                String(fields.Tecnico_PrincipalLookupId)===String(session.id);
+    }
+    esTecnico=esTecnico||(fields.ResponsableLookupValue===nombre||fields.Responsable===nombre);
+    return abierto&&esTecnico;
   });
 
   // KPIs
@@ -593,11 +639,12 @@ function renderDashboard(data){
   }else{
     var html='';
     otsTecnico.forEach(function(o){
-      var comp=o.fields&&(o.fields.Informes_Completos===true||o.fields.Informes_Completos==='true');
+      var f=o.fields||o;
+      var comp=f.Informes_Completos===true||f.Informes_Completos==='true';
       var badge=comp?'<span class="badge badge-green">Completada</span>':'<span class="badge badge-amber">Pendiente</span>';
-      var titulo=o.fields?o.fields.Title||'-':'-';
-      var cliente=o.fields?o.fields.ClienteLookupValue||'':'';
-      var sucursal=o.fields?o.fields.SucursalLookupValue||'':'';
+      var titulo=f.Title||'-';
+      var cliente=f.ClienteLookupValue||f.Cliente||'';
+      var sucursal=f.SucursalLookupValue||f.Sucursal||'';
       html+='<div class="ot-item"><div><div class="ot-name">'+titulo+'</div><div class="ot-sub">'+cliente+(sucursal?' - '+sucursal:'')+'</div></div>'+badge+'</div>';
     });
     divOTs.innerHTML=html;
