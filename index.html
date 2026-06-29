@@ -394,7 +394,7 @@ textarea{min-height:90px;resize:vertical}
 </div>
 
 <div id="screenDX">
-  <div class="inf-top-bar"><div class="brand">Ingecord</div><h1 id="dxTitle">Informe DX</h1><div class="subtitle" id="dxSub">-</div></div>
+  <div class="inf-top-bar" style="display:flex;align-items:center;justify-content:space-between"><div><div class="brand">Ingecord</div><h1 id="dxTitle">Informe DX</h1><div class="subtitle" id="dxSub">-</div></div><button onclick="volverAlOrigen()" style="background:rgba(255,255,255,0.15);border:none;color:white;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit">&#8592; Volver</button></div>
   <div class="container">
     <div class="info-card"><div class="badge-source">Datos cargados desde OT</div><div class="info-row"><span class="info-lbl">OT</span><span class="info-val" id="dxOT">-</span></div><div class="info-row"><span class="info-lbl">Cliente</span><span class="info-val" id="dxCliente">-</span></div><div class="info-row"><span class="info-lbl">Sucursal</span><span class="info-val" id="dxSucursal">-</span></div><div class="info-row"><span class="info-lbl">Equipo</span><span class="info-val" id="dxEquipo">-</span></div><div class="info-row"><span class="info-lbl">Ubicacion</span><span class="info-val" id="dxUbicacion">-</span></div><div class="info-row"><span class="info-lbl">Marca/Modelo</span><span class="info-val" id="dxMarca">-</span></div><div class="info-row"><span class="info-lbl">Refrigerante</span><span class="info-val" id="dxRef">-</span></div><div class="info-row" style="border-bottom:none"><span class="info-lbl">Tecnico</span><span class="info-val" id="dxTecnico">-</span></div></div>
     <div class="section"><div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>Tipo de mantenimiento <span class="required-star">*</span></div><div class="tipo-group"><button class="tipo-btn" id="dxBtnPrev" onclick="dxSetTipo('Preventivo')">Preventivo</button><button class="tipo-btn" id="dxBtnCorr" onclick="dxSetTipo('Correctivo')">Correctivo</button><button class="tipo-btn" id="dxBtnInsp" onclick="dxSetTipo('Inspeccion')">Inspeccion</button></div></div>
@@ -426,7 +426,7 @@ textarea{min-height:90px;resize:vertical}
 </div>
 
 <div id="screenVRF">
-  <div class="inf-top-bar"><div class="brand">Ingecord</div><h1>Informe VRF</h1><div class="subtitle" id="vrfSub">-</div></div>
+  <div class="inf-top-bar" style="display:flex;align-items:center;justify-content:space-between"><div><div class="brand">Ingecord</div><h1>Informe VRF</h1><div class="subtitle" id="vrfSub">-</div></div><button onclick="volverAlOrigen()" style="background:rgba(255,255,255,0.15);border:none;color:white;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit">&#8592; Volver</button></div>
   <div class="container">
     <div class="info-card"><div class="badge-source">Datos cargados desde OT</div><div class="info-row"><span class="info-lbl">OT</span><span class="info-val" id="vrfOT">-</span></div><div class="info-row"><span class="info-lbl">Cliente</span><span class="info-val" id="vrfCliente">-</span></div><div class="info-row"><span class="info-lbl">Sucursal</span><span class="info-val" id="vrfSucursal">-</span></div><div class="info-row"><span class="info-lbl">Sistema</span><span class="info-val" id="vrfSistema">-</span></div><div class="info-row"><span class="info-lbl">Refrigerante</span><span class="info-val" id="vrfRef">-</span></div><div class="info-row" style="border-bottom:none"><span class="info-lbl">Tecnico</span><span class="info-val" id="vrfTecnico">-</span></div></div>
     <div class="section"><div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>Tipo <span class="required-star">*</span></div><div class="tipo-group"><button class="tipo-btn" id="vrfBtnPrev" onclick="vrfSetTipo('Preventivo')">Preventivo</button><button class="tipo-btn" id="vrfBtnCorr" onclick="vrfSetTipo('Correctivo')">Correctivo</button><button class="tipo-btn" id="vrfBtnInsp" onclick="vrfSetTipo('Inspeccion')">Inspeccion</button></div></div>
@@ -443,7 +443,7 @@ textarea{min-height:90px;resize:vertical}
 </div>
 
 <div id="screenSG">
-  <div class="inf-top-bar"><div class="brand">Ingecord</div><h1>Servicio General</h1><div class="subtitle" id="sgSub">-</div></div>
+  <div class="inf-top-bar" style="display:flex;align-items:center;justify-content:space-between"><div><div class="brand">Ingecord</div><h1>Servicio General</h1><div class="subtitle" id="sgSub">-</div></div><button onclick="volverAlOrigen()" style="background:rgba(255,255,255,0.15);border:none;color:white;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit">&#8592; Volver</button></div>
   <div class="container">
     <div class="info-card"><div class="badge-source">Datos cargados desde OT</div><div class="info-row"><span class="info-lbl">OT</span><span class="info-val" id="sgOT">-</span></div><div class="info-row"><span class="info-lbl">Cliente</span><span class="info-val" id="sgCliente">-</span></div><div class="info-row"><span class="info-lbl">Sucursal</span><span class="info-val" id="sgSucursal">-</span></div><div class="info-row" style="border-bottom:none"><span class="info-lbl">Tecnico</span><span class="info-val" id="sgTecnico">-</span></div></div>
     <div class="section"><div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>Tipo de trabajo <span class="required-star">*</span></div><div class="tipo-group" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button class="tipo-btn" id="sgBtnRep" onclick="sgSetTipo('Reparacion civil')">Reparacion civil</button><button class="tipo-btn" id="sgBtnLim" onclick="sgSetTipo('Limpieza general')">Limpieza general</button><button class="tipo-btn" id="sgBtnDre" onclick="sgSetTipo('Drenaje')">Drenaje</button><button class="tipo-btn" id="sgBtnDuc" onclick="sgSetTipo('Ductos')">Ductos</button><button class="tipo-btn" id="sgBtnSop" onclick="sgSetTipo('Instalacion soporte')">Instalacion soporte</button><button class="tipo-btn" id="sgBtnOtro" onclick="sgSetTipo('Otro')">Otro</button></div></div>
@@ -1090,7 +1090,7 @@ function enviarSG(){
   getFotos('sg').then(function(fd){p.fotosArray=fd;return fetch(PA_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});}).then(function(){btn.textContent='Informe enviado';btn.style.background='var(--teal-mid)';setTimeout(function(){volverAlOrigen();},2500);}).catch(function(){btn.textContent='Informe enviado';btn.style.background='var(--teal-mid)';setTimeout(function(){volverAlOrigen();},2500);});
 }
 
-var PA_SOLICITUDES='https://hook.us2.make.com/TU_WEBHOOK_SOLICITUDES';
+var PA_SOLICITUDES='https://defaulteb43a9912a5742808a56db939741fe.ce.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/addc3753489542bfbf94282fdcb03ce4/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=ZVeDYjVerXCuJH8fckLFuTiX02z6nxOqxTyKsG_RuY4';
 
 function abrirSolicitud(tipo){
   var pantallas={
@@ -1121,12 +1121,19 @@ function enviarSolicitud(tipo,datos){
   });
 }
 
+var solMedicoTipo=null;
+function solMedicoSetTipo(t){
+  solMedicoTipo=t;
+  document.getElementById('solMedicoTipoMed').classList.toggle('active',t==='Permiso medico');
+  document.getElementById('solMedicoTipoPer').classList.toggle('active',t==='Permiso personal');
+}
 function submitSolMedico(){
+  if(!solMedicoTipo){alert('Selecciona el tipo de permiso.');return;}
   var fecha=document.getElementById('solMedicoFecha').value;
   var hora=document.getElementById('solMedicoHora').value;
   var motivo=document.getElementById('solMedicoMotivo').value;
   if(!fecha||!motivo.trim()){alert('Completa todos los campos.');return;}
-  enviarSolicitud('Permiso medico',{fecha_permiso:fecha,hora_estimada:hora,motivo:motivo});
+  enviarSolicitud(solMedicoTipo,{fecha_permiso:fecha,hora_estimada:hora,motivo:motivo});
 }
 
 function submitSolVacaciones(){
@@ -1169,6 +1176,11 @@ function submitSolSugerencia(){
   <div class="container">
     <div class="section" style="margin-top:16px">
       <div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Detalles del permiso</div>
+      <span class="field-label">Tipo de permiso <span class="required-star">*</span></span>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px">
+        <button class="tipo-btn" id="solMedicoTipoMed" onclick="solMedicoSetTipo('Permiso medico')">&#127973; Medico</button>
+        <button class="tipo-btn" id="solMedicoTipoPer" onclick="solMedicoSetTipo('Permiso personal')">&#128100; Personal</button>
+      </div>
       <span class="field-label">Fecha del permiso <span class="required-star">*</span></span>
       <input type="date" id="solMedicoFecha">
       <span class="field-label">Hora estimada de salida</span>
