@@ -442,7 +442,13 @@ function goToPin(){showOnly('screenPin');pinBuffer='';updateDots();document.getE
 function backToLobby(){showOnly('screenLobby');}
 function fullLogout(){session={nombre:null,rol:null};pinBuffer='';showOnly('screenLobby');}
 function volverAModulos(){showOnly('screenModulos');}
-function volverAlOrigen(){if(origenDashboard==='tecnico') showOnly('screenDashboard'); else showOnly('screenModulos');}
+function volverAlOrigen(){
+  if(origenDashboard==='tecnico'){
+    showOnly('screenSeleccion');
+  } else {
+    showOnly('screenModulos');
+  }
+}
 
 function pinKey(k){if(pinBuffer.length>=4) return;pinBuffer+=k;updateDots();if(pinBuffer.length===4) setTimeout(validatePin,120);}
 function pinDel(){pinBuffer=pinBuffer.slice(0,-1);updateDots();document.getElementById('pinError').style.display='none';}
