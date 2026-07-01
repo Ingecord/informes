@@ -915,24 +915,39 @@ function doCheckout(){
   if(sel.options[sel.selectedIndex]) codigo=sel.options[sel.selectedIndex].getAttribute('data-codigo')||'';
   var selOTco=document.getElementById('coOT');
   var otTitulo=selOTco.value||'';
+  var otId=selOTco.options[selOTco.selectedIndex]?selOTco.options[selOTco.selectedIndex].getAttribute('data-id')||'':'';
   var herrNombre=sel.options[sel.selectedIndex]?sel.options[sel.selectedIndex].textContent.split(' - ').slice(1).join(' - ')||resp:'';
-  var body={action:'CHECKOUT',payload:{herramienta_id:sel.value,codigo:codigo,nombre:herrNombre,responsable:resp,responsable_id:respId,cliente:document.getElementById('coCliente').value.trim(),sucursal:document.getElementById('coSucursal').value.trim(),ot:otTitulo,registrado_por:session.nombre}};
+  var body={action:'CHECKOUT',payload:{herramienta_id:sel.value,codigo:codigo,nombre:herrNombre,responsable:resp,responsable_id:respId,ot:otTitulo,ot_id:otId,registrado_por:session.nombre}};
   post(WEBHOOK_HERR,body).then(function(){alert('Checkout registrado.');limpiarCheckout();cargarInventario();cargarMovimientosAbiertos();}).catch(function(){alert('Error al registrar.');}).finally(function(){btn.disabled=false;btn.textContent='Registrar salida';});
 }
 
 function cargarMovimientosAbiertos(){
   post(WEBHOOK_HERR,{action:'GET_HISTORIAL'}).then(function(data){
-    movimientosCache=(data.movimientos||[]).filter(function(m){return m.Abierto===true||m.Abierto==='true'||m.Abierto===1;});
-    var sel=document.getElementById('devMovimiento');sel.innerHTML='<option value="">Seleccionar herramienta en campo...</option>';
-    movimientosCache.forEach(function(m){var opt=document.createElement('option');opt.value=m.ID;opt.setAttribute('data-hid',m.HerramientaID||'');opt.textContent=(m.CodigoHerramienta||'-')+' - '+(m.Responsable||'')+' ('+(m.Cliente||'')+')';sel.appendChild(opt);});
+    function toArrM(val){if(!val)return[];if(Array.isArray(val))return val;if(typeof val==='object')return[val];return[];}
+    function flatM(arr){return arr.map(function(o){return(o&&o.fields)?o.fields:o;});}
+    var todosM=flatM(toArrM(data.movimientos||data));
+    movimientosCache=todosM.filter(function(m){
+      return (m.Tipo==='Salida'||!m.Tipo)&&(!m.Fecha_Entrada||m.Fecha_Entrada==='');
+    });
+    var sel=document.getElementById('devMovimiento');
+    sel.innerHTML='<option value="">Seleccionar herramienta en campo...</option>';
+    movimientosCache.forEach(function(m){
+      var opt=document.createElement('option');
+      opt.value=m.id||m.ID||'';
+      opt.setAttribute('data-hid',m.HerramientaLookupId||m.HerramientaID||'');
+      var codigo=m.CodigoHerramienta||'-';
+      var cliente=m.Cliente||'';
+      opt.textContent=codigo+(cliente?' - '+cliente:'');
+      sel.appendChild(opt);
+    });
   }).catch(function(){});
 }
 
 function doDevolucion(){
   var sel=document.getElementById('devMovimiento');if(!sel.value){alert('Selecciona un movimiento abierto.');return;}
-  var m=null;for(var i=0;i<movimientosCache.length;i++){if(String(movimientosCache[i].ID)===String(sel.value)){m=movimientosCache[i];break;}}
+  var m=null;for(var i=0;i<movimientosCache.length;i++){if(String(movimientosCache[i].id||movimientosCache[i].ID)===String(sel.value)){m=movimientosCache[i];break;}}
   var btn=document.getElementById('btnDevolver');btn.disabled=true;btn.textContent='Guardando...';
-  post(WEBHOOK_HERR,{action:'RETURN',payload:{movimiento_id:sel.value,herramienta_id:m?m.HerramientaID||'':'',estado_entrada:document.getElementById('devEstado').value,fecha_entrada:document.getElementById('devFecha').value,observaciones_entrada:document.getElementById('devObs').value.trim(),registrado_por:session.nombre}})
+  post(WEBHOOK_HERR,{action:'RETURN',payload:{movimiento_id:sel.value,herramienta_id:m?m.HerramientaLookupId||m.HerramientaID||'':'',estado_entrada:document.getElementById('devEstado').value,fecha_entrada:document.getElementById('devFecha').value,observaciones_entrada:document.getElementById('devObs').value.trim(),registrado_por:session.nombre}})
   .then(function(){alert('Devolucion registrada.');document.getElementById('devObs').value='';cargarInventario();cargarMovimientosAbiertos();})
   .catch(function(){alert('Error al registrar.');})
   .finally(function(){btn.disabled=false;btn.textContent='Confirmar devolucion';});
@@ -1364,21 +1379,13 @@ function cargarOTsPorTecnico(tecnicoId){
     activas.forEach(function(o){
       var opt=document.createElement('option');
       var titulo=o.fields?o.fields.Title||'':o.Title||'';
-      var cliente=o.fields?o.fields.ClienteLookupValue||o.fields.Cliente||'':'';
-      var sucursal=o.fields?o.fields.SucursalLookupValue||o.fields.Sucursal||'':'';
+      var otId=o.fields?o.fields.id||o.fields.ID||'':o.id||'';
       opt.value=titulo;
-      opt.textContent=titulo+(cliente?' — '+cliente:'');
-      opt.setAttribute('data-cliente',cliente);
-      opt.setAttribute('data-sucursal',sucursal);
+      opt.setAttribute('data-id',otId);
+      opt.textContent=titulo;
       selOT.appendChild(opt);
     });
-    selOT.onchange=function(){
-      var chosen=selOT.options[selOT.selectedIndex];
-      if(chosen){
-        document.getElementById('coCliente').value=chosen.getAttribute('data-cliente')||'';
-        document.getElementById('coSucursal').value=chosen.getAttribute('data-sucursal')||'';
-      }
-    };
+    selOT.onchange=function(){};
   })
   .catch(function(){selOT.innerHTML='<option value="">Error al cargar OTs</option>';});
 }
