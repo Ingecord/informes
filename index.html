@@ -371,7 +371,7 @@ textarea{min-height:90px;resize:vertical}
   </div>
   <div id="hPanelHistorial" class="module-content module-panel">
     <input class="search-input" id="hSearchHist" placeholder="Buscar por herramienta, tecnico o cliente..." oninput="filtrarHistorial()">
-    <div class="data-table-wrap"><table class="data-table"><thead><tr><th>Codigo</th><th>Herramienta</th><th>Responsable</th><th>Cliente</th><th>Salida</th><th>Estado</th></tr></thead><tbody id="hTablaHistorial"><tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text-muted)">Cargando historial...</td></tr></tbody></table></div>
+    <div class="data-table-wrap"><table class="data-table"><thead><tr><th>Codigo</th><th>Responsable</th><th>Cliente</th><th>Fecha Salida</th><th>Fecha Entrada</th><th>Estado</th></tr></thead><tbody id="hTablaHistorial"><tr><td colspan="6" style="text-align:center;padding:24px;color:var(--text-muted)">Cargando historial...</td></tr></tbody></table></div>
   </div>
 </div>
 
@@ -979,8 +979,10 @@ function cargarHistorial(){
     var html='';
     for(var i=0;i<list.length;i++){
       var m=list[i];
-      var est=m.Abierto?'<span class="badge badge-amber">Abierto</span>':'<span class="badge badge-green">Cerrado</span>';
-      html+='<tr><td>'+(m.CodigoHerramienta||m.Title||'-')+'</td><td>'+(m.Herramienta||m.HerramientaLookupValue||'-')+'</td><td>'+(m.Responsable||'-')+'</td><td>'+(m.Cliente||'-')+'</td><td>'+fmt(m.FechaMovimiento||m.Created||'')+'</td><td>'+est+'</td></tr>';
+      var abierto=m.Abierto===true||m.Abierto==='true'||m.Abierto===1;
+      var est=abierto?'<span class="badge badge-amber">Abierto</span>':'<span class="badge badge-green">Cerrado</span>';
+      var fechaEntrada=m.Fecha_Entrada?fmt(m.Fecha_Entrada):'<span style="color:var(--text-muted)">-</span>';
+      html+='<tr><td>'+(m.CodigoHerramienta||m.Title||'-')+'</td><td>'+(m.ResponsableLookupId||'-')+'</td><td>'+(m.Cliente||'-')+'</td><td>'+fmt(m.FechaMovimiento||m.Created||'')+'</td><td>'+fechaEntrada+'</td><td>'+est+'</td></tr>';
     }
     tbody.innerHTML=html;
   })
