@@ -936,7 +936,7 @@ function cargarMovimientosAbiertos(){
       return o;
     });
     movimientosCache=todosM.filter(function(m){
-      return (m.Tipo==='Salida'||!m.Tipo)&&(!m.Fecha_Entrada||m.Fecha_Entrada==='');
+      return m.Abierto===true||m.Abierto==='true'||m.Abierto===1;
     });
     var sel=document.getElementById('devMovimiento');
     sel.innerHTML='<option value="">Seleccionar herramienta en campo...</option>';
