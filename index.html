@@ -922,7 +922,12 @@ function doCheckout(){
 }
 
 function cargarMovimientosAbiertos(){
-  post(WEBHOOK_HERR,{action:'GET_HISTORIAL'}).then(function(data){
+  fetch(WEBHOOK_HERR,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_HISTORIAL'})})
+  .then(function(r){return r.text();})
+  .then(function(txt){
+    var fixed=txt.split('}}, {').join('}, {').split('}},\n{').join('},\n{');
+    var data={};
+    try{data=JSON.parse(fixed);}catch(e){try{data=JSON.parse(txt);}catch(e2){return;}}
     function toArrM(val){if(!val)return[];if(Array.isArray(val))return val;if(typeof val==='object')return[val];return[];}
     function flatM(arr){return arr.map(function(o){return(o&&o.fields)?o.fields:o;});}
     var todosM=flatM(toArrM(data.movimientos||data));
@@ -940,7 +945,8 @@ function cargarMovimientosAbiertos(){
       opt.textContent=codigo+(cliente?' - '+cliente:'');
       sel.appendChild(opt);
     });
-  }).catch(function(){});
+  })
+  .catch(function(){});
 }
 
 function doDevolucion(){
