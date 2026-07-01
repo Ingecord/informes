@@ -925,12 +925,23 @@ function cargarMovimientosAbiertos(){
   fetch(WEBHOOK_HERR,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_HISTORIAL'})})
   .then(function(r){return r.text();})
   .then(function(txt){
-    var fixed=txt.split('}}, {').join('}, {').split('}},\n{').join('},\n{');
-    var data={};
-    try{data=JSON.parse(fixed);}catch(e){try{data=JSON.parse(txt);}catch(e2){return;}}
-    function toArrM(val){if(!val)return[];if(Array.isArray(val))return val;if(typeof val==='object')return[val];return[];}
-    function flatM(arr){return arr.map(function(o){return(o&&o.fields)?o.fields:o;});}
-    var todosM=flatM(toArrM(data.movimientos||data));
+    // Make.com devuelve multiples objetos separados por }}, {
+    // Extraemos cada objeto individualmente
+    var movArr=[];
+    try{
+      // Intentar parsear directo
+      var fixed=txt.replace(/\}\},\s*\{/g,'},{').replace(/__IMTLENGTH__":\d+/g,'');
+      var data=JSON.parse(fixed);
+      if(Array.isArray(data.movimientos)) movArr=data.movimientos;
+      else if(data.movimientos&&typeof data.movimientos==='object') movArr=[data.movimientos];
+      else movArr=[];
+    }catch(e){
+      // Extraer objetos individuales con regex
+      var matches=txt.match(/\{"id":"[^"]+","fields":\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}/g)||[];
+      movArr=matches.map(function(s){try{return JSON.parse(s);}catch(e){return null;}}).filter(Boolean);
+    }
+    function flatM(arr){return arr.map(function(o){return(o&&o.fields)?Object.assign({id:o.id},o.fields):o;});}
+    var todosM=flatM(movArr);
     movimientosCache=todosM.filter(function(m){
       return (m.Tipo==='Salida'||!m.Tipo)&&(!m.Fecha_Entrada||m.Fecha_Entrada==='');
     });
