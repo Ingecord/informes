@@ -347,11 +347,11 @@ textarea{min-height:90px;resize:vertical}
       <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:16px">Registrar salida de herramienta</div>
       <div class="form-grid">
         <div class="form-group full"><label class="form-label">Herramienta <span class="required-star">*</span></label><select class="form-input" id="coHerramienta"><option value="">Seleccionar herramienta disponible...</option></select></div>
-        <div class="form-group"><label class="form-label">Responsable <span class="required-star">*</span></label><input class="form-input" id="coResponsable" placeholder="Nombre del tecnico"></div>
+        <div class="form-group"><label class="form-label">Responsable <span class="required-star">*</span></label><select class="form-input" id="coResponsable"><option value="">Selecciona el responsable...</option></select></div>
         <div class="form-group"><label class="form-label">Estado de salida</label><select class="form-input" id="coEstado"><option value="Bueno">Bueno</option><option value="Regular">Regular</option><option value="Con observaciones">Con observaciones</option></select></div>
-        <div class="form-group"><label class="form-label">Cliente</label><input class="form-input" id="coCliente" placeholder="Nombre del cliente"></div>
-        <div class="form-group"><label class="form-label">Sucursal / Sitio</label><input class="form-input" id="coSucursal" placeholder="Ej. Puma Rodman"></div>
-        <div class="form-group"><label class="form-label">OT (opcional)</label><input class="form-input" id="coOT" placeholder="OT-2026-0892"></div>
+        <div class="form-group"><label class="form-label">Cliente</label><input class="form-input" id="coCliente" placeholder="Se llena automaticamente" readonly style="background:var(--surface);color:var(--text-muted)"></div>
+        <div class="form-group"><label class="form-label">Sucursal / Sitio</label><input class="form-input" id="coSucursal" placeholder="Se llena automaticamente" readonly style="background:var(--surface);color:var(--text-muted)"></div>
+        <div class="form-group full"><label class="form-label">OT (opcional)</label><select class="form-input" id="coOT"><option value="">Cargando OTs...</option></select></div>
         <div class="form-group full"><label class="form-label">Observaciones de salida</label><textarea class="form-input" id="coObs" placeholder="Condicion, accesorios incluidos, etc."></textarea></div>
       </div>
       <div class="form-actions"><button class="btn" onclick="limpiarCheckout()">Limpiar</button><button class="btn primary" id="btnCheckout" onclick="doCheckout()">Registrar salida</button></div>
@@ -764,7 +764,13 @@ function launchModulos(){
   document.getElementById('modRol').textContent=session.rol;
 }
 
-function abrirHerramientas(){showOnly('screenHerramientas');cargarInventario();cargarMovimientosAbiertos();var d=new Date();document.getElementById('devFecha').value=d.toISOString().split('T')[0];}
+function abrirHerramientas(){
+  showOnly('screenHerramientas');
+  cargarInventario();
+  cargarMovimientosAbiertos();
+  cargarTecnicosCheckout();
+  var d=new Date();document.getElementById('devFecha').value=d.toISOString().split('T')[0];
+}
 function abrirInformes(){origenDashboard='operativo';showOnly('screenSeleccion');cargarOTs();}
 function irASeleccion(){origenDashboard='tecnico';showOnly('screenSeleccion');cargarOTs();}
 
@@ -773,6 +779,8 @@ function switchHTab(el,panelId){
   document.querySelectorAll('.module-panel').forEach(function(p){p.classList.remove('active');});
   el.classList.add('active');document.getElementById(panelId).classList.add('active');
   if(panelId==='hPanelHistorial') cargarHistorial();
+  if(panelId==='hPanelCheckout') cargarOTsCheckout();
+  if(panelId==='hPanelDevolucion') cargarMovimientosAbiertos();
 }
 
 function gv(id){var e=document.getElementById(id);return e?e.value||null:null;}
@@ -897,13 +905,18 @@ function limpiarCheckout(){['coHerramienta','coResponsable','coCliente','coSucur
 function doCheckout(){
   var sel=document.getElementById('coHerramienta');
   if(!sel.value){alert('Selecciona una herramienta.');return;}
-  var resp=document.getElementById('coResponsable').value.trim();
-  if(!resp){alert('Ingresa el responsable.');return;}
+  var selResp=document.getElementById('coResponsable');
+  var resp=selResp.value;
+  var respId=selResp.options[selResp.selectedIndex]?selResp.options[selResp.selectedIndex].getAttribute('data-id')||'':'';
+  if(!resp){alert('Selecciona el responsable.');return;}
   var btn=document.getElementById('btnCheckout');
   btn.disabled=true;btn.textContent='Guardando...';
   var codigo='';
   if(sel.options[sel.selectedIndex]) codigo=sel.options[sel.selectedIndex].getAttribute('data-codigo')||'';
-  var body={action:'CHECKOUT',payload:{herramienta_id:sel.value,codigo:codigo,responsable:resp,cliente:document.getElementById('coCliente').value.trim(),sucursal:document.getElementById('coSucursal').value.trim(),ot:document.getElementById('coOT').value.trim(),estado_salida:document.getElementById('coEstado').value,observaciones:document.getElementById('coObs').value.trim(),registrado_por:session.nombre}};
+  var selOTco=document.getElementById('coOT');
+  var otTitulo=selOTco.value||'';
+  var herrNombre=sel.options[sel.selectedIndex]?sel.options[sel.selectedIndex].textContent.split(' - ').slice(1).join(' - ')||resp:'';
+  var body={action:'CHECKOUT',payload:{herramienta_id:sel.value,codigo:codigo,nombre:herrNombre,responsable:resp,responsable_id:respId,cliente:document.getElementById('coCliente').value.trim(),sucursal:document.getElementById('coSucursal').value.trim(),ot:otTitulo,registrado_por:session.nombre}};
   post(WEBHOOK_HERR,body).then(function(){alert('Checkout registrado.');limpiarCheckout();cargarInventario();cargarMovimientosAbiertos();}).catch(function(){alert('Error al registrar.');}).finally(function(){btn.disabled=false;btn.textContent='Registrar salida';});
 }
 
@@ -1251,6 +1264,75 @@ function darDeBaja(id,codigo){
   post(WEBHOOK_HERR,{action:'BAJA_HERRAMIENTA',payload:{herramienta_id:id,registrado_por:session.nombre}})
   .then(function(){alert('Herramienta dada de baja.');cargarInventario();})
   .catch(function(){alert('Error al dar de baja.');});
+}
+
+function cargarOTsCheckout(){
+  var sel=document.getElementById('coOT');
+  sel.innerHTML='<option value="">Cargando OTs...</option>';
+  var estadosActivos=['Abierta','En ejecucion','Pendiente Informe','Pendiente cierre'];
+  fetch(CONSULTA_URL+'?accion=listar_tecnicos')
+  .then(function(r){return r.json();})
+  .then(function(data){
+    var tecnico=null;
+    for(var i=0;i<data.length;i++){
+      if(data[i].fields&&data[i].fields.Title===session.nombre){tecnico=data[i];break;}
+    }
+    var tecnicoId=tecnico?tecnico.fields.id:'';
+    return fetch(CONSULTA_URL+'?accion=listar_ots&tecnicoId='+tecnicoId);
+  })
+  .then(function(r){return r.json();})
+  .then(function(data){
+    var activas=data.filter(function(o){
+      var estado=o.fields?o.fields.Estado_OT||o.fields.Estado||'':'';
+      return estadosActivos.indexOf(estado)!==-1;
+    });
+    sel.innerHTML='<option value="">Selecciona una OT (opcional)</option><option value="">Sin OT</option>';
+    activas.forEach(function(o){
+      var opt=document.createElement('option');
+      var titulo=o.fields?o.fields.Title||'':o.Title||'';
+      var cliente=o.fields?o.fields.ClienteLookupValue||o.fields.Cliente||'':'';
+      var sucursal=o.fields?o.fields.SucursalLookupValue||o.fields.Sucursal||'':'';
+      opt.value=titulo;
+      opt.textContent=titulo+(cliente?' - '+cliente:'');
+      opt.setAttribute('data-cliente',cliente);
+      opt.setAttribute('data-sucursal',sucursal);
+      sel.appendChild(opt);
+    });
+    sel.onchange=function(){
+      var chosen=sel.options[sel.selectedIndex];
+      if(chosen){
+        var cli=chosen.getAttribute('data-cliente')||'';
+        var suc=chosen.getAttribute('data-sucursal')||'';
+        document.getElementById('coCliente').value=cli;
+        document.getElementById('coSucursal').value=suc;
+      }
+    };
+  })
+  .catch(function(){
+    sel.innerHTML='<option value="">Sin OT</option>';
+  });
+}
+
+function cargarTecnicosCheckout(){
+  var sel=document.getElementById('coResponsable');
+  if(!sel) return;
+  fetch(CONSULTA_URL+'?accion=listar_tecnicos')
+  .then(function(r){return r.json();})
+  .then(function(data){
+    sel.innerHTML='<option value="">Selecciona el responsable...</option>';
+    data.forEach(function(t){
+      var opt=document.createElement('option');
+      var nombre=t.fields?t.fields.Title||'':t.Title||'';
+      var id=t.fields?t.fields.id||t.fields.ID||'':t.id||'';
+      opt.value=nombre;
+      opt.setAttribute('data-id',id);
+      opt.textContent=nombre;
+      sel.appendChild(opt);
+    });
+  })
+  .catch(function(){
+    sel.innerHTML='<option value="">Sin datos disponibles</option>';
+  });
 }
 </script>
 
