@@ -1268,32 +1268,40 @@ function darDeBaja(id,codigo){
 
 function cargarOTsCheckout(){
   var sel=document.getElementById('coOT');
+  sel.innerHTML='<option value="">Selecciona primero un tecnico</option>';
+  return; // OTs se cargan al seleccionar tecnico
   sel.innerHTML='<option value="">Cargando OTs...</option>';
   var estadosActivos=['Abierta','En ejecucion','Pendiente Informe','Pendiente cierre'];
-  fetch(CONSULTA_URL+'?accion=listar_tecnicos')
-  .then(function(r){return r.json();})
-  .then(function(data){
-    var tecnico=null;
-    for(var i=0;i<data.length;i++){
-      if(data[i].fields&&data[i].fields.Title===session.nombre){tecnico=data[i];break;}
-    }
-    var tecnicoId=tecnico?tecnico.fields.id:'';
-    return fetch(CONSULTA_URL+'?accion=listar_ots&tecnicoId='+tecnicoId);
-  })
+  var rolesAdmin=['Gerencia','Coordinador','Supervisor','Asistente','Administrativa'];
+  var esAdmin=rolesAdmin.indexOf(session.rol)!==-1;
+  // Para admins cargar todas las OTs, para tecnicos filtrar por su ID
+  var url=esAdmin?CONSULTA_URL+'?accion=listar_ots&tecnicoId=todos':null;
+  var promise=esAdmin?Promise.resolve(url):
+    fetch(CONSULTA_URL+'?accion=listar_tecnicos')
+    .then(function(r){return r.json();})
+    .then(function(data){
+      var tecnico=null;
+      for(var i=0;i<data.length;i++){
+        if(data[i].fields&&data[i].fields.Title===session.nombre){tecnico=data[i];break;}
+      }
+      var tecnicoId=tecnico?tecnico.fields.id||tecnico.fields.ID:'';
+      return CONSULTA_URL+'?accion=listar_ots&tecnicoId='+tecnicoId;
+    });
+  promise.then(function(url){return fetch(url);})
   .then(function(r){return r.json();})
   .then(function(data){
     var activas=data.filter(function(o){
       var estado=o.fields?o.fields.Estado_OT||o.fields.Estado||'':'';
       return estadosActivos.indexOf(estado)!==-1;
     });
-    sel.innerHTML='<option value="">Selecciona una OT (opcional)</option><option value="">Sin OT</option>';
+    sel.innerHTML='<option value="">Sin OT</option>';
     activas.forEach(function(o){
       var opt=document.createElement('option');
       var titulo=o.fields?o.fields.Title||'':o.Title||'';
       var cliente=o.fields?o.fields.ClienteLookupValue||o.fields.Cliente||'':'';
       var sucursal=o.fields?o.fields.SucursalLookupValue||o.fields.Sucursal||'':'';
       opt.value=titulo;
-      opt.textContent=titulo+(cliente?' - '+cliente:'');
+      opt.textContent=titulo+(cliente?' — '+cliente:'');
       opt.setAttribute('data-cliente',cliente);
       opt.setAttribute('data-sucursal',sucursal);
       sel.appendChild(opt);
@@ -1301,16 +1309,12 @@ function cargarOTsCheckout(){
     sel.onchange=function(){
       var chosen=sel.options[sel.selectedIndex];
       if(chosen){
-        var cli=chosen.getAttribute('data-cliente')||'';
-        var suc=chosen.getAttribute('data-sucursal')||'';
-        document.getElementById('coCliente').value=cli;
-        document.getElementById('coSucursal').value=suc;
+        document.getElementById('coCliente').value=chosen.getAttribute('data-cliente')||'';
+        document.getElementById('coSucursal').value=chosen.getAttribute('data-sucursal')||'';
       }
     };
   })
-  .catch(function(){
-    sel.innerHTML='<option value="">Sin OT</option>';
-  });
+  .catch(function(){sel.innerHTML='<option value="">Sin OT</option>';});
 }
 
 function cargarTecnicosCheckout(){
@@ -1329,10 +1333,54 @@ function cargarTecnicosCheckout(){
       opt.textContent=nombre;
       sel.appendChild(opt);
     });
+    // Al seleccionar tecnico, cargar sus OTs
+    sel.onchange=function(){
+      var chosen=sel.options[sel.selectedIndex];
+      var tecnicoId=chosen?chosen.getAttribute('data-id')||'':'';
+      cargarOTsPorTecnico(tecnicoId);
+    };
   })
   .catch(function(){
     sel.innerHTML='<option value="">Sin datos disponibles</option>';
   });
+}
+
+function cargarOTsPorTecnico(tecnicoId){
+  var selOT=document.getElementById('coOT');
+  selOT.innerHTML='<option value="">Cargando OTs...</option>';
+  document.getElementById('coCliente').value='';
+  document.getElementById('coSucursal').value='';
+  if(!tecnicoId){selOT.innerHTML='<option value="">Selecciona primero un tecnico</option>';return;}
+  var estadosActivos=['Abierta','En ejecucion','Pendiente Informe','Pendiente cierre'];
+  fetch(CONSULTA_URL+'?accion=listar_ots&tecnicoId='+tecnicoId)
+  .then(function(r){return r.json();})
+  .then(function(data){
+    var activas=data.filter(function(o){
+      var estado=o.fields?o.fields.Estado_OT||o.fields.Estado||'':'';
+      return estadosActivos.indexOf(estado)!==-1;
+    });
+    selOT.innerHTML='<option value="">Sin OT</option>';
+    if(!activas.length){selOT.innerHTML='<option value="">Sin OTs activas</option>';return;}
+    activas.forEach(function(o){
+      var opt=document.createElement('option');
+      var titulo=o.fields?o.fields.Title||'':o.Title||'';
+      var cliente=o.fields?o.fields.ClienteLookupValue||o.fields.Cliente||'':'';
+      var sucursal=o.fields?o.fields.SucursalLookupValue||o.fields.Sucursal||'':'';
+      opt.value=titulo;
+      opt.textContent=titulo+(cliente?' — '+cliente:'');
+      opt.setAttribute('data-cliente',cliente);
+      opt.setAttribute('data-sucursal',sucursal);
+      selOT.appendChild(opt);
+    });
+    selOT.onchange=function(){
+      var chosen=selOT.options[selOT.selectedIndex];
+      if(chosen){
+        document.getElementById('coCliente').value=chosen.getAttribute('data-cliente')||'';
+        document.getElementById('coSucursal').value=chosen.getAttribute('data-sucursal')||'';
+      }
+    };
+  })
+  .catch(function(){selOT.innerHTML='<option value="">Error al cargar OTs</option>';});
 }
 </script>
 
