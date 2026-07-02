@@ -262,50 +262,11 @@ textarea{min-height:90px;resize:vertical}
   </div>
   <div class="dash-body">
 
-    <div class="dash-section">
-      <div class="dash-section-title">Tablon de anuncios</div>
-      <div style="padding:8px 0;border-bottom:1px solid var(--border-light)">
-        <div style="font-size:13px;color:var(--text)">Reunion de equipo — viernes 4 jul 8am <span style="font-size:9px;background:var(--blue-bg);color:var(--blue-text);padding:2px 7px;border-radius:99px;margin-left:4px;font-weight:600">Nuevo</span></div>
-        <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Publicado 29 jun 2026</div>
-      </div>
-      <div style="padding:8px 0;border-bottom:1px solid var(--border-light)">
-        <div style="font-size:13px;color:var(--text)">Uniformes obligatorios en sitio de cliente <span style="font-size:9px;background:var(--red-bg);color:var(--red-text);padding:2px 7px;border-radius:99px;margin-left:4px;font-weight:600">Importante</span></div>
-        <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Publicado 25 jun 2026</div>
-      </div>
-      <div style="padding:8px 0">
-        <div style="font-size:13px;color:var(--text)">Minimo 3 fotos por equipo atendido en cada informe</div>
-        <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Publicado 20 jun 2026</div>
-      </div>
-    </div>
+
 
     <div class="dash-section">
       <div class="dash-section-title">Accesos rapidos</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-        <button onclick="irASeleccion()" style="background:var(--white);border:1px solid #a8d4b8;border-radius:10px;padding:14px 10px;cursor:pointer;text-align:center;font-family:inherit">
-          <div style="font-size:22px;margin-bottom:6px">&#128203;</div>
-          <div style="font-size:11px;font-weight:600;color:var(--text)">Informe tecnico</div>
-        </button>
-        <button onclick="abrirSolicitud('herramienta')" style="background:var(--white);border:1px solid #a8c0d8;border-radius:10px;padding:14px 10px;cursor:pointer;text-align:center;font-family:inherit">
-          <div style="font-size:22px;margin-bottom:6px">&#128295;</div>
-          <div style="font-size:11px;font-weight:600;color:var(--text)">Solicitar herramienta</div>
-        </button>
-        <button onclick="abrirSolicitud('materiales')" style="background:var(--white);border:1px solid #f5c88a;border-radius:10px;padding:14px 10px;cursor:pointer;text-align:center;font-family:inherit">
-          <div style="font-size:22px;margin-bottom:6px">&#128230;</div>
-          <div style="font-size:11px;font-weight:600;color:var(--text)">Solicitar materiales</div>
-        </button>
-        <button onclick="abrirSolicitud('medico')" style="background:var(--white);border:1px solid #f5a8a8;border-radius:10px;padding:14px 10px;cursor:pointer;text-align:center;font-family:inherit">
-          <div style="font-size:22px;margin-bottom:6px">&#127973;</div>
-          <div style="font-size:11px;font-weight:600;color:var(--text)">Permiso medico</div>
-        </button>
-        <button onclick="abrirSolicitud('vacaciones')" style="background:var(--white);border:1px solid #c4b5f5;border-radius:10px;padding:14px 10px;cursor:pointer;text-align:center;font-family:inherit">
-          <div style="font-size:22px;margin-bottom:6px">&#127958;</div>
-          <div style="font-size:11px;font-weight:600;color:var(--text)">Solicitar vacaciones</div>
-        </button>
-        <button onclick="abrirSolicitud('sugerencia')" style="background:var(--white);border:1px solid var(--border);border-radius:10px;padding:14px 10px;cursor:pointer;text-align:center;font-family:inherit">
-          <div style="font-size:22px;margin-bottom:6px">&#128172;</div>
-          <div style="font-size:11px;font-weight:600;color:var(--text)">Buzon de sugerencias</div>
-        </button>
-      </div>
+      <div id="dashAccesos" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
     </div>
 
     <div class="dash-section">
@@ -481,7 +442,7 @@ var dxCkState={};
 var dxCkBuilt=false;
 var origenDashboard='tecnico';
 
-var SCREENS=['screenLobby','screenPin','screenModulos','screenDashboard','screenHerramientas','screenSeleccion','screenDX','screenVRF','screenSG','screenSolMedico','screenSolVacaciones','screenSolHerramienta','screenSolMateriales','screenSolSugerencia','screenNuevaHerramienta'];
+var SCREENS=['screenLobby','screenPin','screenModulos','screenDashboard','screenHerramientas','screenSeleccion','screenDX','screenVRF','screenSG','screenSolMedico','screenSolVacaciones','screenSolHerramienta','screenSolMateriales','screenSolSugerencia','screenNuevaHerramienta','screenSolCompra','screenSolCompra'];
 
 var MENSAJES_MOT=[
   'El trabajo bien hecho es la mejor forma de hablar por uno mismo.',
@@ -505,7 +466,7 @@ function showOnly(id){
   var target=document.getElementById(id);
   if(!target) return;
   var colScreens=['screenModulos','screenDashboard','screenHerramientas'];
-  var blockScreens=['screenSeleccion','screenDX','screenVRF','screenSG','screenSolMedico','screenSolVacaciones','screenSolHerramienta','screenSolMateriales','screenSolSugerencia','screenNuevaHerramienta'];
+  var blockScreens=['screenSeleccion','screenDX','screenVRF','screenSG','screenSolMedico','screenSolVacaciones','screenSolHerramienta','screenSolMateriales','screenSolSugerencia','screenNuevaHerramienta','screenSolCompra','screenSolCompra'];
   if(blockScreens.indexOf(id)!==-1){target.style.display='block';}
   else if(colScreens.indexOf(id)!==-1){target.style.display='flex';target.style.flexDirection='column';}
   else{target.style.display='flex';}
@@ -553,13 +514,9 @@ function validatePin(){
 
 function routeByRole(){
   var rol=session.rol;
-  var soloTecnico=['Tecnico','Ayudante','ServiciosProfesionales'];
-  var soloAdmin=['Administrativa'];
-  var ambos=['Gerencia','Coordinador','Supervisor','Asistente'];
-  if(soloTecnico.indexOf(rol)!==-1){launchDashboard();}
-  else if(soloAdmin.indexOf(rol)!==-1){document.getElementById('cardInf').style.display='none';launchModulos();}
-  else if(ambos.indexOf(rol)!==-1){document.getElementById('cardInf').style.display='flex';document.getElementById('cardHerr').style.display='flex';launchModulos();}
-  else{launchDashboard();}
+  if(rol==='Tecnico'||rol==='Ayudante') launchDashboard();
+  else if(rol==='Supervisor') launchDashboard();
+  else showOnly('screenModulos');
 }
 
 function launchDashboard(){
@@ -581,6 +538,7 @@ function launchDashboard(){
   var meses=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
   var fechaTxt=dias[hoy.getDay()]+' '+hoy.getDate()+' '+meses[hoy.getMonth()]+' '+hoy.getFullYear();
   document.getElementById('dashFecha').textContent=fechaTxt;
+  renderAccesos();
   cargarDashboard();
 }
 
@@ -1188,7 +1146,8 @@ function abrirSolicitud(tipo){
     'vacaciones':'screenSolVacaciones',
     'herramienta':'screenSolHerramienta',
     'materiales':'screenSolMateriales',
-    'sugerencia':'screenSolSugerencia'
+    'sugerencia':'screenSolSugerencia',
+    'compra':'screenSolCompra'
   };
   var pantalla=pantallas[tipo];
   if(pantalla) showOnly(pantalla);
@@ -1260,7 +1219,7 @@ function submitSolSugerencia(){
 }
 
 
-function abrirNuevaHerramienta(){showOnly('screenNuevaHerramienta');}
+function abrirNuevaHerramienta(){showOnly('screenNuevaHerramienta','screenSolCompra');}
 function volverAHerramientas(){showOnly('screenHerramientas');}
 
 function submitNuevaHerramienta(){
@@ -1401,6 +1360,45 @@ function cargarOTsPorTecnico(tecnicoId){
   })
   .catch(function(){selOT.innerHTML='<option value="">Error al cargar OTs</option>';});
 }
+
+function renderAccesos(){
+  var rol=session.rol;
+  var cont=document.getElementById('dashAccesos');
+  if(!cont) return;
+  cont.innerHTML='';
+  var btns=[];
+
+  // Definicion de botones por rol
+  var btnInforme={icon:'&#128203;',label:'Informe tecnico',color:'#a8d4b8',action:"irASeleccion()"};
+  var btnHerramienta={icon:'&#128295;',label:'Solicitar herramienta',color:'#a8c0d8',action:"abrirSolicitud('herramienta')"};
+  var btnMateriales={icon:'&#128230;',label:'Solicitar materiales',color:'#f5c88a',action:"abrirSolicitud('materiales')"};
+  var btnCompra={icon:'&#128722;',label:'Solicitud de compra',color:'#f5c88a',action:"abrirSolicitud('compra')"};
+  var btnMedico={icon:'&#127973;',label:'Permiso medico/personal',color:'#f5a8a8',action:"abrirSolicitud('medico')"};
+  var btnVacaciones={icon:'&#127958;',label:'Solicitar vacaciones',color:'#c4b5f5',action:"abrirSolicitud('vacaciones')"};
+  var btnSugerencia={icon:'&#128172;',label:'Buzon de sugerencias',color:'var(--border)',action:"abrirSolicitud('sugerencia')"};
+
+  if(rol==='Tecnico'||rol==='Ayudante'){
+    btns=[btnInforme,btnHerramienta,btnMateriales,btnMedico,btnVacaciones,btnSugerencia];
+  } else if(rol==='Supervisor'){
+    btns=[btnInforme,btnMedico,btnVacaciones,btnSugerencia];
+  } else if(rol==='Coordinador'){
+    btns=[btnCompra,btnMedico,btnVacaciones,btnSugerencia];
+  } else if(rol==='Asistente'){
+    btns=[btnCompra,btnMedico,btnVacaciones,btnSugerencia];
+  } else if(rol==='Administrativa'){
+    btns=[btnCompra,btnMedico,btnVacaciones,btnSugerencia];
+  } else if(rol==='Gerencia'){
+    btns=[btnCompra,btnSugerencia];
+  }
+
+  btns.forEach(function(b){
+    var btn=document.createElement('button');
+    btn.style.cssText='background:var(--white);border:1px solid '+b.color+';border-radius:10px;padding:14px 10px;cursor:pointer;text-align:center;font-family:inherit';
+    btn.innerHTML='<div style="font-size:22px;margin-bottom:6px">'+b.icon+'</div><div style="font-size:11px;font-weight:600;color:var(--text)">'+b.label+'</div>';
+    btn.onclick=new Function(b.action);
+    cont.appendChild(btn);
+  });
+}
 </script>
 
 <div id="screenSolMedico" style="display:none">
@@ -1530,6 +1528,21 @@ function cargarOTsPorTecnico(tecnicoId){
       <button class="submit-btn" id="btnNuevaHerr" onclick="submitNuevaHerramienta()" style="margin-top:16px">Registrar herramienta</button>
     </div>
     <div class="bottom-space"></div>
+  </div>
+</div>
+
+
+<div id="screenSolCompra" style="display:none">
+  <div class="inf-top-bar" style="display:flex;align-items:center;justify-content:space-between">
+    <div><div class="brand">Ingecord</div><h1>Solicitud de compra</h1><div class="subtitle">En construccion</div></div>
+    <button onclick="volverAlDashboardDesdeSOL()" style="background:rgba(255,255,255,0.15);border:none;color:white;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit">&#8592; Volver</button>
+  </div>
+  <div class="container">
+    <div class="section" style="margin-top:16px;text-align:center;padding:40px 20px">
+      <div style="font-size:48px;margin-bottom:16px">&#128722;</div>
+      <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:8px">Modulo en construccion</div>
+      <div style="font-size:13px;color:var(--text-muted)">Este modulo estara disponible proximamente.</div>
+    </div>
   </div>
 </div>
 
