@@ -438,7 +438,7 @@ var dxCkState={};
 var dxCkBuilt=false;
 var origenDashboard='tecnico';
 
-var SCREENS=['screenLobby','screenPin','screenModulos','screenDashboard','screenHerramientas','screenSeleccion','screenDX','screenVRF','screenSG','screenSolMedico','screenSolVacaciones','screenSolHerramienta','screenSolMateriales','screenSolSugerencia','screenNuevaHerramienta','screenSolCompra'];
+var SCREENS=['screenLobby','screenPin','screenModulos','screenDashboard','screenHerramientas','screenSeleccion','screenDX','screenVRF','screenSG','screenSolMedico','screenSolVacaciones','screenSolHerramienta','screenSolMateriales','screenSolSugerencia','screenNuevaHerramienta','screenSolCompra','screenNuevaOT'];
 
 var MENSAJES_MOT=[
   'El trabajo bien hecho es la mejor forma de hablar por uno mismo.',
@@ -462,7 +462,7 @@ function showOnly(id){
   var target=document.getElementById(id);
   if(!target) return;
   var colScreens=['screenModulos','screenDashboard','screenHerramientas'];
-  var blockScreens=['screenSeleccion','screenDX','screenVRF','screenSG','screenSolMedico','screenSolVacaciones','screenSolHerramienta','screenSolMateriales','screenSolSugerencia','screenNuevaHerramienta','screenSolCompra'];
+  var blockScreens=['screenSeleccion','screenDX','screenVRF','screenSG','screenSolMedico','screenSolVacaciones','screenSolHerramienta','screenSolMateriales','screenSolSugerencia','screenNuevaHerramienta','screenSolCompra','screenNuevaOT'];
   if(blockScreens.indexOf(id)!==-1){target.style.display='block';}
   else if(colScreens.indexOf(id)!==-1){target.style.display='flex';target.style.flexDirection='column';}
   else{target.style.display='flex';}
@@ -753,7 +753,7 @@ function renderModulos(){
   }
 
   if(otRoles.indexOf(rol)!==-1){
-    cards.push({color:'blue',icon:'&#128221;',title:'Ordenes de trabajo',desc:'Crear y gestionar OTs',action:"alert('Modulo en construccion')"});
+    cards.push({color:'blue',icon:'&#128221;',title:'Ordenes de trabajo',desc:'Crear y gestionar OTs',action:'abrirNuevaOT()'});
   }
 
   if(portalRoles.indexOf(rol)!==-1){
@@ -1445,7 +1445,7 @@ function renderAccesos(){
 
   var btnHerramientasGestion={icon:'&#128295;',label:'Control herramientas',color:'#a8d4b8',action:'abrirHerramientas()'};
   var btnHerramientasHistorial={icon:'&#128295;',label:'Herramientas',color:'#a8d4b8',action:'abrirHerramientasHistorial()'};
-  var btnOTs={icon:'&#128221;',label:'Ordenes de trabajo',color:'#a8c0d8',action:"alert('Modulo en construccion')"};
+  var btnOTs={icon:'&#128221;',label:'Ordenes de trabajo',color:'#a8c0d8',action:'abrirNuevaOT()'};
 
   if(rol==='Tecnico'||rol==='Ayudante'){
     btns=[btnInforme,btnHerramienta,btnMateriales,btnMedico,btnVacaciones,btnSugerencia];
@@ -1468,6 +1468,160 @@ function renderAccesos(){
     (function(a){btn.onclick=function(){eval(a);};})(b.action);
     cont.appendChild(btn);
   });
+}
+
+var otClientesCache=[];
+var otEquiposSeleccionados=[];
+var WEBHOOK_OT='';
+
+function abrirNuevaOT(){
+  showOnly('screenNuevaOT');
+  cargarClientesOT();
+  cargarTecnicosOT();
+  otEquiposSeleccionados=[];
+  document.getElementById('otEquiposCount').textContent='0 equipo(s) seleccionado(s)';
+  var hoy=new Date();
+  document.getElementById('otFecha').value=hoy.toISOString().split('T')[0];
+}
+
+function cargarClientesOT(){
+  fetch(CONSULTA_URL+'?accion=listar_clientes')
+  .then(function(r){return r.json();})
+  .then(function(data){
+    otClientesCache=data;
+  })
+  .catch(function(){otClientesCache=[];});
+}
+
+function filtrarClientes(){
+  var q=document.getElementById('otClienteBuscar').value.toLowerCase();
+  var lista=document.getElementById('otClienteLista');
+  document.getElementById('otClienteId').value='';
+  document.getElementById('otSucursal').innerHTML='<option value="">Selecciona primero un cliente</option>';
+  document.getElementById('otSucursalId').value='';
+  if(!q||q.length<2){lista.style.display='none';return;}
+  var filtrados=otClientesCache.filter(function(c){
+    var nombre=(c.fields?c.fields.Title:c.Title)||'';
+    return nombre.toLowerCase().indexOf(q)!==-1;
+  }).slice(0,10);
+  if(!filtrados.length){lista.style.display='none';return;}
+  lista.innerHTML='';
+  filtrados.forEach(function(c){
+    var nombre=(c.fields?c.fields.Title:c.Title)||'';
+    var id=(c.fields?c.fields.id||c.fields.ID:c.id)||'';
+    var div=document.createElement('div');
+    div.style.cssText='padding:10px 14px;font-size:13px;cursor:pointer;border-bottom:0.5px solid var(--border);color:var(--text)';
+    div.textContent=nombre;
+    div.onmouseover=function(){this.style.background='var(--surface)';};
+    div.onmouseout=function(){this.style.background='';};
+    (function(n,i){div.onclick=function(){
+      document.getElementById('otClienteBuscar').value=n;
+      document.getElementById('otClienteId').value=i;
+      lista.style.display='none';
+      cargarSucursalesOT(i);
+    };})(nombre,id);
+    lista.appendChild(div);
+  });
+  lista.style.display='block';
+}
+
+function cargarSucursalesOT(clienteId){
+  var sel=document.getElementById('otSucursal');
+  sel.innerHTML='<option value="">Cargando sucursales...</option>';
+  fetch(CONSULTA_URL+'?accion=listar_sucursales&clienteId='+clienteId)
+  .then(function(r){return r.json();})
+  .then(function(data){
+    sel.innerHTML='<option value="">Selecciona una sucursal</option>';
+    data.forEach(function(s){
+      var nombre=(s.fields?s.fields.Title:s.Title)||'';
+      var id=(s.fields?s.fields.id||s.fields.ID:s.id)||'';
+      var opt=document.createElement('option');
+      opt.value=id;
+      opt.textContent=nombre;
+      sel.appendChild(opt);
+    });
+  })
+  .catch(function(){sel.innerHTML='<option value="">Error al cargar</option>';});
+}
+
+function cargarEquiposOT(){
+  var sucursalId=document.getElementById('otSucursal').value;
+  var cont=document.getElementById('otEquiposContainer');
+  otEquiposSeleccionados=[];
+  document.getElementById('otEquiposCount').textContent='0 equipo(s) seleccionado(s)';
+  if(!sucursalId){
+    cont.innerHTML='<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px">Selecciona una sucursal para ver los equipos</div>';
+    return;
+  }
+  cont.innerHTML='<div style="text-align:center;padding:16px;color:var(--text-muted);font-size:13px">Cargando equipos...</div>';
+  fetch(CONSULTA_URL+'?accion=listar_equipos&sucursalId='+sucursalId)
+  .then(function(r){return r.json();})
+  .then(function(data){
+    if(!data.length){cont.innerHTML='<div style="text-align:center;padding:16px;color:var(--text-muted);font-size:13px">Sin equipos registrados</div>';return;}
+    cont.innerHTML='';
+    data.forEach(function(e){
+      var nombre=(e.fields?e.fields.Title:e.Title)||'';
+      var id=(e.fields?e.fields.id||e.fields.ID:e.id)||'';
+      var div=document.createElement('div');
+      div.style.cssText='display:flex;align-items:center;gap:10px;padding:10px 12px;border:0.5px solid var(--border);border-radius:8px;margin-bottom:6px;cursor:pointer;background:var(--white)';
+      div.innerHTML='<input type="checkbox" data-id="'+id+'" data-nombre="'+nombre+'" style="width:auto;accent-color:#0F6E56"><span style="font-size:13px;color:var(--text)">'+nombre+'</span>';
+      var cb=div.querySelector('input');
+      div.onclick=function(ev){
+        if(ev.target!==cb) cb.click();
+      };
+      cb.onchange=function(){
+        if(this.checked){
+          otEquiposSeleccionados.push({id:this.getAttribute('data-id'),nombre:this.getAttribute('data-nombre')});
+        } else {
+          otEquiposSeleccionados=otEquiposSeleccionados.filter(function(x){return x.id!==cb.getAttribute('data-id');});
+        }
+        document.getElementById('otEquiposCount').textContent=otEquiposSeleccionados.length+' equipo(s) seleccionado(s)';
+      };
+      cont.appendChild(div);
+    });
+  })
+  .catch(function(){cont.innerHTML='<div style="text-align:center;padding:16px;color:var(--text-muted);font-size:13px">Error al cargar equipos</div>';});
+}
+
+function cargarTecnicosOT(){
+  var sel=document.getElementById('otTecnico');
+  fetch(CONSULTA_URL+'?accion=listar_tecnicos')
+  .then(function(r){return r.json();})
+  .then(function(data){
+    sel.innerHTML='<option value="">Selecciona un tecnico</option>';
+    data.forEach(function(t){
+      var nombre=(t.fields?t.fields.Title:t.Title)||'';
+      var id=(t.fields?t.fields.id||t.fields.ID:t.id)||'';
+      var rol=(t.fields?t.fields.Rol:t.Rol)||'';
+      if(rol==='Tecnico'||rol==='Supervisor'){
+        var opt=document.createElement('option');
+        opt.value=id;
+        opt.textContent=nombre;
+        sel.appendChild(opt);
+      }
+    });
+  })
+  .catch(function(){sel.innerHTML='<option value="">Error al cargar</option>';});
+}
+
+function submitNuevaOT(){
+  var cliente=document.getElementById('otClienteBuscar').value.trim();
+  var clienteId=document.getElementById('otClienteId').value;
+  var sucursalId=document.getElementById('otSucursal').value;
+  var tipo=document.getElementById('otTipo').value;
+  var prioridad=document.getElementById('otPrioridad').value;
+  var tecnicoId=document.getElementById('otTecnico').value;
+  var fecha=document.getElementById('otFecha').value;
+  var desc=document.getElementById('otDescripcion').value.trim();
+  if(!clienteId){alert('Selecciona un cliente.');return;}
+  if(!sucursalId){alert('Selecciona una sucursal.');return;}
+  if(!tecnicoId){alert('Selecciona un tecnico.');return;}
+  if(!fecha){alert('Selecciona la fecha programada.');return;}
+  if(!desc){alert('Escribe una descripcion.');return;}
+  var btn=document.getElementById('btnCrearOT');
+  btn.disabled=true;btn.textContent='Creando OT...';
+  alert('Modulo en construccion. Conecta Make.com para activar.');
+  btn.disabled=false;btn.textContent='Crear orden de trabajo';
 }
 </script>
 
@@ -1613,6 +1767,77 @@ function renderAccesos(){
       <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:8px">Modulo en construccion</div>
       <div style="font-size:13px;color:var(--text-muted)">Este modulo estara disponible proximamente.</div>
     </div>
+  </div>
+</div>
+
+
+<div id="screenNuevaOT" style="display:none">
+  <div class="inf-top-bar" style="display:flex;align-items:center;justify-content:space-between">
+    <div><div class="brand">Ingecord</div><h1>Nueva orden de trabajo</h1></div>
+    <button onclick="volverAlDashboardDesdeSOL()" style="background:rgba(255,255,255,0.15);border:none;color:white;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit">&#8592; Volver</button>
+  </div>
+  <div class="container">
+
+    <div class="section" style="margin-top:16px">
+      <div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>Cliente y ubicacion</div>
+      <span class="field-label">Cliente <span class="required-star">*</span></span>
+      <div style="position:relative">
+        <input type="text" id="otClienteBuscar" placeholder="Buscar cliente..." oninput="filtrarClientes()" autocomplete="off" style="padding-right:36px">
+        <div id="otClienteLista" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--white);border:0.5px solid var(--border);border-radius:8px;max-height:200px;overflow-y:auto;z-index:100;box-shadow:0 4px 12px rgba(0,0,0,0.1)"></div>
+      </div>
+      <input type="hidden" id="otClienteId">
+      <span class="field-label" style="margin-top:12px">Sucursal <span class="required-star">*</span></span>
+      <select id="otSucursal" onchange="cargarEquiposOT()" style="color:var(--text-muted)">
+        <option value="">Selecciona primero un cliente</option>
+      </select>
+      <input type="hidden" id="otSucursalId">
+    </div>
+
+    <div class="section" style="margin-top:12px">
+      <div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>Detalles de la OT</div>
+      <div class="params-grid">
+        <div class="param-field">
+          <label>Tipo <span class="required-star">*</span></label>
+          <select id="otTipo">
+            <option value="Mantenimiento_Preventivo">Mantenimiento preventivo</option>
+            <option value="Mantenimiento_Correctivo">Mantenimiento correctivo</option>
+            <option value="Instalacion">Instalacion</option>
+            <option value="Diagnostico">Diagnostico</option>
+          </select>
+        </div>
+        <div class="param-field">
+          <label>Prioridad <span class="required-star">*</span></label>
+          <select id="otPrioridad">
+            <option value="Media">Media</option>
+            <option value="Alta">Alta</option>
+            <option value="Baja">Baja</option>
+          </select>
+        </div>
+      </div>
+      <span class="field-label" style="margin-top:12px">Tecnico principal <span class="required-star">*</span></span>
+      <select id="otTecnico">
+        <option value="">Cargando tecnicos...</option>
+      </select>
+      <input type="hidden" id="otTecnicoId">
+      <span class="field-label" style="margin-top:12px">Fecha programada <span class="required-star">*</span></span>
+      <input type="date" id="otFecha">
+      <span class="field-label" style="margin-top:12px">Descripcion <span class="required-star">*</span></span>
+      <textarea id="otDescripcion" placeholder="Describe el trabajo a realizar..." style="min-height:80px"></textarea>
+    </div>
+
+    <div class="section" style="margin-top:12px">
+      <div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>Equipos a atender</div>
+      <div id="otEquiposContainer">
+        <div style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px">
+          <div style="font-size:28px;margin-bottom:8px">&#9749;</div>
+          Selecciona una sucursal para ver los equipos
+        </div>
+      </div>
+      <div style="margin-top:10px;font-size:12px;color:var(--text-muted)" id="otEquiposCount">0 equipo(s) seleccionado(s)</div>
+    </div>
+
+    <button class="submit-btn" id="btnCrearOT" onclick="submitNuevaOT()" style="margin-top:16px">Crear orden de trabajo</button>
+    <div class="bottom-space"></div>
   </div>
 </div>
 
