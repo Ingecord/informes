@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -462,7 +463,7 @@ function showOnly(id){
   var target=document.getElementById(id);
   if(!target) return;
   var colScreens=['screenModulos','screenDashboard','screenHerramientas'];
-  var blockScreens=['screenSeleccion','screenDX','screenVRF','screenSG','screenSolMedico','screenSolVacaciones','screenSolHerramienta','screenSolMateriales','screenSolSugerencia','screenNuevaHerramienta','screenSolCompra','screenNuevaOT'];
+  var blockScreens=['screenSeleccion','screenDX','screenVRF','screenSG','screenSolMedico','screenSolVacaciones','screenSolHerramienta','screenSolMateriales','screenSolSugerencia','screenNuevaHerramienta','screenSolCompra','screenNuevaOT','screenModuloOTs'];
   if(blockScreens.indexOf(id)!==-1){target.style.display='block';}
   else if(colScreens.indexOf(id)!==-1){target.style.display='flex';target.style.flexDirection='column';}
   else{target.style.display='flex';}
@@ -753,7 +754,7 @@ function renderModulos(){
   }
 
   if(otRoles.indexOf(rol)!==-1){
-    cards.push({color:'blue',icon:'&#128221;',title:'Ordenes de trabajo',desc:'Crear y gestionar OTs',action:'abrirNuevaOT()'});
+    cards.push({color:'blue',icon:'&#128221;',title:'Ordenes de trabajo',desc:'Crear y gestionar OTs',action:'showOnly(\'screenModuloOTs\')'});
   }
 
   if(portalRoles.indexOf(rol)!==-1){
@@ -1445,7 +1446,7 @@ function renderAccesos(){
 
   var btnHerramientasGestion={icon:'&#128295;',label:'Control herramientas',color:'#a8d4b8',action:'abrirHerramientas()'};
   var btnHerramientasHistorial={icon:'&#128295;',label:'Herramientas',color:'#a8d4b8',action:'abrirHerramientasHistorial()'};
-  var btnOTs={icon:'&#128221;',label:'Ordenes de trabajo',color:'#a8c0d8',action:'abrirNuevaOT()'};
+  var btnOTs={icon:'&#128221;',label:'Ordenes de trabajo',color:'#a8c0d8',action:'showOnly(\'screenModuloOTs\')'};
 
   if(rol==='Tecnico'||rol==='Ayudante'){
     btns=[btnInforme,btnHerramienta,btnMateriales,btnMedico,btnVacaciones,btnSugerencia];
@@ -1837,6 +1838,35 @@ function submitNuevaOT(){
     </div>
 
     <button class="submit-btn" id="btnCrearOT" onclick="submitNuevaOT()" style="margin-top:16px">Crear orden de trabajo</button>
+    <div class="bottom-space"></div>
+  </div>
+</div>
+
+
+<div id="screenModuloOTs" style="display:none">
+  <div class="inf-top-bar" style="display:flex;align-items:center;justify-content:space-between">
+    <div><div class="brand">Ingecord</div><h1>Ordenes de trabajo</h1></div>
+    <button onclick="volverAlDashboardDesdeSOL()" style="background:rgba(255,255,255,0.15);border:none;color:white;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit">&#8592; Volver</button>
+  </div>
+  <div class="container">
+    <div style="margin-top:20px;background:var(--white);border:0.5px solid var(--border);border-radius:12px;overflow:hidden">
+      <div onclick="abrirNuevaOT()" style="padding:18px 20px;display:flex;align-items:center;gap:14px;cursor:pointer;border-bottom:0.5px solid var(--border)">
+        <div style="width:44px;height:44px;border-radius:10px;background:#E1F5EE;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:22px">&#43;</div>
+        <div style="flex:1">
+          <div style="font-size:15px;font-weight:500;color:var(--text)">Nueva OT</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:2px">Crear una nueva orden de trabajo</div>
+        </div>
+        <div style="font-size:18px;color:var(--text-muted)">&#8250;</div>
+      </div>
+      <div style="padding:18px 20px;display:flex;align-items:center;gap:14px;opacity:0.6">
+        <div style="width:44px;height:44px;border-radius:10px;background:#E6F1FB;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:22px">&#128203;</div>
+        <div style="flex:1">
+          <div style="font-size:15px;font-weight:500;color:var(--text)">Control de OTs</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:2px">Ver y gestionar ordenes existentes</div>
+        </div>
+        <span style="font-size:10px;background:#FAEEDA;color:#633806;padding:3px 8px;border-radius:99px;font-weight:500">Proximo</span>
+      </div>
+    </div>
     <div class="bottom-space"></div>
   </div>
 </div>
