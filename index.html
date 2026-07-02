@@ -1473,7 +1473,7 @@ function renderAccesos(){
 
 var otClientesCache=[];
 var otEquiposSeleccionados=[];
-var WEBHOOK_OT='';
+var WEBHOOK_OT='https://hook.us2.make.com/2up4bobjudhpk3t6jyzxatuxt7hjllj8';
 
 function abrirNuevaOT(){
   showOnly('screenNuevaOT');
@@ -1486,10 +1486,10 @@ function abrirNuevaOT(){
 }
 
 function cargarClientesOT(){
-  fetch(CONSULTA_URL+'?accion=listar_clientes')
+  fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_CLIENTES'})})
   .then(function(r){return r.json();})
   .then(function(data){
-    otClientesCache=data;
+    otClientesCache=data.map(function(c){return c.fields?c.fields:c;});
   })
   .catch(function(){otClientesCache=[];});
 }
@@ -1502,7 +1502,7 @@ function filtrarClientes(){
   document.getElementById('otSucursalId').value='';
   if(!q||q.length<2){lista.style.display='none';return;}
   var filtrados=otClientesCache.filter(function(c){
-    var nombre=(c.fields?c.fields.Title:c.Title)||'';
+    var nombre=c.Title||'';
     return nombre.toLowerCase().indexOf(q)!==-1;
   }).slice(0,10);
   if(!filtrados.length){lista.style.display='none';return;}
@@ -1519,6 +1519,7 @@ function filtrarClientes(){
       document.getElementById('otClienteBuscar').value=n;
       document.getElementById('otClienteId').value=i;
       lista.style.display='none';
+      document.getElementById('otSucursal').innerHTML='<option value="">Cargando sucursales...</option>';
       cargarSucursalesOT(i);
     };})(nombre,id);
     lista.appendChild(div);
@@ -1529,13 +1530,20 @@ function filtrarClientes(){
 function cargarSucursalesOT(clienteId){
   var sel=document.getElementById('otSucursal');
   sel.innerHTML='<option value="">Cargando sucursales...</option>';
-  fetch(CONSULTA_URL+'?accion=listar_sucursales&clienteId='+clienteId)
+  fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_SUCURSALES',payload:{clienteId:clienteId}})})
   .then(function(r){return r.json();})
   .then(function(data){
+    // Filtrar por cliente
+    var filtradas=data.filter(function(s){
+      var f=s.fields||s;
+      return String(f.ClienteIDLookupId)===String(clienteId);
+    });
     sel.innerHTML='<option value="">Selecciona una sucursal</option>';
-    data.forEach(function(s){
-      var nombre=(s.fields?s.fields.Title:s.Title)||'';
-      var id=(s.fields?s.fields.id||s.fields.ID:s.id)||'';
+    if(!filtradas.length){sel.innerHTML='<option value="">Sin sucursales para este cliente</option>';return;}
+    filtradas.forEach(function(s){
+      var f=s.fields||s;
+      var nombre=f.Title||'';
+      var id=f.id||f.ID||'';
       var opt=document.createElement('option');
       opt.value=id;
       opt.textContent=nombre;
@@ -1555,9 +1563,11 @@ function cargarEquiposOT(){
     return;
   }
   cont.innerHTML='<div style="text-align:center;padding:16px;color:var(--text-muted);font-size:13px">Cargando equipos...</div>';
-  fetch(CONSULTA_URL+'?accion=listar_equipos&sucursalId='+sucursalId)
+  fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_EQUIPOS',payload:{sucursalId:sucursalId}})})
   .then(function(r){return r.json();})
   .then(function(data){
+    // Filtrar por sucursal
+    data=data.filter(function(e){var f=e.fields||e;return String(f.SucursalIDLookupId||f.SucursalLookupId||'')===String(sucursalId);});
     if(!data.length){cont.innerHTML='<div style="text-align:center;padding:16px;color:var(--text-muted);font-size:13px">Sin equipos registrados</div>';return;}
     cont.innerHTML='';
     data.forEach(function(e){
