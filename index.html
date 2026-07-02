@@ -196,9 +196,17 @@ textarea{min-height:90px;resize:vertical}
 
 <div id="screenLobby">
   <div class="lobby-logo">
-    <div style="width:90px;height:90px;background:var(--teal);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto">
-      <span style="color:white;font-size:28px;font-weight:700;letter-spacing:-1px">IC</span>
-    </div>
+    <svg width="90" height="90" viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg" style="display:block;margin:0 auto">
+      <defs>
+        <linearGradient id="rdGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#E8821A;stop-opacity:1"/>
+          <stop offset="50%" style="stop-color:#0F6E56;stop-opacity:1"/>
+          <stop offset="100%" style="stop-color:#0891B2;stop-opacity:1"/>
+        </linearGradient>
+      </defs>
+      <circle cx="45" cy="45" r="44" fill="url(#rdGrad)"/>
+      <text x="45" y="60" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="38" font-weight="800" fill="white" letter-spacing="-2">RD</text>
+    </svg>
     <div class="lobby-brand">Ingecord</div>
     <div class="lobby-sub">Portal de operaciones</div>
   </div></div>
@@ -207,7 +215,19 @@ textarea{min-height:90px;resize:vertical}
 
 <div id="screenPin">
   <div class="pin-card">
-    <div class="pin-card-logo" style="width:52px;height:52px;background:var(--teal);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto"><span style="color:white;font-size:18px;font-weight:700">IC</span></div>
+    <div class="pin-card-logo">
+      <svg width="52" height="52" viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="rdGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#E8821A;stop-opacity:1"/>
+            <stop offset="50%" style="stop-color:#0F6E56;stop-opacity:1"/>
+            <stop offset="100%" style="stop-color:#0891B2;stop-opacity:1"/>
+          </linearGradient>
+        </defs>
+        <circle cx="45" cy="45" r="44" fill="url(#rdGrad2)"/>
+        <text x="45" y="60" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif" font-size="38" font-weight="800" fill="white" letter-spacing="-2">RD</text>
+      </svg>
+    </div>
     <div class="pin-card-title">Ingresa tu PIN</div>
     <div class="pin-card-sub">El acceso se asigna segun tu rol</div>
     <div class="pin-dots" id="pinDots"><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div></div>
