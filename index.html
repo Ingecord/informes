@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -1637,6 +1638,7 @@ function submitNuevaOT(){
       tecnicoId:tecnicoId,
       tipo:tipo,
       prioridad:prioridad,
+      origen:document.getElementById('otOrigen').value,
       fecha:fecha,
       descripcion:desc,
       equipos:otEquiposSeleccionados,
@@ -1849,6 +1851,13 @@ function submitNuevaOT(){
           </select>
         </div>
       </div>
+      <span class="field-label" style="margin-top:12px">Origen de la OT <span class="required-star">*</span></span>
+      <select id="otOrigen">
+        <option value="Solicitud cliente">Solicitud cliente</option>
+        <option value="Trabajo Programado" selected>Trabajo Programado</option>
+        <option value="Proyecto">Proyecto</option>
+        <option value="Trabajo Adicional">Trabajo Adicional</option>
+      </select>
       <span class="field-label" style="margin-top:12px">Tecnico principal <span class="required-star">*</span></span>
       <select id="otTecnico">
         <option value="">Cargando tecnicos...</option>
