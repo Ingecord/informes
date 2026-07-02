@@ -255,9 +255,14 @@ textarea{min-height:90px;resize:vertical}
       </div>
       <button class="dash-logout" onclick="fullLogout()">Salir &#8617;</button>
     </div>
-    <div style="background:rgba(255,255,255,0.12);border-radius:10px;padding:10px 14px;display:flex;gap:10px;align-items:flex-start">
+    <div id="dashMsg" style="background:rgba(255,255,255,0.12);border-radius:10px;padding:10px 14px;display:flex;gap:10px;align-items:flex-start">
       <div style="font-size:18px;flex-shrink:0">&#128172;</div>
       <div style="font-size:13px;color:white;line-height:1.5;font-style:italic" id="dashMsgTxt">Cargando...</div>
+    </div>
+    <div class="kpi-row" style="margin-top:12px">
+      <div class="kpi"><div class="kpi-val" id="kpiOTs">-</div><div class="kpi-lbl">OTs este mes</div></div>
+      <div class="kpi"><div class="kpi-val" id="kpiInf">-</div><div class="kpi-lbl">Informes</div></div>
+      <div class="kpi"><div class="kpi-val" id="kpiHerr">-</div><div class="kpi-lbl">Herramientas</div></div>
     </div>
   </div>
   <div class="dash-body">
@@ -442,7 +447,7 @@ var dxCkState={};
 var dxCkBuilt=false;
 var origenDashboard='tecnico';
 
-var SCREENS=['screenLobby','screenPin','screenModulos','screenDashboard','screenHerramientas','screenSeleccion','screenDX','screenVRF','screenSG','screenSolMedico','screenSolVacaciones','screenSolHerramienta','screenSolMateriales','screenSolSugerencia','screenNuevaHerramienta','screenSolCompra','screenSolCompra'];
+var SCREENS=['screenLobby','screenPin','screenModulos','screenDashboard','screenHerramientas','screenSeleccion','screenDX','screenVRF','screenSG','screenSolMedico','screenSolVacaciones','screenSolHerramienta','screenSolMateriales','screenSolSugerencia','screenNuevaHerramienta','screenSolCompra'];
 
 var MENSAJES_MOT=[
   'El trabajo bien hecho es la mejor forma de hablar por uno mismo.',
@@ -466,7 +471,7 @@ function showOnly(id){
   var target=document.getElementById(id);
   if(!target) return;
   var colScreens=['screenModulos','screenDashboard','screenHerramientas'];
-  var blockScreens=['screenSeleccion','screenDX','screenVRF','screenSG','screenSolMedico','screenSolVacaciones','screenSolHerramienta','screenSolMateriales','screenSolSugerencia','screenNuevaHerramienta','screenSolCompra','screenSolCompra'];
+  var blockScreens=['screenSeleccion','screenDX','screenVRF','screenSG','screenSolMedico','screenSolVacaciones','screenSolHerramienta','screenSolMateriales','screenSolSugerencia','screenNuevaHerramienta','screenSolCompra'];
   if(blockScreens.indexOf(id)!==-1){target.style.display='block';}
   else if(colScreens.indexOf(id)!==-1){target.style.display='flex';target.style.flexDirection='column';}
   else{target.style.display='flex';}
@@ -1395,7 +1400,7 @@ function renderAccesos(){
     var btn=document.createElement('button');
     btn.style.cssText='background:var(--white);border:1px solid '+b.color+';border-radius:10px;padding:14px 10px;cursor:pointer;text-align:center;font-family:inherit';
     btn.innerHTML='<div style="font-size:22px;margin-bottom:6px">'+b.icon+'</div><div style="font-size:11px;font-weight:600;color:var(--text)">'+b.label+'</div>';
-    btn.onclick=new Function(b.action);
+    (function(a){btn.onclick=function(){eval(a);};})(b.action);
     cont.appendChild(btn);
   });
 }
