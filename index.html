@@ -265,7 +265,7 @@ textarea{min-height:90px;resize:vertical}
       <div id="dashAccesos" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
     </div>
 
-    <div class="dash-section">
+    <div class="dash-section" id="dashOTsSection">
       <div class="dash-section-title">Mis OTs activas este mes</div>
       <div id="dashOTs"><div class="empty-state">Cargando...</div></div>
     </div>
@@ -509,10 +509,7 @@ function validatePin(){
 }
 
 function routeByRole(){
-  var rol=session.rol;
-  if(rol==='Tecnico'||rol==='Ayudante') launchDashboard();
-  else if(rol==='Supervisor') launchDashboard();
-  else showOnly('screenModulos');
+  launchDashboard();
 }
 
 function launchDashboard(){
@@ -535,6 +532,13 @@ function launchDashboard(){
   var fechaTxt=dias[hoy.getDay()]+' '+hoy.getDate()+' '+meses[hoy.getMonth()]+' '+hoy.getFullYear();
   document.getElementById('dashFecha').textContent=fechaTxt;
   renderAccesos();
+  // Mostrar/ocultar seccion de OTs segun rol
+  var rolesConOTs=['Tecnico','Ayudante','Supervisor'];
+  var secOTs=document.getElementById('dashOTsSection');
+  if(secOTs) secOTs.style.display=rolesConOTs.indexOf(session.rol)!==-1?'block':'none';
+  // Mostrar/ocultar KPIs segun rol
+  var kpiRow=document.querySelector('.kpi-row');
+  if(kpiRow) kpiRow.style.display=rolesConOTs.indexOf(session.rol)!==-1?'grid':'none';
   cargarDashboard();
 }
 
@@ -1439,18 +1443,22 @@ function renderAccesos(){
   var btnVacaciones={icon:'&#127958;',label:'Solicitar vacaciones',color:'#c4b5f5',action:"abrirSolicitud('vacaciones')"};
   var btnSugerencia={icon:'&#128172;',label:'Buzon de sugerencias',color:'var(--border)',action:"abrirSolicitud('sugerencia')"};
 
+  var btnHerramientasGestion={icon:'&#128295;',label:'Control herramientas',color:'#a8d4b8',action:'abrirHerramientas()'};
+  var btnHerramientasHistorial={icon:'&#128295;',label:'Herramientas',color:'#a8d4b8',action:'abrirHerramientasHistorial()'};
+  var btnOTs={icon:'&#128221;',label:'Ordenes de trabajo',color:'#a8c0d8',action:"alert('Modulo en construccion')"};
+
   if(rol==='Tecnico'||rol==='Ayudante'){
     btns=[btnInforme,btnHerramienta,btnMateriales,btnMedico,btnVacaciones,btnSugerencia];
   } else if(rol==='Supervisor'){
-    btns=[btnInforme,btnMedico,btnVacaciones,btnSugerencia];
+    btns=[btnInforme,btnHerramientasHistorial,btnMedico,btnVacaciones,btnSugerencia];
   } else if(rol==='Coordinador'){
-    btns=[btnCompra,btnMedico,btnVacaciones,btnSugerencia];
-  } else if(rol==='Asistente'){
-    btns=[btnCompra,btnMedico,btnVacaciones,btnSugerencia];
-  } else if(rol==='Administrativa'){
-    btns=[btnCompra,btnMedico,btnVacaciones,btnSugerencia];
+    btns=[btnHerramientasGestion,btnOTs,btnCompra,btnMedico,btnVacaciones,btnSugerencia];
   } else if(rol==='Gerencia'){
-    btns=[btnCompra,btnSugerencia];
+    btns=[btnHerramientasGestion,btnOTs,btnCompra];
+  } else if(rol==='Asistente'){
+    btns=[btnHerramientasGestion,btnOTs,btnCompra,btnMedico,btnVacaciones,btnSugerencia];
+  } else if(rol==='Administrativa'){
+    btns=[btnHerramientasGestion,btnCompra,btnMedico,btnVacaciones,btnSugerencia];
   }
 
   btns.forEach(function(b){
