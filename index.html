@@ -231,16 +231,7 @@ textarea{min-height:90px;resize:vertical}
   </div>
   <div class="mod-body">
     <div class="mod-label">Selecciona un modulo</div>
-    <div class="mod-card green" id="cardHerr" onclick="abrirHerramientas()">
-      <div class="mod-icon green">&#128295;</div>
-      <div><div class="mod-card-title">Control de herramientas</div><div class="mod-card-desc">Inventario, checkout y devoluciones</div></div>
-      <div class="mod-arrow">&#8250;</div>
-    </div>
-    <div class="mod-card blue" id="cardInf" onclick="abrirInformes()">
-      <div class="mod-icon blue">&#128203;</div>
-      <div><div class="mod-card-title">Informes tecnicos</div><div class="mod-card-desc">Reportes de campo y servicio general</div></div>
-      <div class="mod-arrow">&#8250;</div>
-    </div>
+    <div id="modCards"></div>
   </div>
 </div>
 
@@ -725,6 +716,72 @@ function launchModulos(){
   document.getElementById('modAvatar').textContent=ini.toUpperCase();
   document.getElementById('modNombre').textContent=session.nombre;
   document.getElementById('modRol').textContent=session.rol;
+  renderModulos();
+}
+
+function renderModulos(){
+  var rol=session.rol;
+  var cont=document.getElementById('modCards');
+  if(!cont) return;
+  cont.innerHTML='';
+
+  var cards=[];
+
+  // Card herramientas - gestion completa
+  var herrGestion=['Gerencia','Coordinador','Asistente','Administrativa'];
+  // Card herramientas - solo historial
+  var herrHistorial=['Supervisor'];
+  // Card portal colaborador
+  var portalRoles=['Supervisor','Coordinador','Gerencia','Asistente','Administrativa'];
+  // Card informes - solo supervisor puede hacer informes
+  var informesRoles=['Supervisor'];
+  // Card crear OT
+  var otRoles=['Coordinador','Gerencia','Asistente'];
+
+  if(herrGestion.indexOf(rol)!==-1){
+    cards.push({color:'green',icon:'&#128295;',title:'Control de herramientas',desc:'Inventario, checkout y devoluciones',action:'abrirHerramientas()'});
+  } else if(herrHistorial.indexOf(rol)!==-1){
+    cards.push({color:'green',icon:'&#128295;',title:'Herramientas',desc:'Ver historial de movimientos',action:'abrirHerramientasHistorial()'});
+  }
+
+  if(informesRoles.indexOf(rol)!==-1){
+    cards.push({color:'blue',icon:'&#128203;',title:'Informes tecnicos',desc:'Reportes de campo y servicio general',action:'abrirInformes()'});
+  }
+
+  if(otRoles.indexOf(rol)!==-1){
+    cards.push({color:'blue',icon:'&#128221;',title:'Ordenes de trabajo',desc:'Crear y gestionar OTs',action:"alert('Modulo en construccion')"});
+  }
+
+  if(portalRoles.indexOf(rol)!==-1){
+    cards.push({color:'teal',icon:'&#128100;',title:'Portal colaborador',desc:'Permisos, vacaciones y solicitudes',action:'launchDashboard()'});
+  }
+
+  cards.forEach(function(c){
+    var div=document.createElement('div');
+    div.className='mod-card '+c.color;
+    div.innerHTML='<div class="mod-icon '+c.color+'">'+c.icon+'</div><div><div class="mod-card-title">'+c.title+'</div><div class="mod-card-desc">'+c.desc+'</div></div><div class="mod-arrow">&#8250;</div>';
+    (function(a){div.onclick=function(){eval(a);};})(c.action);
+    cont.appendChild(div);
+  });
+}
+
+function abrirHerramientasHistorial(){
+  abrirHerramientas();
+  // Switch to historial tab after loading
+  setTimeout(function(){
+    var tabs=document.querySelectorAll('.module-tab');
+    var panels=document.querySelectorAll('.module-panel');
+    tabs.forEach(function(t){t.classList.remove('active');});
+    panels.forEach(function(p){p.classList.remove('active');});
+    var histTab=document.querySelector('[onclick*="hPanelHistorial"]');
+    if(histTab){histTab.classList.add('active');}
+    var histPanel=document.getElementById('hPanelHistorial');
+    if(histPanel){histPanel.classList.add('active');cargarHistorial();}
+  },300);
+}
+
+function abrirInformes(){
+  irASeleccion();
 }
 
 function abrirHerramientas(){
