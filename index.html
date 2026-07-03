@@ -1472,7 +1472,7 @@ function renderAccesos(){
   if(rol==='Tecnico'||rol==='Ayudante'||rol==='ServiciosProfesionales'){
     btns=[btnInforme,btnHerramienta,btnMateriales,btnMedico,btnVacaciones,btnSugerencia];
   } else if(rol==='Supervisor'){
-    btns=[btnInforme,btnHerramientasHistorial,btnMedico,btnVacaciones,btnSugerencia];
+    btns=[btnOTs,btnHerramientasHistorial,btnMedico,btnVacaciones,btnSugerencia];
   } else if(rol==='Coordinador'){
     btns=[btnHerramientasGestion,btnOTs,btnCompra,btnMedico,btnVacaciones,btnSugerencia];
   } else if(rol==='Gerencia'){
@@ -1831,11 +1831,13 @@ function cotMostrarDetalle(ot){
     var btns='';
     if(!cerrada){
       btns+='<button onclick="cotAbrirEditar()" style="width:100%;padding:11px;background:var(--surface);color:var(--text);border:0.5px solid var(--border);border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;margin-bottom:8px">&#9998; Editar OT</button>';
-      if(puedesCerrar){
-        btns+='<button onclick="cotCerrarOT()" style="width:100%;padding:11px;background:#0F6E56;color:white;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;margin-bottom:8px">&#10003; Cerrar OT</button>';
-      } else {
-        var motivoBloqueo=!inf?'Faltan informes completos':infCompletos<totalEq?'Faltan informes de equipos':!tieneFechaEjec?'Falta fecha de ejecucion':'';
-        btns+='<button disabled style="width:100%;padding:11px;background:var(--border);color:var(--text-muted);border:none;border-radius:8px;font-size:13px;font-weight:500;font-family:inherit;margin-bottom:8px;cursor:not-allowed" title="'+motivoBloqueo+'">&#10003; Cerrar OT — '+motivoBloqueo+'</button>';
+      if(session.rol!=='Supervisor'){
+        if(puedesCerrar){
+          btns+='<button onclick="cotCerrarOT()" style="width:100%;padding:11px;background:#0F6E56;color:white;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;margin-bottom:8px">&#10003; Cerrar OT</button>';
+        } else {
+          var motivoBloqueo=!inf?'Faltan informes completos':infCompletos<totalEq?'Faltan informes de equipos':!tieneFechaEjec?'Falta fecha de ejecucion':'';
+          btns+='<button disabled style="width:100%;padding:11px;background:var(--border);color:var(--text-muted);border:none;border-radius:8px;font-size:13px;font-weight:500;font-family:inherit;margin-bottom:8px;cursor:not-allowed" title="'+motivoBloqueo+'">&#10003; Cerrar OT — '+motivoBloqueo+'</button>';
+        }
       }
     } else {
       btns+='<button onclick="cotEnviarInforme()" style="width:100%;padding:11px;background:#1a3a5c;color:white;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit">&#128231; Enviar informe por correo</button>';
@@ -1938,6 +1940,31 @@ function cotEnviarInforme(){
   .catch(function(){
     alert('Error de conexion. Intenta de nuevo.');
   });
+}
+
+function abrirModuloOTsFirst(){
+  if(session.rol==='Supervisor'){
+    irASeleccion();
+  } else {
+    abrirNuevaOT();
+  }
+}
+
+function renderModuloOTs(){
+  // Adjust first button based on role
+  var icon=document.getElementById('modOTsFirstIcon');
+  var title=document.getElementById('modOTsFirstTitle');
+  var desc=document.getElementById('modOTsFirstDesc');
+  if(!icon) return;
+  if(session.rol==='Supervisor'){
+    icon.textContent='\u{1F4CB}';
+    title.textContent='Informes tecnicos';
+    desc.textContent='Llenar informes de tus OTs asignadas';
+  } else {
+    icon.innerHTML='&#43;';
+    title.textContent='Nueva OT';
+    desc.textContent='Crear una nueva orden de trabajo';
+  }
 }
 </script>
 
@@ -2172,11 +2199,11 @@ function cotEnviarInforme(){
   </div>
   <div class="container">
     <div style="margin-top:20px;background:var(--white);border:0.5px solid var(--border);border-radius:12px;overflow:hidden">
-      <div onclick="abrirNuevaOT()" style="padding:18px 20px;display:flex;align-items:center;gap:14px;cursor:pointer;border-bottom:0.5px solid var(--border)">
-        <div style="width:44px;height:44px;border-radius:10px;background:#E1F5EE;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:22px">&#43;</div>
+      <div onclick="abrirModuloOTsFirst()" style="padding:18px 20px;display:flex;align-items:center;gap:14px;cursor:pointer;border-bottom:0.5px solid var(--border)">
+        <div style="width:44px;height:44px;border-radius:10px;background:#E1F5EE;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:22px" id="modOTsFirstIcon">&#43;</div>
         <div style="flex:1">
-          <div style="font-size:15px;font-weight:500;color:var(--text)">Nueva OT</div>
-          <div style="font-size:12px;color:var(--text-muted);margin-top:2px">Crear una nueva orden de trabajo</div>
+          <div style="font-size:15px;font-weight:500;color:var(--text)" id="modOTsFirstTitle">Nueva OT</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:2px" id="modOTsFirstDesc">Crear una nueva orden de trabajo</div>
         </div>
         <div style="font-size:18px;color:var(--text-muted)">&#8250;</div>
       </div>
