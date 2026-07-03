@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -1809,14 +1810,16 @@ function cotMostrarDetalle(ot){
     // Buttons
     var totalEq=eqs.length;
     var infCompletos=eqs.filter(function(e){return e.Informe_Recibido===true||e.Informe_Recibido==='true';}).length;
-    var puedesCerrar=inf&&infCompletos===totalEq&&totalEq>0&&!cerrada;
+    var tieneFechaEjec=!!(ot.Fecha_Ejecucion&&ot.Fecha_Ejecucion!=='');
+    var puedesCerrar=inf&&infCompletos===totalEq&&totalEq>0&&!cerrada&&tieneFechaEjec;
     var btns='';
     if(!cerrada){
       btns+='<button onclick="cotAbrirEditar()" style="width:100%;padding:11px;background:var(--surface);color:var(--text);border:0.5px solid var(--border);border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;margin-bottom:8px">&#9998; Editar OT</button>';
       if(puedesCerrar){
         btns+='<button onclick="cotCerrarOT()" style="width:100%;padding:11px;background:#0F6E56;color:white;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;margin-bottom:8px">&#10003; Cerrar OT</button>';
       } else {
-        btns+='<button disabled style="width:100%;padding:11px;background:var(--border);color:var(--text-muted);border:none;border-radius:8px;font-size:13px;font-weight:500;font-family:inherit;margin-bottom:8px;cursor:not-allowed" title="Requiere todos los informes completos">&#10003; Cerrar OT</button>';
+        var motivoBloqueo=!inf?'Faltan informes completos':infCompletos<totalEq?'Faltan informes de equipos':!tieneFechaEjec?'Falta fecha de ejecucion':'';
+        btns+='<button disabled style="width:100%;padding:11px;background:var(--border);color:var(--text-muted);border:none;border-radius:8px;font-size:13px;font-weight:500;font-family:inherit;margin-bottom:8px;cursor:not-allowed" title="'+motivoBloqueo+'">&#10003; Cerrar OT — '+motivoBloqueo+'</button>';
       }
     } else {
       btns+='<button onclick="cotEnviarInforme()" style="width:100%;padding:11px;background:#1a3a5c;color:white;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit">&#128231; Enviar informe por correo</button>';
@@ -1890,9 +1893,10 @@ function cotGuardarEdicion(){
 
 function cotCerrarOT(){
   if(!confirm('Cerrar la OT '+cotOTActual.Title+'? Esta accion no se puede deshacer.')) return;
+  var hoy=new Date().toISOString().split('T')[0];
   fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
     action:'CLOSE_OT',
-    payload:{otId:cotOTActual.id||cotOTActual.ID}
+    payload:{otId:cotOTActual.id||cotOTActual.ID,fechaCierre:hoy}
   })})
   .then(function(r){return r.json();})
   .then(function(data){
