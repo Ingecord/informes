@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -1874,7 +1875,7 @@ function cotAbrirEditar(){
     sel.innerHTML='<option value="">Selecciona un tecnico</option>';
     data.forEach(function(t){
       var f=t.fields||t;
-      if(f.Rol==='Tecnico'||f.Rol==='Supervisor'){
+      if(f.Rol==='Tecnico'||f.Rol==='Supervisor'||f.Rol==='ServiciosProfesionales'||f.Rol==='ServiciosProfesionales'){
         var opt=document.createElement('option');
         opt.value=f.id||f.ID;
         opt.textContent=f.Title;
