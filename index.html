@@ -258,7 +258,7 @@ textarea{min-height:90px;resize:vertical}
     </div>
     <div class="kpi-row" style="margin-top:12px">
       <div class="kpi"><div class="kpi-val" id="kpiOTs">-</div><div class="kpi-lbl">OTs este mes</div></div>
-      <div class="kpi"><div class="kpi-val" id="kpiInf">-</div><div class="kpi-lbl">Informes</div></div>
+      <div class="kpi"><div class="kpi-val" id="kpiInf">-</div><div class="kpi-lbl">Inf. pendientes</div></div>
       <div class="kpi"><div class="kpi-val" id="kpiHerr">-</div><div class="kpi-lbl">Herramientas</div></div>
     </div>
   </div>
@@ -664,19 +664,20 @@ function renderDashboard(data){
     return abierto&&esTecnico;
   });
 
-  // Equipos del tecnico con y sin informe
+  // Equipos pendientes del tecnico
   var otIdsTecnico=otsTecnico.map(function(o){return String(o.id||o.ID||'');});
   eqsTecnico=eqs.filter(function(e){
     var otId=String(e.OTsLookupId||e.OTLookupId||e.OT_ID||'');
     return otId&&otIdsTecnico.indexOf(otId)!==-1;
   });
-  var eqsConInforme=eqsTecnico.filter(function(e){
-    return e.Informe_Recibido===true||e.Informe_Recibido==='true'||e.Informe_Recibido===1;
+  var eqsPendientes=eqsTecnico.filter(function(e){
+    var estado=e.Estado_Equipo||'';
+    return estado==='Pendiente'||estado===''||(!e.Informe_Recibido&&e.Informe_Recibido!==true);
   });
 
   // KPIs
   document.getElementById('kpiOTs').textContent=otsTecnico.length;
-  document.getElementById('kpiInf').textContent=eqsTecnico.length>0?eqsConInforme.length+'/'+eqsTecnico.length:otsComp.length;
+  document.getElementById('kpiInf').textContent=eqsPendientes.length;
   document.getElementById('kpiHerr').textContent=herrTecnico.length;
 
   // Mensaje motivacional
