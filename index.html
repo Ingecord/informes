@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -1701,10 +1702,20 @@ function cotCargarOTs(){
 
 function cotSetEstado(estado){
   cotEstadoFiltro=estado;
-  document.querySelectorAll('#cotFiltros .filter-chip').forEach(function(b){b.classList.remove('active');});
-  var idx=['','Abierta','En ejecucion','Pendiente Informe','Pendiente cierre','Cerrada'].indexOf(estado);
-  var btn=document.getElementById('cotF'+idx);
-  if(btn) btn.classList.add('active');
+  var estados=['','Abierta','En ejecucion','Pendiente Informe','Pendiente cierre','Cerrada'];
+  estados.forEach(function(e,i){
+    var btn=document.getElementById('cotF'+i);
+    if(!btn) return;
+    if(e===estado){
+      btn.style.color='#0F6E56';
+      btn.style.fontWeight='600';
+      btn.style.borderBottom='2px solid #0F6E56';
+    } else {
+      btn.style.color='var(--text-muted)';
+      btn.style.fontWeight='400';
+      btn.style.borderBottom='2px solid transparent';
+    }
+  });
   cotRenderLista();
 }
 
@@ -1735,15 +1746,16 @@ function cotRenderLista(){
     html+='<span style="font-size:13px;font-weight:600;color:var(--text)">'+(o.Title||'-')+'</span>';
     html+='<span style="font-size:10px;padding:3px 10px;border-radius:99px;font-weight:500;background:'+(badge==='badge-open'?'#FEF3C7':badge==='badge-exec'?'#DBEAFE':badge==='badge-pend'?'#FEE2E2':'#D1FAE5')+';color:'+(badge==='badge-open'?'#92400E':badge==='badge-exec'?'#1E40AF':badge==='badge-pend'?'#991B1B':'#065F46')+'">'+est+'</span>';
     html+='</div>';
-    var clienteNom=cotClientesMap[o.ClienteLookupId]||'Cliente '+o.ClienteLookupId||'Sin cliente';
+    var clienteNom=(cotClientesMap[o.ClienteLookupId]||'Sin cliente').replace(/—/g,'-');
     var tecnicoNom=cotTecnicosMap[o.Tecnico_PrincipalLookupId]||'Sin asignar';
     html+='<div style="font-size:12px;color:var(--text-muted);margin-bottom:6px">'+clienteNom+'</div>';
-    html+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">';
+    html+='<div style="display:flex;align-items:center;justify-content:space-between">';
     html+='<span style="font-size:11px;color:var(--text-muted)">&#128100; '+tecnicoNom+'</span>';
-    html+='<span style="font-size:11px;color:var(--text-muted)">equipos</span>';
-    html+='</div>';
-    html+='<div style="width:100%;height:4px;background:var(--border);border-radius:99px;overflow:hidden;margin-bottom:6px"><div style="height:100%;background:#0F6E56;border-radius:99px;width:'+(inf?'100':'50')+'%"></div></div>';
-    html+='<div style="font-size:10px;color:var(--text-muted)">Programada: '+(o.Fecha_Programada?o.Fecha_Programada.split('T')[0]:'-')+'</div>';
+    html+='<div style="display:flex;align-items:center;gap:6px">';
+    html+='<div style="width:60px;height:4px;background:var(--border);border-radius:99px;overflow:hidden"><div style="height:100%;background:#0F6E56;border-radius:99px;width:'+(inf?'100':'30')+'%"></div></div>';
+    html+='<span style="font-size:11px;color:var(--text-muted)">'+(inf?'Completo':'Pendiente')+'</span>';
+    html+='</div></div>';
+    html+='<div style="font-size:10px;color:var(--text-muted);margin-top:4px">Programada: '+(o.Fecha_Programada?o.Fecha_Programada.split('T')[0]:'-')+'</div>';
     html+='</div>';
   });
   document.getElementById('cotListaOTs').innerHTML=html;
@@ -2155,13 +2167,13 @@ function cotEnviarInforme(){
   <div class="container" id="cotPanelLista">
     <div style="margin-top:14px">
       <input type="text" id="cotBuscador" placeholder="&#128269; Buscar por OT o cliente..." oninput="cotFiltrar()" style="margin-bottom:10px">
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px" id="cotFiltros">
-        <button onclick="cotSetEstado('')" class="filter-chip active" id="cotF0" style="text-align:center">Todas</button>
-        <button onclick="cotSetEstado('Abierta')" class="filter-chip" id="cotF1" style="text-align:center;background:#FEF3C7;color:#92400E;border-color:#F5C842">Abierta</button>
-        <button onclick="cotSetEstado('En ejecucion')" class="filter-chip" id="cotF2" style="text-align:center;background:#DBEAFE;color:#1E40AF;border-color:#93C5FD">En ejecucion</button>
-        <button onclick="cotSetEstado('Pendiente Informe')" class="filter-chip" id="cotF3" style="text-align:center;background:#FEE2E2;color:#991B1B;border-color:#FCA5A5">Pend. informe</button>
-        <button onclick="cotSetEstado('Pendiente cierre')" class="filter-chip" id="cotF4" style="text-align:center;background:#FEE2E2;color:#991B1B;border-color:#FCA5A5">Pend. cierre</button>
-        <button onclick="cotSetEstado('Cerrada')" class="filter-chip" id="cotF5" style="text-align:center;background:#D1FAE5;color:#065F46;border-color:#6EE7B7">Cerrada</button>
+      <div style="display:flex;gap:0;margin-bottom:12px;overflow-x:auto;border-bottom:1px solid var(--border)" id="cotFiltros">
+        <button onclick="cotSetEstado('')" id="cotF0" style="padding:8px 14px;border:none;background:none;font-size:12px;font-weight:600;color:#0F6E56;border-bottom:2px solid #0F6E56;cursor:pointer;font-family:inherit;white-space:nowrap">Todas</button>
+        <button onclick="cotSetEstado('Abierta')" id="cotF1" style="padding:8px 14px;border:none;background:none;font-size:12px;color:var(--text-muted);border-bottom:2px solid transparent;cursor:pointer;font-family:inherit;white-space:nowrap">Abierta</button>
+        <button onclick="cotSetEstado('En ejecucion')" id="cotF2" style="padding:8px 14px;border:none;background:none;font-size:12px;color:var(--text-muted);border-bottom:2px solid transparent;cursor:pointer;font-family:inherit;white-space:nowrap">En ejecucion</button>
+        <button onclick="cotSetEstado('Pendiente Informe')" id="cotF3" style="padding:8px 14px;border:none;background:none;font-size:12px;color:var(--text-muted);border-bottom:2px solid transparent;cursor:pointer;font-family:inherit;white-space:nowrap">Pend. informe</button>
+        <button onclick="cotSetEstado('Pendiente cierre')" id="cotF4" style="padding:8px 14px;border:none;background:none;font-size:12px;color:var(--text-muted);border-bottom:2px solid transparent;cursor:pointer;font-family:inherit;white-space:nowrap">Pend. cierre</button>
+        <button onclick="cotSetEstado('Cerrada')" id="cotF5" style="padding:8px 14px;border:none;background:none;font-size:12px;color:var(--text-muted);border-bottom:2px solid transparent;cursor:pointer;font-family:inherit;white-space:nowrap">Cerrada</button>
       </div>
       <div id="cotListaOTs"><div class="empty-state">Cargando OTs...</div></div>
     </div>
