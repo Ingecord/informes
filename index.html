@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -664,15 +665,17 @@ function renderDashboard(data){
     return abierto&&esTecnico;
   });
 
-  // Equipos pendientes del tecnico
+  // Equipos pendientes del tecnico - usar TODAS las OTs del tecnico, no solo las del mes
+  var todosOtIdsTecnico=ots.filter(function(o){
+    return String(o.Tecnico_PrincipalLookupId)===String(tecnicoId);
+  }).map(function(o){return String(o.id||o.ID||'');});
   var otIdsTecnico=otsTecnico.map(function(o){return String(o.id||o.ID||'');});
   eqsTecnico=eqs.filter(function(e){
     var otId=String(e.OTsLookupId||e.OTLookupId||e.OT_ID||'');
-    return otId&&otIdsTecnico.indexOf(otId)!==-1;
+    return otId&&todosOtIdsTecnico.indexOf(otId)!==-1;
   });
   var eqsPendientes=eqsTecnico.filter(function(e){
-    var estado=e.Estado_Equipo||'';
-    return estado==='Pendiente'||estado===''||(!e.Informe_Recibido&&e.Informe_Recibido!==true);
+    return e.Informe_Recibido===false||e.Informe_Recibido===null||e.Informe_Recibido===undefined||e.Informe_Recibido==='false';
   });
 
   // KPIs
