@@ -1488,6 +1488,7 @@ function renderAccesos(){
 var otClientesCache=[];
 var otEquiposSeleccionados=[];
 var WEBHOOK_OT='https://hook.us2.make.com/2up4bobjudhpk3t6jyzxatuxt7hjllj8';
+var PA_INFORME_OT='https://defaulteb43a9912a5742808a56db939741fe.ce.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/3424caeccb1445659a5de6cad3669522/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=RVCtUH57hgilz0aaU3uy--QMGKCH85nbYE0HZm7NvSE';
 
 function abrirNuevaOT(){
   showOnly('screenNuevaOT');
@@ -1915,7 +1916,21 @@ function cotCerrarOT(){
 }
 
 function cotEnviarInforme(){
-  alert('Conecta el flujo de Power Automate para activar esta funcion.');
+  if(!cotOTActual){alert('No hay OT seleccionada.');return;}
+  var codigoOT=cotOTActual.Title||'';
+  if(!codigoOT){alert('No se pudo obtener el codigo de la OT.');return;}
+  if(!confirm('Enviar informe por correo para la OT '+codigoOT+'?')) return;
+  fetch(PA_INFORME_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({codigoOT:codigoOT})})
+  .then(function(r){
+    if(r.ok||r.status===202){
+      alert('Informe enviado correctamente. Llegara por correo en unos momentos.');
+    } else {
+      alert('Error al enviar el informe. Intenta de nuevo.');
+    }
+  })
+  .catch(function(){
+    alert('Error de conexion. Intenta de nuevo.');
+  });
 }
 </script>
 
