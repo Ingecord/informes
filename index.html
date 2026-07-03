@@ -463,7 +463,7 @@ function showOnly(id){
   var target=document.getElementById(id);
   if(!target) return;
   var colScreens=['screenModulos','screenDashboard','screenHerramientas'];
-  var blockScreens=['screenSeleccion','screenDX','screenVRF','screenSG','screenSolMedico','screenSolVacaciones','screenSolHerramienta','screenSolMateriales','screenSolSugerencia','screenNuevaHerramienta','screenSolCompra','screenNuevaOT','screenModuloOTs'];
+  var blockScreens=['screenSeleccion','screenDX','screenVRF','screenSG','screenSolMedico','screenSolVacaciones','screenSolHerramienta','screenSolMateriales','screenSolSugerencia','screenNuevaHerramienta','screenSolCompra','screenNuevaOT','screenModuloOTs','screenControlOTs'];
   if(blockScreens.indexOf(id)!==-1){target.style.display='block';}
   else if(colScreens.indexOf(id)!==-1){target.style.display='flex';target.style.flexDirection='column';}
   else{target.style.display='flex';}
@@ -1660,6 +1660,216 @@ function submitNuevaOT(){
     btn.disabled=false;btn.textContent='Crear orden de trabajo';
   });
 }
+
+var cotOTsCache=[];
+var cotEquiposCache=[];
+var cotOTActual=null;
+var cotEstadoFiltro='';
+
+function abrirControlOTs(){
+  showOnly('screenControlOTs');
+  document.getElementById('cotPanelLista').style.display='block';
+  document.getElementById('cotPanelDetalle').style.display='none';
+  document.getElementById('cotPanelEditar').style.display='none';
+  document.getElementById('cotPantallaTitle').textContent='Control de OTs';
+  cotCargarOTs();
+}
+
+function cotCargarOTs(){
+  document.getElementById('cotListaOTs').innerHTML='<div class="empty-state">Cargando...</div>';
+  fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_OTS',payload:{estado:'todos'}})})
+  .then(function(r){return r.json();})
+  .then(function(data){
+    cotOTsCache=data.map(function(o){return o.fields?o.fields:o;});
+    cotRenderLista();
+  })
+  .catch(function(){document.getElementById('cotListaOTs').innerHTML='<div class="empty-state">Error al cargar.</div>';});
+}
+
+function cotSetEstado(estado){
+  cotEstadoFiltro=estado;
+  document.querySelectorAll('#cotFiltros .filter-chip').forEach(function(b){b.classList.remove('active');});
+  var idx=['','Abierta','En ejecucion','Pendiente Informe','Pendiente cierre','Cerrada'].indexOf(estado);
+  var btn=document.getElementById('cotF'+idx);
+  if(btn) btn.classList.add('active');
+  cotRenderLista();
+}
+
+function cotFiltrar(){cotRenderLista();}
+
+function cotRenderLista(){
+  var q=document.getElementById('cotBuscador').value.toLowerCase();
+  var lista=cotOTsCache.filter(function(o){
+    var est=o.Estado||'';
+    var pasaEstado=!cotEstadoFiltro||est===cotEstadoFiltro;
+    var pasaBusqueda=!q||(o.Title||'').toLowerCase().indexOf(q)!==-1||(o.Cliente||'').toLowerCase().indexOf(q)!==-1;
+    return pasaEstado&&pasaBusqueda;
+  });
+  if(!lista.length){document.getElementById('cotListaOTs').innerHTML='<div class="empty-state">Sin OTs.</div>';return;}
+  var badgeMap={'Abierta':'badge-open','En ejecucion':'badge-exec','En ejecución':'badge-exec','Pendiente Informe':'badge-pend','Pendiente cierre':'badge-pend','Cerrada':'badge-closed','Facturada':'badge-closed'};
+  var html='';
+  lista.forEach(function(o){
+    var badge=badgeMap[o.Estado||'']||'badge-open';
+    var inf=o.Informes_Completos===true||o.Informes_Completos==='true';
+    html+='<div onclick="cotMostrarDetalle('+JSON.stringify(o).replace(/"/g,'&quot;')+')" style="background:var(--white);border:0.5px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px;cursor:pointer">';
+    html+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">';
+    html+='<span style="font-size:13px;font-weight:600;color:var(--text)">'+(o.Title||'-')+'</span>';
+    html+='<span class="badge '+badge+'" style="font-size:10px;padding:3px 8px;border-radius:99px;font-weight:500">'+(o.Estado||'-')+'</span>';
+    html+='</div>';
+    html+='<div style="font-size:12px;color:var(--text-muted);margin-bottom:6px">'+(o.ClienteLookupId?'Cliente ID: '+o.ClienteLookupId:'Sin cliente')+'</div>';
+    html+='<div style="display:flex;align-items:center;justify-content:space-between">';
+    html+='<span style="font-size:11px;color:var(--text-muted)">&#128100; Tecnico ID: '+(o.Tecnico_PrincipalLookupId||'Sin asignar')+'</span>';
+    html+='<span style="font-size:11px;color:var(--text-muted)">'+(inf?'&#9989; Completo':'&#9203; Pendiente')+'</span>';
+    html+='</div>';
+    html+='<div style="font-size:10px;color:var(--text-muted);margin-top:4px">Programada: '+(o.Fecha_Programada?o.Fecha_Programada.split('T')[0]:'-')+'</div>';
+    html+='</div>';
+  });
+  document.getElementById('cotListaOTs').innerHTML=html;
+}
+
+function cotMostrarDetalle(ot){
+  if(typeof ot==='string') ot=JSON.parse(ot);
+  cotOTActual=ot;
+  document.getElementById('cotPanelLista').style.display='none';
+  document.getElementById('cotPanelEditar').style.display='none';
+  document.getElementById('cotPanelDetalle').style.display='block';
+  document.getElementById('cotPantallaTitle').textContent=ot.Title||'Detalle OT';
+
+  var inf=ot.Informes_Completos===true||ot.Informes_Completos==='true';
+  var cerrada=ot.Estado==='Cerrada'||ot.Estado==='Facturada';
+
+  var infoHTML='';
+  var campos=[
+    ['Tipo',ot.Tipo_OT||'-'],
+    ['Prioridad',ot.Prioridad||'-'],
+    ['Estado',ot.Estado||'-'],
+    ['Origen',ot.Origen_OT||'-'],
+    ['Fecha programada',ot.Fecha_Programada?ot.Fecha_Programada.split('T')[0]:'-'],
+    ['Fecha ejecucion',ot.Fecha_Ejecucion?ot.Fecha_Ejecucion.split('T')[0]:'-'],
+    ['Informes completos',inf?'Si':'No'],
+    ['Descripcion',ot.Descripcion||'-']
+  ];
+  campos.forEach(function(c){
+    infoHTML+='<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:0.5px solid var(--border);font-size:12px"><span style="color:var(--text-muted)">'+c[0]+'</span><span style="color:var(--text);font-weight:500;text-align:right;max-width:60%">'+c[1]+'</span></div>';
+  });
+  document.getElementById('cotDetalleInfo').innerHTML=infoHTML;
+
+  // Load equipos
+  document.getElementById('cotDetalleEquipos').innerHTML='<div class="empty-state">Cargando equipos...</div>';
+  fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_EQUIPOS_OT',payload:{otId:ot.id||ot.ID}})})
+  .then(function(r){return r.json();})
+  .then(function(data){
+    var eqs=data.map(function(e){return e.fields?e.fields:e;})
+      .filter(function(e){return String(e.OTsLookupId)===String(ot.id||ot.ID);});
+    cotEquiposCache=eqs;
+    var total=eqs.length;
+    var conInf=eqs.filter(function(e){return e.Informe_Recibido===true||e.Informe_Recibido==='true';}).length;
+    var eqHTML='<div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">'+conInf+'/'+total+' informes recibidos '+(conInf===total&&total>0?'&#9989;':'&#9203;')+'</div>';
+    eqs.forEach(function(e){
+      var ok=e.Informe_Recibido===true||e.Informe_Recibido==='true';
+      eqHTML+='<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid var(--border);font-size:12px">';
+      eqHTML+='<span style="color:var(--text)">'+(e.NombreEquipo||e.Title||'-')+'</span>';
+      eqHTML+='<span style="color:'+(ok?'#0F6E56':'#D97706');eqHTML+=';font-weight:600">'+(ok?'&#9989; Informe':'&#9203; Pendiente')+'</span></div>';
+    });
+    document.getElementById('cotDetalleEquipos').innerHTML=eqHTML;
+
+    // Buttons
+    var totalEq=eqs.length;
+    var infCompletos=eqs.filter(function(e){return e.Informe_Recibido===true||e.Informe_Recibido==='true';}).length;
+    var puedesCerrar=inf&&infCompletos===totalEq&&totalEq>0&&!cerrada;
+    var btns='';
+    if(!cerrada){
+      btns+='<button onclick="cotAbrirEditar()" style="width:100%;padding:11px;background:var(--surface);color:var(--text);border:0.5px solid var(--border);border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;margin-bottom:8px">&#9998; Editar OT</button>';
+      if(puedesCerrar){
+        btns+='<button onclick="cotCerrarOT()" style="width:100%;padding:11px;background:#0F6E56;color:white;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;margin-bottom:8px">&#10003; Cerrar OT</button>';
+      } else {
+        btns+='<button disabled style="width:100%;padding:11px;background:var(--border);color:var(--text-muted);border:none;border-radius:8px;font-size:13px;font-weight:500;font-family:inherit;margin-bottom:8px;cursor:not-allowed" title="Requiere todos los informes completos">&#10003; Cerrar OT</button>';
+      }
+    } else {
+      btns+='<button onclick="cotEnviarInforme()" style="width:100%;padding:11px;background:#1a3a5c;color:white;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit">&#128231; Enviar informe por correo</button>';
+    }
+    document.getElementById('cotBotonesDetalle').innerHTML=btns;
+  })
+  .catch(function(){document.getElementById('cotDetalleEquipos').innerHTML='<div class="empty-state">Error al cargar equipos.</div>';});
+}
+
+function cotVolver(){
+  if(document.getElementById('cotPanelDetalle').style.display!=='none'){
+    document.getElementById('cotPanelDetalle').style.display='none';
+    document.getElementById('cotPanelLista').style.display='block';
+    document.getElementById('cotPantallaTitle').textContent='Control de OTs';
+  } else if(document.getElementById('cotPanelEditar').style.display!=='none'){
+    cotMostrarDetalle(cotOTActual);
+  } else {
+    volverAlDashboardDesdeSOL();
+  }
+}
+
+function cotAbrirEditar(){
+  document.getElementById('cotPanelDetalle').style.display='none';
+  document.getElementById('cotPanelEditar').style.display='block';
+  document.getElementById('cotPantallaTitle').textContent='Editar OT';
+  var ot=cotOTActual;
+  document.getElementById('cotEditFechaProg').value=ot.Fecha_Programada?ot.Fecha_Programada.split('T')[0]:'';
+  document.getElementById('cotEditFechaEjec').value=ot.Fecha_Ejecucion?ot.Fecha_Ejecucion.split('T')[0]:'';
+  document.getElementById('cotEditDesc').value=ot.Descripcion||'';
+  // Load tecnicos
+  var sel=document.getElementById('cotEditTecnico');
+  sel.innerHTML='<option value="">Cargando...</option>';
+  fetch(CONSULTA_URL+'?accion=listar_tecnicos')
+  .then(function(r){return r.json();})
+  .then(function(data){
+    sel.innerHTML='<option value="">Selecciona un tecnico</option>';
+    data.forEach(function(t){
+      var f=t.fields||t;
+      if(f.Rol==='Tecnico'||f.Rol==='Supervisor'){
+        var opt=document.createElement('option');
+        opt.value=f.id||f.ID;
+        opt.textContent=f.Title;
+        if(String(f.id||f.ID)===String(ot.Tecnico_PrincipalLookupId)) opt.selected=true;
+        sel.appendChild(opt);
+      }
+    });
+  });
+}
+
+function cotGuardarEdicion(){
+  var ot=cotOTActual;
+  var tecnicoId=document.getElementById('cotEditTecnico').value;
+  var fechaProg=document.getElementById('cotEditFechaProg').value;
+  var fechaEjec=document.getElementById('cotEditFechaEjec').value;
+  var desc=document.getElementById('cotEditDesc').value.trim();
+  var btn=document.querySelector('#cotPanelEditar .submit-btn');
+  btn.disabled=true;btn.textContent='Guardando...';
+  fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+    action:'UPDATE_OT',
+    payload:{otId:ot.id||ot.ID,tecnicoId:tecnicoId,fechaProg:fechaProg,fechaEjec:fechaEjec,descripcion:desc}
+  })})
+  .then(function(r){return r.json();})
+  .then(function(data){
+    if(data.ok){alert('OT actualizada.');cotCargarOTs();cotMostrarDetalle(Object.assign({},ot,{Tecnico_PrincipalLookupId:tecnicoId,Fecha_Programada:fechaProg,Fecha_Ejecucion:fechaEjec,Descripcion:desc}));}
+    else{alert('Error al guardar.');btn.disabled=false;btn.textContent='Guardar cambios';}
+  })
+  .catch(function(){alert('Error de conexion.');btn.disabled=false;btn.textContent='Guardar cambios';});
+}
+
+function cotCerrarOT(){
+  if(!confirm('Cerrar la OT '+cotOTActual.Title+'? Esta accion no se puede deshacer.')) return;
+  fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+    action:'CLOSE_OT',
+    payload:{otId:cotOTActual.id||cotOTActual.ID}
+  })})
+  .then(function(r){return r.json();})
+  .then(function(data){
+    if(data.ok){alert('OT cerrada correctamente.');cotCargarOTs();document.getElementById('cotPanelDetalle').style.display='none';document.getElementById('cotPanelLista').style.display='block';document.getElementById('cotPantallaTitle').textContent='Control de OTs';}
+    else{alert('Error al cerrar la OT.');}
+  })
+  .catch(function(){alert('Error de conexion.');});
+}
+
+function cotEnviarInforme(){
+  alert('Conecta el flujo de Power Automate para activar esta funcion.');
+}
 </script>
 
 <div id="screenSolMedico" style="display:none">
@@ -1901,17 +2111,72 @@ function submitNuevaOT(){
         </div>
         <div style="font-size:18px;color:var(--text-muted)">&#8250;</div>
       </div>
-      <div style="padding:18px 20px;display:flex;align-items:center;gap:14px;opacity:0.6">
+      <div onclick="abrirControlOTs()" style="padding:18px 20px;display:flex;align-items:center;gap:14px;cursor:pointer">
         <div style="width:44px;height:44px;border-radius:10px;background:#E6F1FB;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:22px">&#128203;</div>
         <div style="flex:1">
           <div style="font-size:15px;font-weight:500;color:var(--text)">Control de OTs</div>
           <div style="font-size:12px;color:var(--text-muted);margin-top:2px">Ver y gestionar ordenes existentes</div>
         </div>
-        <span style="font-size:10px;background:#FAEEDA;color:#633806;padding:3px 8px;border-radius:99px;font-weight:500">Proximo</span>
+        <div style="font-size:18px;color:var(--text-muted)">&#8250;</div>
       </div>
     </div>
     <div class="bottom-space"></div>
   </div>
+</div>
+
+
+<div id="screenControlOTs" style="display:none">
+  <div class="inf-top-bar" style="display:flex;align-items:center;justify-content:space-between">
+    <div><div class="brand">Ingecord</div><h1 id="cotPantallaTitle">Control de OTs</h1></div>
+    <button id="cotBtnVolver" onclick="cotVolver()" style="background:rgba(255,255,255,0.15);border:none;color:white;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit">&#8592; Volver</button>
+  </div>
+  <div class="container" id="cotPanelLista">
+    <div style="margin-top:14px">
+      <input type="text" id="cotBuscador" placeholder="&#128269; Buscar por OT o cliente..." oninput="cotFiltrar()" style="margin-bottom:10px">
+      <div style="display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;padding-bottom:2px" id="cotFiltros">
+        <button onclick="cotSetEstado('')" class="filter-chip active" id="cotF0">Todas</button>
+        <button onclick="cotSetEstado('Abierta')" class="filter-chip" id="cotF1">Abierta</button>
+        <button onclick="cotSetEstado('En ejecucion')" class="filter-chip" id="cotF2">En ejecucion</button>
+        <button onclick="cotSetEstado('Pendiente Informe')" class="filter-chip" id="cotF3">Pend. informe</button>
+        <button onclick="cotSetEstado('Pendiente cierre')" class="filter-chip" id="cotF4">Pend. cierre</button>
+        <button onclick="cotSetEstado('Cerrada')" class="filter-chip" id="cotF5">Cerrada</button>
+      </div>
+      <div id="cotListaOTs"><div class="empty-state">Cargando OTs...</div></div>
+    </div>
+  </div>
+  <div class="container" id="cotPanelDetalle" style="display:none">
+    <div style="margin-top:14px">
+      <div class="section">
+        <div class="section-title">Informacion general</div>
+        <div id="cotDetalleInfo"></div>
+      </div>
+      <div class="section" style="margin-top:12px">
+        <div class="section-title">Equipos</div>
+        <div id="cotDetalleEquipos"><div class="empty-state">Cargando equipos...</div></div>
+      </div>
+      <div id="cotBotonesDetalle" style="margin-top:12px"></div>
+    </div>
+  </div>
+  <div class="container" id="cotPanelEditar" style="display:none">
+    <div style="margin-top:14px">
+      <div class="section">
+        <div class="section-title">Editar OT</div>
+        <span class="field-label">Tecnico principal</span>
+        <select id="cotEditTecnico"></select>
+        <span class="field-label" style="margin-top:12px">Fecha programada</span>
+        <input type="date" id="cotEditFechaProg">
+        <span class="field-label" style="margin-top:12px">Fecha ejecucion</span>
+        <input type="date" id="cotEditFechaEjec">
+        <span class="field-label" style="margin-top:12px">Descripcion</span>
+        <textarea id="cotEditDesc" style="min-height:80px"></textarea>
+        <button class="submit-btn" onclick="cotGuardarEdicion()" style="margin-top:16px">Guardar cambios</button>
+        <div style="margin-top:10px;text-align:center">
+          <button style="background:none;border:none;font-size:12px;color:var(--text-muted);cursor:pointer;font-family:inherit" onclick="cotMostrarDetalle(cotOTActual)">&#8592; Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="bottom-space"></div>
 </div>
 
 </body>
