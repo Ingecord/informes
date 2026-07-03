@@ -628,22 +628,19 @@ function renderDashboard(data){
 
   var otsTecnico=ots.filter(function(o){
     var fields=o.fields||o;
-    // Tecnico_Principal viene como texto "Tecnico 1 - Jorge Gonzalez"
-    // session.nombre tiene el mismo formato
+    // Filtrar por ID de tecnico (campo mas confiable)
     var esTecnico=false;
-    if(fields.Tecnico_Principal){
-      esTecnico=fields.Tecnico_Principal===nombre||
-                fields.Tecnico_Principal.indexOf(nombreReal)!==-1||
-                nombre.indexOf(fields.Tecnico_Principal)!==-1;
-    }
-    // Fallback por ID numerico si existe
-    if(!esTecnico&&tecnicoId&&fields.Tecnico_PrincipalLookupId){
+    if(tecnicoId&&fields.Tecnico_PrincipalLookupId){
       esTecnico=String(fields.Tecnico_PrincipalLookupId)===String(tecnicoId);
     }
-    // Filtrar por mes usando Fecha_Programada o Fecha_Creacion
+    if(!esTecnico&&fields.Tecnico_Principal){
+      esTecnico=fields.Tecnico_Principal===nombre||nombre.indexOf(fields.Tecnico_Principal)!==-1;
+    }
+    // Filtrar por mes - usar Fecha_Creacion o Created como fallback
     var fechaStr=fields.Fecha_Programada||fields.Fecha_Creacion||fields.Created||null;
     var f=fechaStr?new Date(fechaStr):null;
-    var enMes=f?f.getMonth()===mes&&f.getFullYear()===anio:true;
+    // Si no hay fecha, incluir la OT
+    var enMes=f?(f.getMonth()===mes&&f.getFullYear()===anio):true;
     return esTecnico&&enMes;
   });
 
