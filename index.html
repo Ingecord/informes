@@ -273,7 +273,7 @@ textarea{min-height:90px;resize:vertical}
     </div>
 
     <div class="dash-section" id="dashOTsSection">
-      <div class="dash-section-title">Mis OTs activas este mes</div>
+      <div class="dash-section-title">Mis OTs activas</div>
       <div id="dashOTs"><div class="empty-state">Cargando...</div></div>
     </div>
 
@@ -627,22 +627,23 @@ function renderDashboard(data){
     nombreReal=nombre.split(' - ').slice(1).join(' - ');
   }
 
-  var otsTecnico=ots.filter(function(o){
+  // OTs del mes para KPIs
+  var otsMes=ots.filter(function(o){
     var fields=o.fields||o;
-    // Filtrar por ID de tecnico (campo mas confiable)
-    var esTecnico=false;
-    if(tecnicoId&&fields.Tecnico_PrincipalLookupId){
-      esTecnico=String(fields.Tecnico_PrincipalLookupId)===String(tecnicoId);
-    }
-    if(!esTecnico&&fields.Tecnico_Principal){
-      esTecnico=fields.Tecnico_Principal===nombre||nombre.indexOf(fields.Tecnico_Principal)!==-1;
-    }
-    // Filtrar por mes - usar Fecha_Creacion o Created como fallback
+    var esTecnico=tecnicoId?String(fields.Tecnico_PrincipalLookupId)===String(tecnicoId):false;
     var fechaStr=fields.Fecha_Programada||fields.Fecha_Creacion||fields.Created||null;
     var f=fechaStr?new Date(fechaStr):null;
-    // Si no hay fecha, incluir la OT
     var enMes=f?(f.getMonth()===mes&&f.getFullYear()===anio):true;
     return esTecnico&&enMes;
+  });
+
+  // Todas las OTs activas del tecnico (para la lista y equipos pendientes)
+  var estadosCerrados=['Cerrada','Facturada'];
+  var otsTecnico=ots.filter(function(o){
+    var fields=o.fields||o;
+    var esTecnico=tecnicoId?String(fields.Tecnico_PrincipalLookupId)===String(tecnicoId):false;
+    var activa=estadosCerrados.indexOf(fields.Estado||fields.Estado_OT||'Abierta')===-1;
+    return esTecnico&&activa;
   });
 
   // OTs completadas
@@ -679,7 +680,7 @@ function renderDashboard(data){
   });
 
   // KPIs
-  document.getElementById('kpiOTs').textContent=otsTecnico.length;
+  document.getElementById('kpiOTs').textContent=otsMes.length;
   document.getElementById('kpiInf').textContent=eqsPendientes.length;
   document.getElementById('kpiHerr').textContent=herrTecnico.length;
 
