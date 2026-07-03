@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -675,7 +674,18 @@ function renderDashboard(data){
     var otId=String(e.OTsLookupId||e.OTLookupId||e.OT_ID||'');
     return otId&&todosOtIdsTecnico.indexOf(otId)!==-1;
   });
-  var eqsPendientes=eqsTecnico.filter(function(e){
+  // Solo equipos de OTs NO cerradas
+  var estadosCerradosKPI=['Cerrada','Facturada','Completada'];
+  var otIdsTecnicoActivos=ots.filter(function(o){
+    var fields=o.fields||o;
+    var esTecnico=tecnicoId?String(fields.Tecnico_PrincipalLookupId)===String(tecnicoId):false;
+    var activa=estadosCerradosKPI.indexOf(fields.Estado||fields.Estado_OT||'Abierta')===-1;
+    return esTecnico&&activa;
+  }).map(function(o){return String(o.id||o.ID||'');});
+  var eqsActivos=eqs.filter(function(e){
+    return otIdsTecnicoActivos.indexOf(String(e.OTsLookupId||''))!==-1;
+  });
+  var eqsPendientes=eqsActivos.filter(function(e){
     return e.Informe_Recibido===false||e.Informe_Recibido===null||e.Informe_Recibido===undefined||e.Informe_Recibido==='false';
   });
 
