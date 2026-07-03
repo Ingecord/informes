@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -535,7 +534,8 @@ function launchDashboard(){
   document.getElementById('kpiInf').textContent='...';
   document.getElementById('kpiHerr').textContent='...';
   // Mensaje motivacional inmediato
-  var msg=getMensajeMotivacional();
+  var rolesConMsgOT=['Tecnico','Ayudante','Supervisor','ServiciosProfesionales'];
+  var msg=rolesConMsgOT.indexOf(session.rol)!==-1?getMensajeMotivacional():'El orden que creas hoy es la eficiencia que todos disfrutan mañana.';
   document.getElementById('dashMsg').className='mensaje-box';
   document.getElementById('dashMsgTxt').textContent=msg;
   // Fecha actual
@@ -1469,7 +1469,7 @@ function renderAccesos(){
   var btnHerramientasHistorial={icon:'&#128295;',label:'Herramientas',color:'#a8d4b8',action:'abrirHerramientasHistorial()'};
   var btnOTs={icon:'&#128221;',label:'Ordenes de trabajo',color:'#a8c0d8',action:'showOnly(\'screenModuloOTs\')'};
 
-  if(rol==='Tecnico'||rol==='Ayudante'){
+  if(rol==='Tecnico'||rol==='Ayudante'||rol==='ServiciosProfesionales'){
     btns=[btnInforme,btnHerramienta,btnMateriales,btnMedico,btnVacaciones,btnSugerencia];
   } else if(rol==='Supervisor'){
     btns=[btnInforme,btnHerramientasHistorial,btnMedico,btnVacaciones,btnSugerencia];
