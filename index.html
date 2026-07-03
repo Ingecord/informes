@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -1665,6 +1664,8 @@ var cotOTsCache=[];
 var cotEquiposCache=[];
 var cotOTActual=null;
 var cotEstadoFiltro='';
+var cotClientesMap={};
+var cotTecnicosMap={};
 
 function abrirControlOTs(){
   showOnly('screenControlOTs');
@@ -1677,13 +1678,19 @@ function abrirControlOTs(){
 
 function cotCargarOTs(){
   document.getElementById('cotListaOTs').innerHTML='<div class="empty-state">Cargando...</div>';
-  fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_OTS',payload:{estado:'todos'}})})
-  .then(function(r){return r.json();})
-  .then(function(data){
-    cotOTsCache=data.map(function(o){return o.fields?o.fields:o;});
+  // Cargar clientes, tecnicos y OTs en paralelo
+  var pClientes=fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_CLIENTES'})}).then(function(r){return r.json();});
+  var pTecnicos=fetch(CONSULTA_URL+'?accion=listar_tecnicos').then(function(r){return r.json();});
+  var pOTs=fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_OTS',payload:{estado:'todos'}})}).then(function(r){return r.json();});
+  Promise.all([pClientes,pTecnicos,pOTs]).then(function(results){
+    // Build clientes map
+    (results[0]||[]).forEach(function(c){var f=c.fields||c;cotClientesMap[f.id||f.ID]=f.Title||'';});
+    // Build tecnicos map
+    (results[1]||[]).forEach(function(t){var f=t.fields||t;cotTecnicosMap[f.id||f.ID]=f.Title||'';});
+    // Load OTs
+    cotOTsCache=(results[2]||[]).map(function(o){return o.fields?o.fields:o;});
     cotRenderLista();
-  })
-  .catch(function(){document.getElementById('cotListaOTs').innerHTML='<div class="empty-state">Error al cargar.</div>';});
+  }).catch(function(){document.getElementById('cotListaOTs').innerHTML='<div class="empty-state">Error al cargar.</div>';});
 }
 
 function cotSetEstado(estado){
@@ -1701,8 +1708,13 @@ function cotRenderLista(){
   var q=document.getElementById('cotBuscador').value.toLowerCase();
   var lista=cotOTsCache.filter(function(o){
     var est=o.Estado||'';
-    var pasaEstado=!cotEstadoFiltro||est===cotEstadoFiltro;
-    var pasaBusqueda=!q||(o.Title||'').toLowerCase().indexOf(q)!==-1||(o.Cliente||'').toLowerCase().indexOf(q)!==-1;
+    // Normalize estado for comparison
+    var estNorm=est.toLowerCase().replace(/[áéíóú]/g,function(c){return {á:'a',é:'e',í:'i',ó:'o',ú:'u'}[c]||c;});
+    var filtroNorm=cotEstadoFiltro.toLowerCase().replace(/[áéíóú]/g,function(c){return {á:'a',é:'e',í:'i',ó:'o',ú:'u'}[c]||c;});
+    var pasaEstado=!cotEstadoFiltro||estNorm===filtroNorm;
+    var clienteNombre=cotClientesMap[o.ClienteLookupId]||'';
+    var tecnicoNombre=cotTecnicosMap[o.Tecnico_PrincipalLookupId]||'';
+    var pasaBusqueda=!q||(o.Title||'').toLowerCase().indexOf(q)!==-1||clienteNombre.toLowerCase().indexOf(q)!==-1||tecnicoNombre.toLowerCase().indexOf(q)!==-1;
     return pasaEstado&&pasaBusqueda;
   });
   if(!lista.length){document.getElementById('cotListaOTs').innerHTML='<div class="empty-state">Sin OTs.</div>';return;}
@@ -1714,11 +1726,13 @@ function cotRenderLista(){
     html+='<div onclick="cotMostrarDetalle('+JSON.stringify(o).replace(/"/g,'&quot;')+')" style="background:var(--white);border:0.5px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px;cursor:pointer">';
     html+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">';
     html+='<span style="font-size:13px;font-weight:600;color:var(--text)">'+(o.Title||'-')+'</span>';
-    html+='<span class="badge '+badge+'" style="font-size:10px;padding:3px 8px;border-radius:99px;font-weight:500">'+(o.Estado||'-')+'</span>';
+    html+='<span style="font-size:10px;padding:3px 10px;border-radius:99px;font-weight:500;background:'+(badge==='badge-open'?'#FEF3C7':badge==='badge-exec'?'#DBEAFE':badge==='badge-pend'?'#FEE2E2':'#D1FAE5')+';color:'+(badge==='badge-open'?'#92400E':badge==='badge-exec'?'#1E40AF':badge==='badge-pend'?'#991B1B':'#065F46')+'">'+est+'</span>';
     html+='</div>';
-    html+='<div style="font-size:12px;color:var(--text-muted);margin-bottom:6px">'+(o.ClienteLookupId?'Cliente ID: '+o.ClienteLookupId:'Sin cliente')+'</div>';
+    var clienteNom=cotClientesMap[o.ClienteLookupId]||'Cliente '+o.ClienteLookupId||'Sin cliente';
+    var tecnicoNom=cotTecnicosMap[o.Tecnico_PrincipalLookupId]||'Sin asignar';
+    html+='<div style="font-size:12px;color:var(--text-muted);margin-bottom:6px">'+clienteNom+'</div>';
     html+='<div style="display:flex;align-items:center;justify-content:space-between">';
-    html+='<span style="font-size:11px;color:var(--text-muted)">&#128100; Tecnico ID: '+(o.Tecnico_PrincipalLookupId||'Sin asignar')+'</span>';
+    html+='<span style="font-size:11px;color:var(--text-muted)">&#128100; '+tecnicoNom+'</span>';
     html+='<span style="font-size:11px;color:var(--text-muted)">'+(inf?'&#9989; Completo':'&#9203; Pendiente')+'</span>';
     html+='</div>';
     html+='<div style="font-size:10px;color:var(--text-muted);margin-top:4px">Programada: '+(o.Fecha_Programada?o.Fecha_Programada.split('T')[0]:'-')+'</div>';
