@@ -485,7 +485,7 @@ function showOnly(id){
 function goToPin(){showOnly('screenPin');pinBuffer='';updateDots();document.getElementById('pinError').style.display='none';}
 function backToLobby(){showOnly('screenLobby');}
 function fullLogout(){session={nombre:null,rol:null};pinBuffer='';showOnly('screenLobby');}
-function volverAModulos(){showOnly('screenModulos');}
+function volverAModulos(){launchDashboard();}
 function volverAlOrigen(){
   if(origenDashboard==='tecnico'){
     showOnly('screenSeleccion');
