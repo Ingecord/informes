@@ -1689,6 +1689,7 @@ var cotOTActual=null;
 var cotEstadoFiltro='';
 var cotClientesMap={};
 var cotTecnicosMap={};
+var cotSucursalesMap={};
 
 function abrirControlOTs(){
   showOnly('screenControlOTs');
@@ -1704,14 +1705,17 @@ function cotCargarOTs(){
   // Cargar clientes, tecnicos y OTs en paralelo
   var pClientes=fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_CLIENTES'})}).then(function(r){return r.json();});
   var pTecnicos=fetch(CONSULTA_URL+'?accion=listar_tecnicos').then(function(r){return r.json();});
+  var pSucursales=fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_SUCURSALES',payload:{clienteId:'todos'}})}).then(function(r){return r.json();});
   var pOTs=fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_OTS',payload:{estado:'todos'}})}).then(function(r){return r.json();});
-  Promise.all([pClientes,pTecnicos,pOTs]).then(function(results){
+  Promise.all([pClientes,pTecnicos,pSucursales,pOTs]).then(function(results){
     // Build clientes map
     (results[0]||[]).forEach(function(c){var f=c.fields||c;cotClientesMap[f.id||f.ID]=f.Title||'';});
     // Build tecnicos map
     (results[1]||[]).forEach(function(t){var f=t.fields||t;cotTecnicosMap[f.id||f.ID]=f.Title||'';});
+    // Build sucursales map
+    (results[2]||[]).forEach(function(s){var f=s.fields||s;cotSucursalesMap[f.id||f.ID]=f.Title||'';});
     // Load OTs
-    cotOTsCache=(results[2]||[]).map(function(o){return o.fields?o.fields:o;});
+    cotOTsCache=(results[3]||[]).map(function(o){return o.fields?o.fields:o;});
     cotRenderLista();
   }).catch(function(){document.getElementById('cotListaOTs').innerHTML='<div class="empty-state">Error al cargar.</div>';});
 }
@@ -1763,8 +1767,10 @@ function cotRenderLista(){
     html+='<span style="font-size:10px;padding:3px 10px;border-radius:99px;font-weight:500;background:'+(badge==='badge-open'?'#FEF3C7':badge==='badge-exec'?'#DBEAFE':badge==='badge-pend'?'#FEE2E2':'#D1FAE5')+';color:'+(badge==='badge-open'?'#92400E':badge==='badge-exec'?'#1E40AF':badge==='badge-pend'?'#991B1B':'#065F46')+'">'+est+'</span>';
     html+='</div>';
     var clienteNom=(cotClientesMap[o.ClienteLookupId]||'Sin cliente').replace(/—/g,'-');
+    var sucursalNom=(cotSucursalesMap[o.SucursalLookupId]||'').replace(/—/g,'-');
     var tecnicoNom=cotTecnicosMap[o.Tecnico_PrincipalLookupId]||'Sin asignar';
-    html+='<div style="font-size:12px;color:var(--text-muted);margin-bottom:6px">'+clienteNom+'</div>';
+    var clienteSucursal=clienteNom+(sucursalNom?' — '+sucursalNom:'');
+    html+='<div style="font-size:12px;color:var(--text-muted);margin-bottom:6px">'+clienteSucursal+'</div>';
     html+='<div style="display:flex;align-items:center;justify-content:space-between">';
     html+='<span style="font-size:11px;color:var(--text-muted)">&#128100; '+tecnicoNom+'</span>';
     html+='<div style="display:flex;align-items:center;gap:6px">';
@@ -2144,8 +2150,9 @@ function renderModuloOTs(){
           <select id="otTipo">
             <option value="Mantenimiento_Preventivo">Mantenimiento preventivo</option>
             <option value="Mantenimiento_Correctivo">Mantenimiento correctivo</option>
-            <option value="Instalacion">Instalacion</option>
-            <option value="Diagnostico">Diagnostico</option>
+            <option value="Instalación">Instalación</option>
+            <option value="Diagnostico">Diagnóstico</option>
+            <option value="Inspeccion">Inspección</option>
           </select>
         </div>
         <div class="param-field">
