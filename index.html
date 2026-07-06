@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -18,7 +17,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;backgrou
 #screenLobby{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:32px 24px}
 #screenPin{min-height:100vh;display:none;align-items:center;justify-content:center;padding:24px}
 #screenModulos,#screenDashboard,#screenHerramientas{display:none;flex-direction:column;min-height:100vh}
-#screenSeleccion,#screenDX,#screenVRF,#screenSG{display:none}
+#screenSeleccion,#screenDX,#screenVRF,#screenSG,#screenEXT{display:none}
 .lobby-logo{text-align:center}
 .lobby-logo img{height:90px;width:auto}
 .lobby-brand{font-size:22px;font-weight:600;color:var(--text);margin-top:8px;letter-spacing:-0.02em}
@@ -499,7 +498,7 @@ function showOnly(id){
   var target=document.getElementById(id);
   if(!target) return;
   var colScreens=['screenModulos','screenDashboard','screenHerramientas'];
-  var blockScreens=['screenSeleccion','screenDX','screenVRF','screenSG','screenSolMedico','screenSolVacaciones','screenSolHerramienta','screenSolMateriales','screenSolSugerencia','screenNuevaHerramienta','screenSolCompra','screenNuevaOT','screenModuloOTs','screenControlOTs'];
+  var blockScreens=['screenSeleccion','screenDX','screenVRF','screenSG','screenEXT','screenSolMedico','screenSolVacaciones','screenSolHerramienta','screenSolMateriales','screenSolSugerencia','screenNuevaHerramienta','screenSolCompra','screenNuevaOT','screenModuloOTs','screenControlOTs'];
   if(blockScreens.indexOf(id)!==-1){target.style.display='block';}
   else if(colScreens.indexOf(id)!==-1){target.style.display='flex';target.style.flexDirection='column';}
   else{target.style.display='flex';}
