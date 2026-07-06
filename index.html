@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -428,6 +429,29 @@ textarea{min-height:90px;resize:vertical}
   </div>
 </div>
 
+<div id="screenEXT">
+  <div class="inf-top-bar" style="display:flex;align-items:center;justify-content:space-between"><div><div class="brand">Ingecord</div><h1 id="extTitle">Informe de Extraccion</h1><div class="subtitle" id="extSub">-</div></div><button onclick="volverAlOrigen()" style="background:rgba(255,255,255,0.15);border:none;color:white;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit">&#8592; Volver</button></div>
+  <div class="container">
+    <div class="info-card"><div class="badge-source">Datos cargados desde OT</div><div class="info-row"><span class="info-lbl">OT</span><span class="info-val" id="extOT">-</span></div><div class="info-row"><span class="info-lbl">Cliente</span><span class="info-val" id="extCliente">-</span></div><div class="info-row"><span class="info-lbl">Sucursal</span><span class="info-val" id="extSucursal">-</span></div><div class="info-row"><span class="info-lbl">Equipo</span><span class="info-val" id="extEquipo">-</span></div><div class="info-row"><span class="info-lbl">Ubicacion</span><span class="info-val" id="extUbicacion">-</span></div><div class="info-row"><span class="info-lbl">Marca/Modelo</span><span class="info-val" id="extMarca">-</span></div><div class="info-row" style="border-bottom:none"><span class="info-lbl">Tecnico</span><span class="info-val" id="extTecnico">-</span></div></div>
+    <div class="section"><div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>Tipo de mantenimiento <span class="required-star">*</span></div><div class="tipo-group" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button class="tipo-btn" id="extBtnPrev" onclick="extSetTipo('Preventivo')">Preventivo</button><button class="tipo-btn" id="extBtnCorr" onclick="extSetTipo('Correctivo')">Correctivo</button><button class="tipo-btn" id="extBtnInsp" onclick="extSetTipo('Inspeccion')">Inspeccion</button><button class="tipo-btn" id="extBtnDiag" onclick="extSetTipo('Diagnostico')">Diagnostico</button></div></div>
+    <div class="section"><div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Checklist</div><table class="checklist-table"><thead><tr><th style="width:52%">Actividad</th><th style="width:16%">Si</th><th style="width:16%">No</th><th style="width:16%">NA</th></tr></thead><tbody id="extChecklist"></tbody></table></div>
+    <div class="section"><div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>Parametros electricos del motor</div>
+      <div class="circuito-block">
+        <div class="circuito-header">Voltaje y amperaje</div>
+        <span class="field-label">Voltaje medido (V)</span><div class="params-grid"><div class="param-field"><label>A-B</label><input type="number" id="extVAB"></div><div class="param-field"><label>B-C</label><input type="number" id="extVBC"></div><div class="param-field"><label>A-C</label><input type="number" id="extVAC"></div></div>
+        <span class="field-label" style="margin-top:12px">Amperaje medido (A)</span><div class="params-grid"><div class="param-field"><label>Fase A</label><input type="number" id="extAmpA"></div><div class="param-field"><label>Fase B</label><input type="number" id="extAmpB"></div><div class="param-field"><label>Fase C</label><input type="number" id="extAmpC"></div></div>
+        <span class="field-label" style="margin-top:12px">Velocidad y ruido</span><div class="params-grid"><div class="param-field"><label>RPM medido</label><input type="number" id="extRPM"></div><div class="param-field"><label>Nivel de ruido</label><input type="text" id="extRuido" placeholder="Normal / Anormal"></div></div>
+      </div>
+    </div>
+    <div class="section"><div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>Estado del equipo <span class="required-star">*</span></div><div class="estado-group"><button class="estado-btn atendido" onclick="extSetEstado(this,'Atendido')">Atendido</button><button class="estado-btn seguimiento" onclick="extSetEstado(this,'Requiere seguimiento')">Requiere seguimiento</button><button class="estado-btn accesible" style="grid-column:1/-1" onclick="extSetEstado(this,'No accesible')">No accesible</button></div></div>
+    <div class="section"><div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>Trabajo adicional <span class="required-star">*</span></div><div class="trabajo-toggle"><button class="toggle-btn" id="extTrabNo" onclick="extSetTrab(false)">No detectado</button><button class="toggle-btn" id="extTrabSi" onclick="extSetTrab(true)">Si detectado</button></div><div class="trabajo-desc" id="extTrabWrap"><textarea id="extTrabDesc" placeholder="Describa el trabajo adicional..."></textarea></div></div>
+    <div class="section"><div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Observaciones</div><textarea id="extObs" placeholder="Describa el trabajo realizado..."></textarea></div>
+    <div class="section"><div class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>Fotos</div><div class="foto-zone"><input type="file" accept="image/*" multiple id="extFotos" onchange="handleFotos('ext',this)"><div class="foto-zone-icon">&#128247;</div><p>Seleccionar fotos</p><small>Maximo 5</small></div><div class="foto-grid" id="extFotoGrid"></div><p class="foto-count-label" id="extFotoCount"></p></div>
+    <button class="submit-btn" id="extSubmit" onclick="enviarEXT()">Enviar informe</button>
+    <div class="bottom-space"></div>
+  </div>
+</div>
+
 <script>
 var WEBHOOK_AUTH='https://hook.us2.make.com/h39vw2abu22qydiy23hobjb5woc53qa7';
 var WEBHOOK_DASH='https://hook.us2.make.com/i5eda7jlcihhm5a2skuvdk1tas8o54gx';
@@ -441,16 +465,17 @@ var otsCache=[];
 var equiposCache=[];
 var inventarioCache=[];
 var movimientosCache=[];
-var fotosMap={dx:[],vrf:[],sg:[]};
+var fotosMap={dx:[],vrf:[],sg:[],ext:[]};
 var OTD={ot:'',cliente:'',sucursal:'',equipo:'',ubicacion:'',marca:'',refrigerante:'',tecnico:'',tipoEquipo:'',tipoSistema:'',eqID:''};
 var dxTipo=null,dxEstado=null,dxTrab=null;
 var vrfTipo=null,vrfEstado=null,vrfTrab=null,vrfEvN=0,vrfCoN=0,vrfCkState={};
 var sgTipo=null,sgEstado=null;
+var extTipo=null,extEstado=null,extTrab=null,extCkState={};
 var dxCkState={};
 var dxCkBuilt=false;
 var origenDashboard='tecnico';
 
-var SCREENS=['screenLobby','screenPin','screenModulos','screenDashboard','screenHerramientas','screenSeleccion','screenDX','screenVRF','screenSG','screenSolMedico','screenSolVacaciones','screenSolHerramienta','screenSolMateriales','screenSolSugerencia','screenNuevaHerramienta','screenSolCompra','screenNuevaOT'];
+var SCREENS=['screenLobby','screenPin','screenModulos','screenDashboard','screenHerramientas','screenSeleccion','screenDX','screenVRF','screenSG','screenEXT','screenSolMedico','screenSolVacaciones','screenSolHerramienta','screenSolMateriales','screenSolSugerencia','screenNuevaHerramienta','screenSolCompra','screenNuevaOT'];
 
 var MENSAJES_MOT=[
   'El trabajo bien hecho es la mejor forma de hablar por uno mismo.',
@@ -1086,7 +1111,8 @@ function continuarAFormulario(){
   for(var i=0;i<equiposCache.length;i++){if(String(equiposCache[i].equipoOT_ID)===String(eqId)){eq=equiposCache[i];break;}}
   if(!ot||!eq){alert('Selecciona OT y equipo.');return;}
   OTD.ot=ot.fields.Title;OTD.equipo=eq.nombreEquipo;OTD.ubicacion=eq.ubicacion||'-';OTD.marca=eq.marcaModelo||'-';OTD.refrigerante=eq.refrigerante||'-';OTD.tecnico=session.nombre;OTD.tipoEquipo=eq.tipoEquipo||'DX';OTD.tipoSistema=eq.tipoSistema||'';OTD.eqID=eq.equipoOT_ID;OTD.cliente=eq.clienteNombre||'-';OTD.sucursal=eq.sucursalNombre||'-';
-  if(OTD.tipoSistema&&OTD.tipoSistema.toLowerCase().indexOf('vrf')!==-1){abrirVRF();}else{abrirDX();}
+  var ts=(OTD.tipoSistema||'').toLowerCase();var te=(OTD.tipoEquipo||'').toLowerCase();
+  if(ts.indexOf('vrf')!==-1){abrirVRF();}else if(ts.indexOf('extrac')!==-1||te.indexOf('extrac')!==-1){abrirEXT();}else{abrirDX();}
 }
 
 function irASG(){
@@ -1117,6 +1143,51 @@ function abrirVRF(){
   buildChecklist('vrfChecklist',vrfCkState);showOnly('screenVRF');
 }
 
+var CHECKLIST_EXT=[
+  {g:'Motor y transmision',items:['Motor electrico - estado general','Correa / banda - tension y desgaste','Poleas - alineacion','Rodamientos - lubricacion y ruido']},
+  {g:'Impulsor y ductos',items:['Aspas / impulsor - limpieza y balance','Ductos - fugas o danos visibles','Rejillas / difusores - limpieza']},
+  {g:'Electrica y operacion',items:['Conexiones electricas - ajuste y apriete','Vibracion anormal','Protecciones electricas - estado']}
+];
+
+function abrirEXT(){
+  extTipo=null;extEstado=null;extTrab=null;extCkState={};fotosMap.ext=[];
+  document.getElementById('extOT').textContent=OTD.ot;document.getElementById('extCliente').textContent=OTD.cliente;document.getElementById('extSucursal').textContent=OTD.sucursal;document.getElementById('extEquipo').textContent=OTD.equipo;document.getElementById('extUbicacion').textContent=OTD.ubicacion;document.getElementById('extMarca').textContent=OTD.marca;document.getElementById('extTecnico').textContent=OTD.tecnico;document.getElementById('extSub').textContent=OTD.cliente+' - '+OTD.sucursal;
+  document.getElementById('extFotoGrid').innerHTML='';document.getElementById('extFotoCount').textContent='';
+  buildChecklistCustom('extChecklist',extCkState,CHECKLIST_EXT);
+  document.querySelectorAll('#screenEXT .tipo-btn').forEach(function(b){b.classList.remove('active');});
+  document.querySelectorAll('#screenEXT .estado-btn').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('extTrabWrap').classList.remove('visible');
+  document.getElementById('extTrabNo').className='toggle-btn';document.getElementById('extTrabSi').className='toggle-btn';
+  ['extVAB','extVBC','extVAC','extAmpA','extAmpB','extAmpC','extRPM','extRuido','extObs','extTrabDesc'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  showOnly('screenEXT');
+}
+function extSetTipo(t){extTipo=t;document.querySelectorAll('#screenEXT .tipo-btn').forEach(function(b){b.classList.remove('active');});var m={Preventivo:'extBtnPrev',Correctivo:'extBtnCorr',Inspeccion:'extBtnInsp',Diagnostico:'extBtnDiag'};if(m[t])document.getElementById(m[t]).classList.add('active');}
+function extSetEstado(btn,v){extEstado=v;document.querySelectorAll('#screenEXT .estado-btn').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');}
+function extSetTrab(v){extTrab=v;document.getElementById('extTrabNo').className='toggle-btn'+(v?'':' active-no');document.getElementById('extTrabSi').className='toggle-btn'+(v?' active-si':'');document.getElementById('extTrabWrap').classList.toggle('visible',v);}
+function enviarEXT(){
+  if(!extTipo){alert('Selecciona tipo de mantenimiento.');return;}
+  if(!extEstado){alert('Selecciona estado del equipo.');return;}
+  if(extTrab===null){alert('Indica si hay trabajo adicional.');return;}
+  var btn=document.getElementById('extSubmit');btn.disabled=true;btn.textContent='Enviando...';
+  var p={tipoFormulario:'Extraccion',ot:OTD.ot,equipoOT_ID:OTD.eqID,equipo:OTD.equipo,cliente:OTD.cliente,sucursal:OTD.sucursal,ubicacion:OTD.ubicacion,marca:OTD.marca,tecnico:OTD.tecnico,tipoEquipo:OTD.tipoEquipo,tipoMantenimiento:extTipo,fechaInforme:new Date().toISOString(),checklist:extCkState,voltAB:gv('extVAB'),voltBC:gv('extVBC'),voltAC:gv('extVAC'),ampA:gv('extAmpA'),ampB:gv('extAmpB'),ampC:gv('extAmpC'),rpm:gv('extRPM'),nivelRuido:gv('extRuido'),estadoEquipo:extEstado,trabajoAdicionalDetectado:extTrab,descripcionTrabajoAdicional:extTrab?gv('extTrabDesc'):null,observacionesTecnico:gv('extObs')};
+  getFotos('ext').then(function(fd){p.fotosArray=fd;return fetch(PA_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});}).then(function(){btn.textContent='Informe enviado';btn.style.background='var(--teal-mid)';setTimeout(function(){volverAlOrigen();},2500);}).catch(function(){btn.textContent='Informe enviado';btn.style.background='var(--teal-mid)';setTimeout(function(){volverAlOrigen();},2500);});
+}
+
+function buildChecklistCustom(tbodyId,stateObj,items){
+  var tb=document.getElementById(tbodyId);tb.innerHTML='';
+  items.forEach(function(group){
+    tb.innerHTML+='<tr><td colspan="4" style="padding:8px 0 4px;font-size:11px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:0.05em">'+group.g+'</td></tr>';
+    group.items.forEach(function(item){
+      var key=item.replace(/[^a-zA-Z0-9]/g,'_');stateObj[key]=null;
+      var html='<tr><td class="item-name">'+item+'</td>';
+      html+='<td class="radio-cell"><button class="radio-sn si" data-key="'+key+'" data-tb="'+tbodyId+'" data-val="Si" onclick="setCheck(this)">Si</button></td>';
+      html+='<td class="radio-cell"><button class="radio-sn no" data-key="'+key+'" data-tb="'+tbodyId+'" data-val="No" onclick="setCheck(this)">No</button></td>';
+      html+='<td class="radio-cell"><button class="radio-sn na" data-key="'+key+'" data-tb="'+tbodyId+'" data-val="NA" onclick="setCheck(this)">NA</button></td></tr>';
+      tb.innerHTML+=html;
+    });
+  });
+}
+
 var CHECKLIST=[
   {g:'Limpieza',items:['Limpieza de serpentin condensador','Limpieza de serpentin evaporador','Lavado o cambio de filtros','Limpieza de desague condensado']},
   {g:'Mecanica',items:['Lubricacion de motores','Ajuste de correas','Ajuste de poleas','Inspeccion de rodamientos']},
@@ -1141,7 +1212,7 @@ function buildChecklist(tbodyId,state){
 
 function setCheck(btn){
   var key=btn.getAttribute('data-key');var val=btn.getAttribute('data-val');var tb=btn.getAttribute('data-tb');
-  if(tb==='dxChecklist') dxCkState[key]=val; else vrfCkState[key]=val;
+  if(tb==='dxChecklist') dxCkState[key]=val; else if(tb==='extChecklist') extCkState[key]=val; else vrfCkState[key]=val;
   var all=document.querySelectorAll('[data-key="'+key+'"][data-tb="'+tb+'"]');all.forEach(function(b){b.classList.remove('selected');});btn.classList.add('selected');
 }
 
