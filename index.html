@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -1766,7 +1767,8 @@ function submitNuevaOT(){
   .then(function(data){
     if(data.ok){
       alert('Orden de trabajo creada correctamente.');
-      volverAlDashboardDesdeSOL();
+      resetNuevaOT();
+      showOnly('screenModuloOTs');
     } else {
       alert('Error al crear la OT. Intenta de nuevo.');
       btn.disabled=false;btn.textContent='Crear orden de trabajo';
@@ -1776,6 +1778,27 @@ function submitNuevaOT(){
     alert('Error de conexion. Intenta de nuevo.');
     btn.disabled=false;btn.textContent='Crear orden de trabajo';
   });
+}
+
+function resetNuevaOT(){
+  otClienteSeleccionado=null;otSucursalSeleccionada=null;otTecnicoSeleccionado=null;otEquiposSeleccionados=[];
+  var btn=document.getElementById('btnCrearOT');
+  btn.disabled=false;btn.textContent='Crear orden de trabajo';
+  var el;
+  el=document.getElementById('otClienteBuscar');if(el)el.value='';
+  el=document.getElementById('otClienteId');if(el)el.value='';
+  el=document.getElementById('otClienteLista');if(el){el.innerHTML='';el.style.display='none';}
+  el=document.getElementById('otSucursal');if(el)el.selectedIndex=0;
+  el=document.getElementById('otSucursalId');if(el)el.value='';
+  el=document.getElementById('otTipo');if(el)el.selectedIndex=0;
+  el=document.getElementById('otPrioridad');if(el)el.selectedIndex=0;
+  el=document.getElementById('otOrigen');if(el)el.selectedIndex=0;
+  el=document.getElementById('otTecnico');if(el)el.selectedIndex=0;
+  el=document.getElementById('otTecnicoId');if(el)el.value='';
+  el=document.getElementById('otFecha');if(el)el.value='';
+  el=document.getElementById('otDescripcion');if(el)el.value='';
+  el=document.getElementById('otEquiposContainer');if(el)el.innerHTML='';
+  el=document.getElementById('otEquiposCount');if(el)el.textContent='0 equipo(s) seleccionado(s)';
 }
 
 var cotOTsCache=[];
