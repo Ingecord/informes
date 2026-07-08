@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -837,6 +836,8 @@ function abrirInformes(){
 
 function abrirHerramientas(){
   showOnly('screenHerramientas');
+  var btnCk=document.getElementById('btnCheckout');if(btnCk){btnCk.disabled=false;btnCk.textContent='Registrar salida';}
+  var btnDev=document.getElementById('btnDevolver');if(btnDev){btnDev.disabled=false;btnDev.textContent='Confirmar devolucion';}
   cargarInventario();
   cargarMovimientosAbiertos();
   cargarTecnicosCheckout();
@@ -1403,7 +1404,11 @@ function submitSolSugerencia(){
 }
 
 
-function abrirNuevaHerramienta(){showOnly('screenNuevaHerramienta');}
+function abrirNuevaHerramienta(){
+  var btn=document.getElementById('btnNuevaHerr');
+  if(btn){btn.disabled=false;btn.textContent='Registrar herramienta';}
+  showOnly('screenNuevaHerramienta');
+}
 function volverAHerramientas(){showOnly('screenHerramientas');}
 
 function submitNuevaHerramienta(){
@@ -1815,6 +1820,8 @@ function abrirControlOTs(){
   document.getElementById('cotPanelDetalle').style.display='none';
   document.getElementById('cotPanelEditar').style.display='none';
   document.getElementById('cotPantallaTitle').textContent='Control de OTs';
+  var btnGuardar=document.querySelector('#cotPanelEditar .submit-btn');
+  if(btnGuardar){btnGuardar.disabled=false;btnGuardar.textContent='Guardar cambios';}
   cotCargarOTs();
 }
 
@@ -1987,6 +1994,8 @@ function cotAbrirEditar(){
   document.getElementById('cotPanelDetalle').style.display='none';
   document.getElementById('cotPanelEditar').style.display='block';
   document.getElementById('cotPantallaTitle').textContent='Editar OT';
+  var btnGuardar=document.querySelector('#cotPanelEditar .submit-btn');
+  if(btnGuardar){btnGuardar.disabled=false;btnGuardar.textContent='Guardar cambios';}
   var ot=cotOTActual;
   document.getElementById('cotEditEstado').value=ot.Estado||'Abierta';
   document.getElementById('cotEditFechaProg').value=ot.Fecha_Programada?ot.Fecha_Programada.split('T')[0]:'';
@@ -2027,7 +2036,7 @@ function cotGuardarEdicion(){
   })})
   .then(function(r){return r.json();})
   .then(function(data){
-    if(data.ok){alert('OT actualizada.');cotCargarOTs();cotMostrarDetalle(Object.assign({},ot,{Estado:estado,Tecnico_PrincipalLookupId:tecnicoId,Fecha_Programada:fechaProg,Fecha_Ejecucion:fechaEjec,Descripcion:desc}));}
+    if(data.ok){alert('OT actualizada.');btn.disabled=false;btn.textContent='Guardar cambios';cotCargarOTs();cotMostrarDetalle(Object.assign({},ot,{Estado:estado,Tecnico_PrincipalLookupId:tecnicoId,Fecha_Programada:fechaProg,Fecha_Ejecucion:fechaEjec,Descripcion:desc}));}
     else{alert('Error al guardar.');btn.disabled=false;btn.textContent='Guardar cambios';}
   })
   .catch(function(){alert('Error de conexion.');btn.disabled=false;btn.textContent='Guardar cambios';});
