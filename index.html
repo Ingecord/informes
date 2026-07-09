@@ -2032,7 +2032,7 @@ function cotGuardarEdicion(){
   btn.disabled=true;btn.textContent='Guardando...';
   fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
     action:'UPDATE_OT',
-    payload:{otId:ot.id||ot.ID,tecnicoId:tecnicoId,fechaProg:fechaProg,fechaEjec:fechaEjec,descripcion:desc}
+    payload:{otId:ot.id||ot.ID,estado:estado,tecnicoId:tecnicoId,fechaProg:fechaProg,fechaEjec:fechaEjec,descripcion:desc}
   })})
   .then(function(r){return r.json();})
   .then(function(data){
