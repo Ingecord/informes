@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -546,7 +547,12 @@ function validatePin(){
 }
 
 function routeByRole(){
-  launchDashboard();
+  var modRoles=['Gerencia','Coordinador','Administrativa','Asistente'];
+  if(modRoles.indexOf(session.rol)!==-1){
+    launchModulos();
+  } else {
+    launchDashboard();
+  }
 }
 
 function launchDashboard(){
@@ -1575,19 +1581,20 @@ function renderAccesos(){
   var btnHerramientasGestion={icon:'&#128295;',label:'Control herramientas',color:'#a8d4b8',action:'abrirHerramientas()'};
   var btnHerramientasHistorial={icon:'&#128295;',label:'Herramientas',color:'#a8d4b8',action:'abrirHerramientasHistorial()'};
   var btnOTs={icon:'&#128221;',label:'Ordenes de trabajo',color:'#a8c0d8',action:'showOnly(\'screenModuloOTs\')'};
+  var btnCotizaciones={icon:'&#128179;',label:'Cotizaciones',color:'#a8c0d8',action:'abrirCotizaciones()'};
 
   if(rol==='Tecnico'||rol==='Ayudante'||rol==='ServiciosProfesionales'){
     btns=[btnInforme,btnHerramienta,btnMateriales,btnMedico,btnVacaciones,btnSugerencia];
   } else if(rol==='Supervisor'){
     btns=[btnOTs,btnHerramientasHistorial,btnMedico,btnVacaciones,btnSugerencia];
   } else if(rol==='Coordinador'){
-    btns=[btnHerramientasGestion,btnOTs,btnCompra,btnMedico,btnVacaciones,btnSugerencia];
+    btns=[btnHerramientasGestion,btnOTs,btnCotizaciones,btnCompra,btnMedico,btnVacaciones,btnSugerencia];
   } else if(rol==='Gerencia'){
-    btns=[btnHerramientasGestion,btnOTs,btnCompra];
+    btns=[btnHerramientasGestion,btnOTs,btnCotizaciones,btnCompra];
   } else if(rol==='Asistente'){
-    btns=[btnHerramientasGestion,btnOTs,btnCompra,btnMedico,btnVacaciones,btnSugerencia];
+    btns=[btnHerramientasGestion,btnOTs,btnCotizaciones,btnCompra,btnMedico,btnVacaciones,btnSugerencia];
   } else if(rol==='Administrativa'){
-    btns=[btnHerramientasGestion,btnCompra,btnMedico,btnVacaciones,btnSugerencia];
+    btns=[btnHerramientasGestion,btnCotizaciones,btnCompra,btnMedico,btnVacaciones,btnSugerencia];
   }
 
   btns.forEach(function(b){
