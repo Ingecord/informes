@@ -454,9 +454,9 @@ textarea{min-height:90px;resize:vertical}
 
 <script>
 var WEBHOOK_AUTH='https://hook.us2.make.com/h39vw2abu22qydiy23hobjb5woc53qa7';
+var WEBHOOK_COT='https://hook.us2.make.com/v2p8mjc1qh0na8e8lgs1nlovonz453e0';
 var WEBHOOK_DASH='https://hook.us2.make.com/i5eda7jlcihhm5a2skuvdk1tas8o54gx';
 var WEBHOOK_HERR='https://hook.us2.make.com/h772bobeo1wfik0qrnupo9lrk9blltyb';
-var WEBHOOK_COT='https://hook.us2.make.com/v2p8mjc1qh0na8e8lgs1nlovonz453e0';
 var CONSULTA_URL='https://hook.us2.make.com/apdlfnasi6d3hxdgj4f3l4wyr6lndip4';
 var PA_URL='https://hook.us2.make.com/7ewyz9o2o108solu40zj6ovlz2pvjduq';
 
@@ -547,12 +547,7 @@ function validatePin(){
 }
 
 function routeByRole(){
-  var modRoles=['Gerencia','Coordinador','Administrativa','Asistente'];
-  if(modRoles.indexOf(session.rol)!==-1){
-    launchModulos();
-  } else {
-    launchDashboard();
-  }
+  launchDashboard();
 }
 
 function launchDashboard(){
@@ -2434,7 +2429,7 @@ function renderModuloOTs(){
 <div id="screenCotizaciones" style="display:none;flex-direction:column;min-height:100vh">
   <div class="dash-header" style="padding:16px 20px">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
-      <button onclick="showOnly('screenModulos')" style="background:rgba(255,255,255,0.15);border:none;color:white;border-radius:8px;padding:6px 10px;font-size:14px;cursor:pointer">&#8592;</button>
+      <button onclick="showOnly('screenDashboard')" style="background:rgba(255,255,255,0.15);border:none;color:white;border-radius:8px;padding:6px 10px;font-size:14px;cursor:pointer">&#8592;</button>
       <span style="font-size:17px;font-weight:600;color:white">Cotizaciones</span>
       <button onclick="abrirFormCot(null)" style="margin-left:auto;background:rgba(255,255,255,0.2);border:none;color:white;border-radius:8px;padding:6px 14px;font-size:13px;cursor:pointer;font-family:inherit">+ Nueva</button>
     </div>
@@ -2456,7 +2451,7 @@ function renderModuloOTs(){
   <div style="background:var(--teal);padding:16px 20px;display:flex;align-items:center;gap:12px">
     <button onclick="showOnly('screenCotizaciones')" style="background:rgba(255,255,255,0.15);border:none;color:white;border-radius:8px;padding:6px 10px;font-size:14px;cursor:pointer">&#8592;</button>
     <span style="font-size:17px;font-weight:600;color:white">Detalle</span>
-    <button id="btnEditarCot" onclick="" style="margin-left:auto;background:rgba(255,255,255,0.2);border:none;color:white;border-radius:8px;padding:6px 14px;font-size:13px;cursor:pointer;font-family:inherit">Editar</button>
+    <button id="btnEditarCot" style="margin-left:auto;background:rgba(255,255,255,0.2);border:none;color:white;border-radius:8px;padding:6px 14px;font-size:13px;cursor:pointer;font-family:inherit">Editar</button>
   </div>
   <div id="cotDetalleBody" style="padding:16px;flex:1"></div>
 </div>
@@ -2498,7 +2493,6 @@ function renderModuloOTs(){
 </div>
 
 <script>
-// ===== COTIZACIONES =====
 var cotCache=[];
 var cotFiltroActual='';
 var cotClientesCache=[];
@@ -2506,13 +2500,18 @@ var cotPersonalCache=[];
 var cotItemActual=null;
 
 var COT_BADGE={
-  'Borrador':'background:#F1EFE8;color:#444441',
-  'Enviada':'background:#E6F1FB;color:#0C447C',
-  'En negociación':'background:#FAEEDA;color:#633806',
-  'Aprobada':'background:#EAF3DE;color:#27500A',
-  'Perdida':'background:#FCEBEB;color:#791F1F',
-  'Cancelada':'background:#F1EFE8;color:#6b6b67'
+  Borrador:'background:#F1EFE8;color:#444441',
+  Enviada:'background:#E6F1FB;color:#0C447C',
+  Negociacion:'background:#FAEEDA;color:#633806',
+  Aprobada:'background:#EAF3DE;color:#27500A',
+  Perdida:'background:#FCEBEB;color:#791F1F',
+  Cancelada:'background:#F1EFE8;color:#6b6b67'
 };
+
+function cotBadge(estado){
+  var key=estado==='En negociaci\u00f3n'?'Negociacion':estado;
+  return COT_BADGE[key]||'background:#eee;color:#333';
+}
 
 function cotPost(body){
   return fetch(WEBHOOK_COT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(function(r){return r.json();});
@@ -2528,25 +2527,23 @@ function cotCargarLista(){
   cotPost({accion:'listar'}).then(function(data){
     var items=(data.value||[]).map(function(it){
       var f=it.fields||{};
-      return {id:it.id,titulo:f.Title||'',descripcion:f.Descripcion||'',monto:f.MontoEstimado||0,estado:f.Estado||'',probabilidad:f.Probabilidad||0,notas:f.Notas||'',fechaEnvio:f.FechaEnvio||'',creado:it.createdDateTime||''};
+      return {id:it.id,titulo:f.Title||'',descripcion:f.Descripcion||'',monto:f.MontoEstimado||0,estado:f.Estado||'',probabilidad:f.Probabilidad||0,notas:f.Notas||'',fechaEnvio:f.FechaEnvio||''};
     });
     cotCache=items;
     cotRenderKpis(items);
     cotRenderLista(items,cotFiltroActual);
   }).catch(function(){
-    document.getElementById('cotLista').innerHTML='<div style="text-align:center;padding:40px;color:var(--red-text);font-size:14px">Error al cargar cotizaciones</div>';
+    document.getElementById('cotLista').innerHTML='<div style="text-align:center;padding:40px;color:var(--red-text);font-size:14px">Error al cargar</div>';
   });
 }
 
 function cotRenderKpis(items){
-  var total=items.length;
-  var montoTotal=items.reduce(function(s,i){return s+(parseFloat(i.monto)||0);},0);
   var aprobadas=items.filter(function(i){return i.estado==='Aprobada';});
   var montoAprobado=aprobadas.reduce(function(s,i){return s+(parseFloat(i.monto)||0);},0);
   var cerradas=items.filter(function(i){return i.estado==='Aprobada'||i.estado==='Perdida'||i.estado==='Cancelada';});
   var tasa=cerradas.length>0?Math.round((aprobadas.length/cerradas.length)*100):0;
   document.getElementById('cotKpis').innerHTML=
-    '<div class="kpi"><div class="kpi-val">'+total+'</div><div class="kpi-lbl">Total</div></div>'+
+    '<div class="kpi"><div class="kpi-val">'+items.length+'</div><div class="kpi-lbl">Total</div></div>'+
     '<div class="kpi"><div class="kpi-val">$'+Math.round(montoAprobado/1000)+'k</div><div class="kpi-lbl">Aprobado</div></div>'+
     '<div class="kpi"><div class="kpi-val">'+tasa+'%</div><div class="kpi-lbl">Cierre</div></div>';
 }
@@ -2561,46 +2558,69 @@ function cotFiltrar(estado,btn){
 function cotRenderLista(items,filtro){
   var lista=filtro?items.filter(function(i){return i.estado===filtro;}):items;
   var cont=document.getElementById('cotLista');
-  if(!lista.length){cont.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-muted);font-size:14px">No hay cotizaciones</div>';return;}
-  cont.innerHTML=lista.map(function(it){
-    var badge=COT_BADGE[it.estado]||'background:#eee;color:#333';
+  if(!lista.length){
+    cont.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-muted);font-size:14px">No hay cotizaciones</div>';
+    return;
+  }
+  cont.innerHTML='';
+  lista.forEach(function(it){
+    var badge=cotBadge(it.estado);
     var monto=it.monto?'$'+parseFloat(it.monto).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0}):'—';
-    return '<div onclick="cotVerDetalle(\''+it.id+'\')" style="background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px;cursor:pointer">'+
+    var prob=Math.round((it.probabilidad||0)*100);
+    var div=document.createElement('div');
+    div.style.cssText='background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px;cursor:pointer';
+    div.innerHTML=
       '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px">'+
       '<div style="font-size:13px;font-weight:600;color:var(--teal)">'+it.titulo+'</div>'+
       '<span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;white-space:nowrap;'+badge+'">'+it.estado+'</span></div>'+
       '<div style="font-size:13px;color:var(--text-muted);margin-bottom:6px">'+it.descripcion+'</div>'+
       '<div style="display:flex;align-items:center;justify-content:space-between">'+
       '<span style="font-size:13px;font-weight:600;color:var(--text)">'+monto+'</span>'+
-      '<span style="font-size:11px;color:var(--text-muted)">'+Math.round((it.probabilidad||0)*100)+'% prob.</span></div></div>';
-  }).join('');
+      '<span style="font-size:11px;color:var(--text-muted)">'+prob+'% prob.</span></div>';
+    (function(id){div.onclick=function(){cotVerDetalle(id);};})(it.id);
+    cont.appendChild(div);
+  });
 }
 
 function cotVerDetalle(id){
   var it=cotCache.find(function(x){return x.id==id;});
   if(!it) return;
   cotItemActual=it;
-  var badge=COT_BADGE[it.estado]||'background:#eee;color:#333';
+  var badge=cotBadge(it.estado);
   var monto=it.monto?'$'+parseFloat(it.monto).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}):'—';
   var prob=Math.round((it.probabilidad||0)*100)+'%';
   document.getElementById('btnEditarCot').onclick=function(){abrirFormCot(it);};
+  var estados=['Borrador','Enviada','En negociaci\u00f3n','Aprobada','Perdida','Cancelada'];
+  var botones=estados.map(function(e){
+    var btn=document.createElement('button');
+    var activo=e===it.estado;
+    btn.style.cssText=(activo?'background:var(--teal);color:white;border-color:var(--teal)':'background:var(--white);color:var(--text);border:1px solid var(--border)')+';padding:6px 14px;border-radius:99px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit';
+    btn.textContent=e;
+    (function(estado){btn.onclick=function(){cotCambiarEstado(id,estado);};})(e);
+    return btn.outerHTML;
+  }).join('');
   document.getElementById('cotDetalleBody').innerHTML=
     '<div style="background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius);padding:16px;margin-bottom:12px">'+
     '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">'+
     '<div style="font-size:16px;font-weight:600;color:var(--text)">'+it.titulo+'</div>'+
     '<span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px;'+badge+'">'+it.estado+'</span></div>'+
-    cotDetalleRow('Descripción',it.descripcion||'—')+
+    cotDetalleRow('Descripcion',it.descripcion||'—')+
     cotDetalleRow('Monto estimado',monto)+
     cotDetalleRow('Probabilidad',prob)+
-    cotDetalleRow('Fecha envío',it.fechaEnvio?it.fechaEnvio.substring(0,10):'—')+
+    cotDetalleRow('Fecha envio',it.fechaEnvio?it.fechaEnvio.substring(0,10):'—')+
     cotDetalleRow('Notas',it.notas||'—')+'</div>'+
     '<div style="background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius);padding:14px 16px">'+
     '<div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px">Cambiar estado</div>'+
-    '<div style="display:flex;flex-wrap:wrap;gap:8px">'+
-    ['Borrador','Enviada','En negociación','Aprobada','Perdida','Cancelada'].map(function(e){
-      var s=e===it.estado?'background:var(--teal);color:white;border-color:var(--teal)':'background:var(--white);color:var(--text);border:1px solid var(--border)';
-      return '<button onclick="cotCambiarEstado(\''+it.id+'\',\''+e+'\')" style="'+s+';padding:6px 14px;border-radius:99px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit">'+e+'</button>';
-    }).join('')+'</div></div>';
+    '<div style="display:flex;flex-wrap:wrap;gap:8px" id="cotEstadoBotones"></div></div>';
+  var cont=document.getElementById('cotEstadoBotones');
+  estados.forEach(function(e){
+    var btn=document.createElement('button');
+    var activo=e===it.estado;
+    btn.style.cssText=(activo?'background:var(--teal);color:white;border:1px solid var(--teal)':'background:var(--white);color:var(--text);border:1px solid var(--border)')+';padding:6px 14px;border-radius:99px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit';
+    btn.textContent=e;
+    (function(estado){btn.onclick=function(){cotCambiarEstado(id,estado);};})(e);
+    cont.appendChild(btn);
+  });
   showOnly('screenDetalleCot');
 }
 
@@ -2613,7 +2633,7 @@ function cotDetalleRow(label,val){
 function cotCambiarEstado(id,estado){
   cotPost({accion:'editar',id:id,estado:estado}).then(function(){
     var it=cotCache.find(function(x){return x.id==id;});
-    if(it){it.estado=estado;cotItemActual=it;}
+    if(it){it.estado=estado;}
     cotVerDetalle(id);
   }).catch(function(){alert('Error al cambiar estado.');});
 }
@@ -2621,7 +2641,7 @@ function cotCambiarEstado(id,estado){
 function abrirFormCot(it){
   cotCargarClientesYPersonal(function(){
     document.getElementById('cotFormId').value=it?it.id:'';
-    document.getElementById('formCotTitulo').textContent=it?'Editar cotización':'Nueva cotización';
+    document.getElementById('formCotTitulo').textContent=it?'Editar cotizacion':'Nueva cotizacion';
     document.getElementById('cotFormContacto').value='';
     document.getElementById('cotFormDesc').value=it?it.descripcion:'';
     document.getElementById('cotFormMonto').value=it?it.monto:'';
@@ -2630,26 +2650,23 @@ function abrirFormCot(it){
     document.getElementById('cotFormNotas').value=it?it.notas:'';
     document.getElementById('cotFormFechaEnvio').value=it&&it.fechaEnvio?it.fechaEnvio.substring(0,10):'';
     document.getElementById('cotFormFechaResp').value='';
-    document.getElementById('btnGuardarCot').textContent='Guardar cotización';
+    document.getElementById('btnGuardarCot').textContent='Guardar cotizacion';
     document.getElementById('btnGuardarCot').disabled=false;
     showOnly('screenFormCot');
   });
 }
 
 function cotCargarClientesYPersonal(cb){
-  var sel=document.getElementById('cotFormCliente');
-  var selP=document.getElementById('cotFormResponsable');
   if(cotClientesCache.length){cb();return;}
-  Promise.all([
-    cotPost({accion:'clientes'}),
-    cotPost({accion:'personal'})
-  ]).then(function(res){
+  Promise.all([cotPost({accion:'clientes'}),cotPost({accion:'personal'})]).then(function(res){
     cotClientesCache=(res[0].value||[]).map(function(x){return {id:x.id,nombre:(x.fields&&x.fields.Title)||''};});
     cotPersonalCache=(res[1].value||[]).map(function(x){return {id:x.id,nombre:(x.fields&&x.fields.Title)||''};});
+    var sel=document.getElementById('cotFormCliente');
+    var selP=document.getElementById('cotFormResponsable');
     sel.innerHTML=cotClientesCache.map(function(c){return '<option value="'+c.id+'">'+c.nombre+'</option>';}).join('');
     selP.innerHTML='<option value="">Sin asignar</option>'+cotPersonalCache.map(function(p){return '<option value="'+p.id+'">'+p.nombre+'</option>';}).join('');
     cb();
-  }).catch(function(){sel.innerHTML='<option>Error al cargar</option>';cb();});
+  }).catch(function(){document.getElementById('cotFormCliente').innerHTML='<option>Error</option>';cb();});
 }
 
 function cotGuardar(){
@@ -2658,7 +2675,7 @@ function cotGuardar(){
   var id=document.getElementById('cotFormId').value;
   var prob=parseFloat(document.getElementById('cotFormProb').value||50)/100;
   var payload={
-    titulo:document.getElementById('cotFormDesc').value.trim().substring(0,50)||'COT-'+Date.now(),
+    titulo:document.getElementById('cotFormDesc').value.trim().substring(0,50)||('COT-'+Date.now()),
     descripcion:document.getElementById('cotFormDesc').value.trim(),
     monto:parseFloat(document.getElementById('cotFormMonto').value)||0,
     estado:document.getElementById('cotFormEstado').value,
@@ -2678,7 +2695,7 @@ function cotGuardar(){
     showOnly('screenCotizaciones');
   }).catch(function(){
     alert('Error al guardar.');
-    btn.disabled=false;btn.textContent='Guardar cotización';
+    btn.disabled=false;btn.textContent='Guardar cotizacion';
   });
 }
 </script>
