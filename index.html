@@ -455,6 +455,7 @@ textarea{min-height:90px;resize:vertical}
 var WEBHOOK_AUTH='https://hook.us2.make.com/h39vw2abu22qydiy23hobjb5woc53qa7';
 var WEBHOOK_DASH='https://hook.us2.make.com/i5eda7jlcihhm5a2skuvdk1tas8o54gx';
 var WEBHOOK_HERR='https://hook.us2.make.com/h772bobeo1wfik0qrnupo9lrk9blltyb';
+var WEBHOOK_COT='https://hook.us2.make.com/v2p8mjc1qh0na8e8lgs1nlovonz453e0';
 var CONSULTA_URL='https://hook.us2.make.com/apdlfnasi6d3hxdgj4f3l4wyr6lndip4';
 var PA_URL='https://hook.us2.make.com/7ewyz9o2o108solu40zj6ovlz2pvjduq';
 
@@ -474,7 +475,7 @@ var dxCkState={};
 var dxCkBuilt=false;
 var origenDashboard='tecnico';
 
-var SCREENS=['screenLobby','screenPin','screenModulos','screenDashboard','screenHerramientas','screenSeleccion','screenDX','screenVRF','screenSG','screenEXT','screenSolMedico','screenSolVacaciones','screenSolHerramienta','screenSolMateriales','screenSolSugerencia','screenNuevaHerramienta','screenSolCompra','screenNuevaOT'];
+var SCREENS=['screenLobby','screenPin','screenModulos','screenDashboard','screenHerramientas','screenSeleccion','screenDX','screenVRF','screenSG','screenEXT','screenSolMedico','screenSolVacaciones','screenSolHerramienta','screenSolMateriales','screenSolSugerencia','screenNuevaHerramienta','screenSolCompra','screenNuevaOT','screenCotizaciones','screenDetalleCot','screenFormCot'];
 
 var MENSAJES_MOT=[
   'El trabajo bien hecho es la mejor forma de hablar por uno mismo.',
@@ -804,6 +805,11 @@ function renderModulos(){
 
   if(portalRoles.indexOf(rol)!==-1){
     cards.push({color:'teal',icon:'&#128100;',title:'Portal colaborador',desc:'Permisos, vacaciones y solicitudes',action:'launchDashboard()'});
+  }
+
+  var cotRoles=['Gerencia','Coordinador','Administrativa','Asistente'];
+  if(cotRoles.indexOf(rol)!==-1){
+    cards.push({color:'blue',icon:'&#128179;',title:'Cotizaciones',desc:'Seguimiento de propuestas y negociaciones',action:'abrirCotizaciones()'});
   }
 
   cards.forEach(function(c){
@@ -2415,6 +2421,260 @@ function renderModuloOTs(){
   </div>
   <div class="bottom-space"></div>
 </div>
+
+
+<!-- ========== MÓDULO COTIZACIONES ========== -->
+<div id="screenCotizaciones" style="display:none;flex-direction:column;min-height:100vh">
+  <div class="dash-header" style="padding:16px 20px">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+      <button onclick="showOnly('screenModulos')" style="background:rgba(255,255,255,0.15);border:none;color:white;border-radius:8px;padding:6px 10px;font-size:14px;cursor:pointer">&#8592;</button>
+      <span style="font-size:17px;font-weight:600;color:white">Cotizaciones</span>
+      <button onclick="abrirFormCot(null)" style="margin-left:auto;background:rgba(255,255,255,0.2);border:none;color:white;border-radius:8px;padding:6px 14px;font-size:13px;cursor:pointer;font-family:inherit">+ Nueva</button>
+    </div>
+    <div id="cotKpis" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px"></div>
+  </div>
+  <div style="padding:14px 16px;display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--border-light)">
+    <button class="filter-chip active" onclick="cotFiltrar('',this)">Todas</button>
+    <button class="filter-chip" onclick="cotFiltrar('Borrador',this)">Borrador</button>
+    <button class="filter-chip" onclick="cotFiltrar('Enviada',this)">Enviada</button>
+    <button class="filter-chip" onclick="cotFiltrar('En negociación',this)">Negociación</button>
+    <button class="filter-chip" onclick="cotFiltrar('Aprobada',this)">Aprobada</button>
+    <button class="filter-chip" onclick="cotFiltrar('Perdida',this)">Perdida</button>
+    <button class="filter-chip" onclick="cotFiltrar('Cancelada',this)">Cancelada</button>
+  </div>
+  <div id="cotLista" style="flex:1;padding:12px 16px"></div>
+</div>
+
+<div id="screenDetalleCot" style="display:none;flex-direction:column;min-height:100vh">
+  <div style="background:var(--teal);padding:16px 20px;display:flex;align-items:center;gap:12px">
+    <button onclick="showOnly('screenCotizaciones')" style="background:rgba(255,255,255,0.15);border:none;color:white;border-radius:8px;padding:6px 10px;font-size:14px;cursor:pointer">&#8592;</button>
+    <span style="font-size:17px;font-weight:600;color:white">Detalle</span>
+    <button id="btnEditarCot" onclick="" style="margin-left:auto;background:rgba(255,255,255,0.2);border:none;color:white;border-radius:8px;padding:6px 14px;font-size:13px;cursor:pointer;font-family:inherit">Editar</button>
+  </div>
+  <div id="cotDetalleBody" style="padding:16px;flex:1"></div>
+</div>
+
+<div id="screenFormCot" style="display:none;flex-direction:column;min-height:100vh">
+  <div style="background:var(--teal);padding:16px 20px;display:flex;align-items:center;gap:12px">
+    <button onclick="showOnly('screenCotizaciones')" style="background:rgba(255,255,255,0.15);border:none;color:white;border-radius:8px;padding:6px 10px;font-size:14px;cursor:pointer">&#8592;</button>
+    <span id="formCotTitulo" style="font-size:17px;font-weight:600;color:white">Nueva cotización</span>
+  </div>
+  <div style="padding:16px;flex:1">
+    <input type="hidden" id="cotFormId">
+    <div class="section" style="background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius);padding:16px">
+      <span class="field-label">Cliente *</span>
+      <select id="cotFormCliente" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:14px;background:var(--white)"><option value="">Cargando...</option></select>
+      <span class="field-label" style="margin-top:12px">Contacto</span>
+      <input type="text" id="cotFormContacto" placeholder="Nombre del contacto" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:14px">
+      <span class="field-label" style="margin-top:12px">Descripción *</span>
+      <textarea id="cotFormDesc" placeholder="Descripción del servicio cotizado" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:14px;min-height:80px"></textarea>
+      <span class="field-label" style="margin-top:12px">Monto estimado (USD)</span>
+      <input type="number" id="cotFormMonto" placeholder="0.00" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:14px">
+      <span class="field-label" style="margin-top:12px">Probabilidad (%)</span>
+      <input type="number" id="cotFormProb" placeholder="50" min="0" max="100" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:14px">
+      <span class="field-label" style="margin-top:12px">Estado</span>
+      <select id="cotFormEstado" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:14px;background:var(--white)">
+        <option>Borrador</option><option>Enviada</option><option>En negociación</option><option>Aprobada</option><option>Perdida</option><option>Cancelada</option>
+      </select>
+      <span class="field-label" style="margin-top:12px">Responsable seguimiento</span>
+      <select id="cotFormResponsable" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:14px;background:var(--white)"><option value="">Sin asignar</option></select>
+      <span class="field-label" style="margin-top:12px">Fecha envío</span>
+      <input type="date" id="cotFormFechaEnvio" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:14px">
+      <span class="field-label" style="margin-top:12px">Fecha respuesta esperada</span>
+      <input type="date" id="cotFormFechaResp" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:14px">
+      <span class="field-label" style="margin-top:12px">Notas internas</span>
+      <textarea id="cotFormNotas" placeholder="Observaciones opcionales" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:14px;min-height:60px"></textarea>
+      <button id="btnGuardarCot" onclick="cotGuardar()" style="width:100%;margin-top:16px;padding:13px;background:var(--teal);color:white;border:none;border-radius:var(--radius);font-size:15px;font-weight:600;cursor:pointer;font-family:inherit">Guardar cotización</button>
+    </div>
+    <div style="height:32px"></div>
+  </div>
+</div>
+
+<script>
+// ===== COTIZACIONES =====
+var cotCache=[];
+var cotFiltroActual='';
+var cotClientesCache=[];
+var cotPersonalCache=[];
+var cotItemActual=null;
+
+var COT_BADGE={
+  'Borrador':'background:#F1EFE8;color:#444441',
+  'Enviada':'background:#E6F1FB;color:#0C447C',
+  'En negociación':'background:#FAEEDA;color:#633806',
+  'Aprobada':'background:#EAF3DE;color:#27500A',
+  'Perdida':'background:#FCEBEB;color:#791F1F',
+  'Cancelada':'background:#F1EFE8;color:#6b6b67'
+};
+
+function cotPost(body){
+  return fetch(WEBHOOK_COT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(function(r){return r.json();});
+}
+
+function abrirCotizaciones(){
+  showOnly('screenCotizaciones');
+  cotCargarLista();
+}
+
+function cotCargarLista(){
+  document.getElementById('cotLista').innerHTML='<div style="text-align:center;padding:40px;color:var(--text-muted);font-size:14px">Cargando...</div>';
+  cotPost({accion:'listar'}).then(function(data){
+    var items=(data.value||[]).map(function(it){
+      var f=it.fields||{};
+      return {id:it.id,titulo:f.Title||'',descripcion:f.Descripcion||'',monto:f.MontoEstimado||0,estado:f.Estado||'',probabilidad:f.Probabilidad||0,notas:f.Notas||'',fechaEnvio:f.FechaEnvio||'',creado:it.createdDateTime||''};
+    });
+    cotCache=items;
+    cotRenderKpis(items);
+    cotRenderLista(items,cotFiltroActual);
+  }).catch(function(){
+    document.getElementById('cotLista').innerHTML='<div style="text-align:center;padding:40px;color:var(--red-text);font-size:14px">Error al cargar cotizaciones</div>';
+  });
+}
+
+function cotRenderKpis(items){
+  var total=items.length;
+  var montoTotal=items.reduce(function(s,i){return s+(parseFloat(i.monto)||0);},0);
+  var aprobadas=items.filter(function(i){return i.estado==='Aprobada';});
+  var montoAprobado=aprobadas.reduce(function(s,i){return s+(parseFloat(i.monto)||0);},0);
+  var cerradas=items.filter(function(i){return i.estado==='Aprobada'||i.estado==='Perdida'||i.estado==='Cancelada';});
+  var tasa=cerradas.length>0?Math.round((aprobadas.length/cerradas.length)*100):0;
+  document.getElementById('cotKpis').innerHTML=
+    '<div class="kpi"><div class="kpi-val">'+total+'</div><div class="kpi-lbl">Total</div></div>'+
+    '<div class="kpi"><div class="kpi-val">$'+Math.round(montoAprobado/1000)+'k</div><div class="kpi-lbl">Aprobado</div></div>'+
+    '<div class="kpi"><div class="kpi-val">'+tasa+'%</div><div class="kpi-lbl">Cierre</div></div>';
+}
+
+function cotFiltrar(estado,btn){
+  cotFiltroActual=estado;
+  document.querySelectorAll('#screenCotizaciones .filter-chip').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  cotRenderLista(cotCache,estado);
+}
+
+function cotRenderLista(items,filtro){
+  var lista=filtro?items.filter(function(i){return i.estado===filtro;}):items;
+  var cont=document.getElementById('cotLista');
+  if(!lista.length){cont.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-muted);font-size:14px">No hay cotizaciones</div>';return;}
+  cont.innerHTML=lista.map(function(it){
+    var badge=COT_BADGE[it.estado]||'background:#eee;color:#333';
+    var monto=it.monto?'$'+parseFloat(it.monto).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0}):'—';
+    return '<div onclick="cotVerDetalle(\''+it.id+'\')" style="background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px;cursor:pointer">'+
+      '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px">'+
+      '<div style="font-size:13px;font-weight:600;color:var(--teal)">'+it.titulo+'</div>'+
+      '<span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;white-space:nowrap;'+badge+'">'+it.estado+'</span></div>'+
+      '<div style="font-size:13px;color:var(--text-muted);margin-bottom:6px">'+it.descripcion+'</div>'+
+      '<div style="display:flex;align-items:center;justify-content:space-between">'+
+      '<span style="font-size:13px;font-weight:600;color:var(--text)">'+monto+'</span>'+
+      '<span style="font-size:11px;color:var(--text-muted)">'+Math.round((it.probabilidad||0)*100)+'% prob.</span></div></div>';
+  }).join('');
+}
+
+function cotVerDetalle(id){
+  var it=cotCache.find(function(x){return x.id==id;});
+  if(!it) return;
+  cotItemActual=it;
+  var badge=COT_BADGE[it.estado]||'background:#eee;color:#333';
+  var monto=it.monto?'$'+parseFloat(it.monto).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}):'—';
+  var prob=Math.round((it.probabilidad||0)*100)+'%';
+  document.getElementById('btnEditarCot').onclick=function(){abrirFormCot(it);};
+  document.getElementById('cotDetalleBody').innerHTML=
+    '<div style="background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius);padding:16px;margin-bottom:12px">'+
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">'+
+    '<div style="font-size:16px;font-weight:600;color:var(--text)">'+it.titulo+'</div>'+
+    '<span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px;'+badge+'">'+it.estado+'</span></div>'+
+    cotDetalleRow('Descripción',it.descripcion||'—')+
+    cotDetalleRow('Monto estimado',monto)+
+    cotDetalleRow('Probabilidad',prob)+
+    cotDetalleRow('Fecha envío',it.fechaEnvio?it.fechaEnvio.substring(0,10):'—')+
+    cotDetalleRow('Notas',it.notas||'—')+'</div>'+
+    '<div style="background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius);padding:14px 16px">'+
+    '<div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px">Cambiar estado</div>'+
+    '<div style="display:flex;flex-wrap:wrap;gap:8px">'+
+    ['Borrador','Enviada','En negociación','Aprobada','Perdida','Cancelada'].map(function(e){
+      var s=e===it.estado?'background:var(--teal);color:white;border-color:var(--teal)':'background:var(--white);color:var(--text);border:1px solid var(--border)';
+      return '<button onclick="cotCambiarEstado(\''+it.id+'\',\''+e+'\')" style="'+s+';padding:6px 14px;border-radius:99px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit">'+e+'</button>';
+    }).join('')+'</div></div>';
+  showOnly('screenDetalleCot');
+}
+
+function cotDetalleRow(label,val){
+  return '<div style="display:flex;padding:8px 0;border-bottom:1px solid var(--border-light)">'+
+    '<span style="font-size:13px;color:var(--text-muted);width:140px;flex-shrink:0">'+label+'</span>'+
+    '<span style="font-size:13px;color:var(--text)">'+val+'</span></div>';
+}
+
+function cotCambiarEstado(id,estado){
+  cotPost({accion:'editar',id:id,estado:estado}).then(function(){
+    var it=cotCache.find(function(x){return x.id==id;});
+    if(it){it.estado=estado;cotItemActual=it;}
+    cotVerDetalle(id);
+  }).catch(function(){alert('Error al cambiar estado.');});
+}
+
+function abrirFormCot(it){
+  cotCargarClientesYPersonal(function(){
+    document.getElementById('cotFormId').value=it?it.id:'';
+    document.getElementById('formCotTitulo').textContent=it?'Editar cotización':'Nueva cotización';
+    document.getElementById('cotFormContacto').value='';
+    document.getElementById('cotFormDesc').value=it?it.descripcion:'';
+    document.getElementById('cotFormMonto').value=it?it.monto:'';
+    document.getElementById('cotFormProb').value=it?Math.round((it.probabilidad||0)*100):'50';
+    document.getElementById('cotFormEstado').value=it?it.estado:'Borrador';
+    document.getElementById('cotFormNotas').value=it?it.notas:'';
+    document.getElementById('cotFormFechaEnvio').value=it&&it.fechaEnvio?it.fechaEnvio.substring(0,10):'';
+    document.getElementById('cotFormFechaResp').value='';
+    document.getElementById('btnGuardarCot').textContent='Guardar cotización';
+    document.getElementById('btnGuardarCot').disabled=false;
+    showOnly('screenFormCot');
+  });
+}
+
+function cotCargarClientesYPersonal(cb){
+  var sel=document.getElementById('cotFormCliente');
+  var selP=document.getElementById('cotFormResponsable');
+  if(cotClientesCache.length){cb();return;}
+  Promise.all([
+    cotPost({accion:'clientes'}),
+    cotPost({accion:'personal'})
+  ]).then(function(res){
+    cotClientesCache=(res[0].value||[]).map(function(x){return {id:x.id,nombre:(x.fields&&x.fields.Title)||''};});
+    cotPersonalCache=(res[1].value||[]).map(function(x){return {id:x.id,nombre:(x.fields&&x.fields.Title)||''};});
+    sel.innerHTML=cotClientesCache.map(function(c){return '<option value="'+c.id+'">'+c.nombre+'</option>';}).join('');
+    selP.innerHTML='<option value="">Sin asignar</option>'+cotPersonalCache.map(function(p){return '<option value="'+p.id+'">'+p.nombre+'</option>';}).join('');
+    cb();
+  }).catch(function(){sel.innerHTML='<option>Error al cargar</option>';cb();});
+}
+
+function cotGuardar(){
+  var btn=document.getElementById('btnGuardarCot');
+  btn.disabled=true;btn.textContent='Guardando...';
+  var id=document.getElementById('cotFormId').value;
+  var prob=parseFloat(document.getElementById('cotFormProb').value||50)/100;
+  var payload={
+    titulo:document.getElementById('cotFormDesc').value.trim().substring(0,50)||'COT-'+Date.now(),
+    descripcion:document.getElementById('cotFormDesc').value.trim(),
+    monto:parseFloat(document.getElementById('cotFormMonto').value)||0,
+    estado:document.getElementById('cotFormEstado').value,
+    probabilidad:prob,
+    clienteId:document.getElementById('cotFormCliente').value,
+    responsableId:document.getElementById('cotFormResponsable').value,
+    fechaEnvio:document.getElementById('cotFormFechaEnvio').value||null,
+    fechaRespuestaEsperada:document.getElementById('cotFormFechaResp').value||null,
+    notas:document.getElementById('cotFormNotas').value.trim(),
+    creadoPor:session.nombre
+  };
+  if(id){payload.accion='editar';payload.id=id;}
+  else{payload.accion='crear';}
+  cotPost(payload).then(function(){
+    cotClientesCache=[];
+    cotCargarLista();
+    showOnly('screenCotizaciones');
+  }).catch(function(){
+    alert('Error al guardar.');
+    btn.disabled=false;btn.textContent='Guardar cotización';
+  });
+}
+</script>
 
 </body>
 </html>
