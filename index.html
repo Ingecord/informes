@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -2436,13 +2435,13 @@ function renderModuloOTs(){
     <div id="cotKpis" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px"></div>
   </div>
   <div style="padding:14px 16px;display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--border-light)">
-    <button class="filter-chip active" onclick="cotFiltrar('',this)">Todas</button>
-    <button class="filter-chip" onclick="cotFiltrar('Borrador',this)">Borrador</button>
-    <button class="filter-chip" onclick="cotFiltrar('Enviada',this)">Enviada</button>
-    <button class="filter-chip" onclick="cotFiltrar('En negociación',this)">Negociación</button>
-    <button class="filter-chip" onclick="cotFiltrar('Aprobada',this)">Aprobada</button>
-    <button class="filter-chip" onclick="cotFiltrar('Perdida',this)">Perdida</button>
-    <button class="filter-chip" onclick="cotFiltrar('Cancelada',this)">Cancelada</button>
+    <button class="filter-chip active" onclick="czFiltrar('',this)">Todas</button>
+    <button class="filter-chip" onclick="czFiltrar('Borrador',this)">Borrador</button>
+    <button class="filter-chip" onclick="czFiltrar('Enviada',this)">Enviada</button>
+    <button class="filter-chip" onclick="czFiltrar('En negociación',this)">Negociación</button>
+    <button class="filter-chip" onclick="czFiltrar('Aprobada',this)">Aprobada</button>
+    <button class="filter-chip" onclick="czFiltrar('Perdida',this)">Perdida</button>
+    <button class="filter-chip" onclick="czFiltrar('Cancelada',this)">Cancelada</button>
   </div>
   <div id="cotLista" style="flex:1;padding:12px 16px"></div>
 </div>
@@ -2486,20 +2485,20 @@ function renderModuloOTs(){
       <input type="date" id="cotFormFechaResp" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:14px">
       <span class="field-label" style="margin-top:12px">Notas internas</span>
       <textarea id="cotFormNotas" placeholder="Observaciones opcionales" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:14px;min-height:60px"></textarea>
-      <button id="btnGuardarCot" onclick="cotGuardar()" style="width:100%;margin-top:16px;padding:13px;background:var(--teal);color:white;border:none;border-radius:var(--radius);font-size:15px;font-weight:600;cursor:pointer;font-family:inherit">Guardar cotización</button>
+      <button id="btnGuardarCot" onclick="czGuardar()" style="width:100%;margin-top:16px;padding:13px;background:var(--teal);color:white;border:none;border-radius:var(--radius);font-size:15px;font-weight:600;cursor:pointer;font-family:inherit">Guardar cotización</button>
     </div>
     <div style="height:32px"></div>
   </div>
 </div>
 
 <script>
-var cotCache=[];
-var cotFiltroActual='';
-var cotClientesCache=[];
-var cotPersonalCache=[];
-var cotItemActual=null;
+var czCache=[];
+var czFiltroActual='';
+var czClientesCache=[];
+var czPersonalCache=[];
+var czItemActual=null;
 
-var COT_BADGE={
+var CZ_BADGE={
   Borrador:'background:#F1EFE8;color:#444441',
   Enviada:'background:#E6F1FB;color:#0C447C',
   Negociacion:'background:#FAEEDA;color:#633806',
@@ -2508,36 +2507,36 @@ var COT_BADGE={
   Cancelada:'background:#F1EFE8;color:#6b6b67'
 };
 
-function cotBadge(estado){
+function czBadge(estado){
   var key=estado==='En negociaci\u00f3n'?'Negociacion':estado;
-  return COT_BADGE[key]||'background:#eee;color:#333';
+  return CZ_BADGE[key]||'background:#eee;color:#333';
 }
 
-function cotPost(body){
+function czPost(body){
   return fetch(WEBHOOK_COT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(function(r){return r.json();});
 }
 
 function abrirCotizaciones(){
   showOnly('screenCotizaciones');
-  cotCargarLista();
+  czCargarLista();
 }
 
-function cotCargarLista(){
+function czCargarLista(){
   document.getElementById('cotLista').innerHTML='<div style="text-align:center;padding:40px;color:var(--text-muted);font-size:14px">Cargando...</div>';
-  cotPost({accion:'listar'}).then(function(data){
+  czPost({accion:'listar'}).then(function(data){
     var items=(data.value||[]).map(function(it){
       var f=it.fields||{};
       return {id:it.id,titulo:f.Title||'',descripcion:f.Descripcion||'',monto:f.MontoEstimado||0,estado:f.Estado||'',probabilidad:f.Probabilidad||0,notas:f.Notas||'',fechaEnvio:f.FechaEnvio||''};
     });
-    cotCache=items;
-    cotRenderKpis(items);
-    cotRenderLista(items,cotFiltroActual);
+    czCache=items;
+    czRenderKpis(items);
+    czRenderLista(items,czFiltroActual);
   }).catch(function(){
     document.getElementById('cotLista').innerHTML='<div style="text-align:center;padding:40px;color:var(--red-text);font-size:14px">Error al cargar</div>';
   });
 }
 
-function cotRenderKpis(items){
+function czRenderKpis(items){
   var aprobadas=items.filter(function(i){return i.estado==='Aprobada';});
   var montoAprobado=aprobadas.reduce(function(s,i){return s+(parseFloat(i.monto)||0);},0);
   var cerradas=items.filter(function(i){return i.estado==='Aprobada'||i.estado==='Perdida'||i.estado==='Cancelada';});
@@ -2548,14 +2547,14 @@ function cotRenderKpis(items){
     '<div class="kpi"><div class="kpi-val">'+tasa+'%</div><div class="kpi-lbl">Cierre</div></div>';
 }
 
-function cotFiltrar(estado,btn){
-  cotFiltroActual=estado;
+function czFiltrar(estado,btn){
+  czFiltroActual=estado;
   document.querySelectorAll('#screenCotizaciones .filter-chip').forEach(function(b){b.classList.remove('active');});
   btn.classList.add('active');
-  cotRenderLista(cotCache,estado);
+  czRenderLista(czCache,estado);
 }
 
-function cotRenderLista(items,filtro){
+function czRenderLista(items,filtro){
   var lista=filtro?items.filter(function(i){return i.estado===filtro;}):items;
   var cont=document.getElementById('cotLista');
   if(!lista.length){
@@ -2564,7 +2563,7 @@ function cotRenderLista(items,filtro){
   }
   cont.innerHTML='';
   lista.forEach(function(it){
-    var badge=cotBadge(it.estado);
+    var badge=czBadge(it.estado);
     var monto=it.monto?'$'+parseFloat(it.monto).toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0}):'—';
     var prob=Math.round((it.probabilidad||0)*100);
     var div=document.createElement('div');
@@ -2577,16 +2576,16 @@ function cotRenderLista(items,filtro){
       '<div style="display:flex;align-items:center;justify-content:space-between">'+
       '<span style="font-size:13px;font-weight:600;color:var(--text)">'+monto+'</span>'+
       '<span style="font-size:11px;color:var(--text-muted)">'+prob+'% prob.</span></div>';
-    (function(id){div.onclick=function(){cotVerDetalle(id);};})(it.id);
+    (function(id){div.onclick=function(){czVerDetalle(id);};})(it.id);
     cont.appendChild(div);
   });
 }
 
-function cotVerDetalle(id){
-  var it=cotCache.find(function(x){return x.id==id;});
+function czVerDetalle(id){
+  var it=czCache.find(function(x){return x.id==id;});
   if(!it) return;
-  cotItemActual=it;
-  var badge=cotBadge(it.estado);
+  czItemActual=it;
+  var badge=czBadge(it.estado);
   var monto=it.monto?'$'+parseFloat(it.monto).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}):'—';
   var prob=Math.round((it.probabilidad||0)*100)+'%';
   document.getElementById('btnEditarCot').onclick=function(){abrirFormCot(it);};
@@ -2596,7 +2595,7 @@ function cotVerDetalle(id){
     var activo=e===it.estado;
     btn.style.cssText=(activo?'background:var(--teal);color:white;border-color:var(--teal)':'background:var(--white);color:var(--text);border:1px solid var(--border)')+';padding:6px 14px;border-radius:99px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit';
     btn.textContent=e;
-    (function(estado){btn.onclick=function(){cotCambiarEstado(id,estado);};})(e);
+    (function(estado){btn.onclick=function(){czCambiarEstado(id,estado);};})(e);
     return btn.outerHTML;
   }).join('');
   document.getElementById('cotDetalleBody').innerHTML=
@@ -2604,11 +2603,11 @@ function cotVerDetalle(id){
     '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">'+
     '<div style="font-size:16px;font-weight:600;color:var(--text)">'+it.titulo+'</div>'+
     '<span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px;'+badge+'">'+it.estado+'</span></div>'+
-    cotDetalleRow('Descripcion',it.descripcion||'—')+
-    cotDetalleRow('Monto estimado',monto)+
-    cotDetalleRow('Probabilidad',prob)+
-    cotDetalleRow('Fecha envio',it.fechaEnvio?it.fechaEnvio.substring(0,10):'—')+
-    cotDetalleRow('Notas',it.notas||'—')+'</div>'+
+    czDetalleRow('Descripcion',it.descripcion||'—')+
+    czDetalleRow('Monto estimado',monto)+
+    czDetalleRow('Probabilidad',prob)+
+    czDetalleRow('Fecha envio',it.fechaEnvio?it.fechaEnvio.substring(0,10):'—')+
+    czDetalleRow('Notas',it.notas||'—')+'</div>'+
     '<div style="background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius);padding:14px 16px">'+
     '<div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px">Cambiar estado</div>'+
     '<div style="display:flex;flex-wrap:wrap;gap:8px" id="cotEstadoBotones"></div></div>';
@@ -2618,28 +2617,28 @@ function cotVerDetalle(id){
     var activo=e===it.estado;
     btn.style.cssText=(activo?'background:var(--teal);color:white;border:1px solid var(--teal)':'background:var(--white);color:var(--text);border:1px solid var(--border)')+';padding:6px 14px;border-radius:99px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit';
     btn.textContent=e;
-    (function(estado){btn.onclick=function(){cotCambiarEstado(id,estado);};})(e);
+    (function(estado){btn.onclick=function(){czCambiarEstado(id,estado);};})(e);
     cont.appendChild(btn);
   });
   showOnly('screenDetalleCot');
 }
 
-function cotDetalleRow(label,val){
+function czDetalleRow(label,val){
   return '<div style="display:flex;padding:8px 0;border-bottom:1px solid var(--border-light)">'+
     '<span style="font-size:13px;color:var(--text-muted);width:140px;flex-shrink:0">'+label+'</span>'+
     '<span style="font-size:13px;color:var(--text)">'+val+'</span></div>';
 }
 
-function cotCambiarEstado(id,estado){
-  cotPost({accion:'editar',id:id,estado:estado}).then(function(){
-    var it=cotCache.find(function(x){return x.id==id;});
+function czCambiarEstado(id,estado){
+  czPost({accion:'editar',id:id,estado:estado}).then(function(){
+    var it=czCache.find(function(x){return x.id==id;});
     if(it){it.estado=estado;}
-    cotVerDetalle(id);
+    czVerDetalle(id);
   }).catch(function(){alert('Error al cambiar estado.');});
 }
 
 function abrirFormCot(it){
-  cotCargarClientesYPersonal(function(){
+  czCargarClientesYPersonal(function(){
     document.getElementById('cotFormId').value=it?it.id:'';
     document.getElementById('formCotTitulo').textContent=it?'Editar cotizacion':'Nueva cotizacion';
     document.getElementById('cotFormContacto').value='';
@@ -2656,20 +2655,20 @@ function abrirFormCot(it){
   });
 }
 
-function cotCargarClientesYPersonal(cb){
-  if(cotClientesCache.length){cb();return;}
-  Promise.all([cotPost({accion:'clientes'}),cotPost({accion:'personal'})]).then(function(res){
-    cotClientesCache=(res[0].value||[]).map(function(x){return {id:x.id,nombre:(x.fields&&x.fields.Title)||''};});
-    cotPersonalCache=(res[1].value||[]).map(function(x){return {id:x.id,nombre:(x.fields&&x.fields.Title)||''};});
+function czCargarClientesYPersonal(cb){
+  if(czClientesCache.length){cb();return;}
+  Promise.all([czPost({accion:'clientes'}),czPost({accion:'personal'})]).then(function(res){
+    czClientesCache=(res[0].value||[]).map(function(x){return {id:x.id,nombre:(x.fields&&x.fields.Title)||''};});
+    czPersonalCache=(res[1].value||[]).map(function(x){return {id:x.id,nombre:(x.fields&&x.fields.Title)||''};});
     var sel=document.getElementById('cotFormCliente');
     var selP=document.getElementById('cotFormResponsable');
-    sel.innerHTML=cotClientesCache.map(function(c){return '<option value="'+c.id+'">'+c.nombre+'</option>';}).join('');
-    selP.innerHTML='<option value="">Sin asignar</option>'+cotPersonalCache.map(function(p){return '<option value="'+p.id+'">'+p.nombre+'</option>';}).join('');
+    sel.innerHTML=czClientesCache.map(function(c){return '<option value="'+c.id+'">'+c.nombre+'</option>';}).join('');
+    selP.innerHTML='<option value="">Sin asignar</option>'+czPersonalCache.map(function(p){return '<option value="'+p.id+'">'+p.nombre+'</option>';}).join('');
     cb();
   }).catch(function(){document.getElementById('cotFormCliente').innerHTML='<option>Error</option>';cb();});
 }
 
-function cotGuardar(){
+function czGuardar(){
   var btn=document.getElementById('btnGuardarCot');
   btn.disabled=true;btn.textContent='Guardando...';
   var id=document.getElementById('cotFormId').value;
@@ -2689,9 +2688,9 @@ function cotGuardar(){
   };
   if(id){payload.accion='editar';payload.id=id;}
   else{payload.accion='crear';}
-  cotPost(payload).then(function(){
-    cotClientesCache=[];
-    cotCargarLista();
+  czPost(payload).then(function(){
+    czClientesCache=[];
+    czCargarLista();
     showOnly('screenCotizaciones');
   }).catch(function(){
     alert('Error al guardar.');
