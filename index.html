@@ -1588,13 +1588,13 @@ function renderAccesos(){
   } else if(rol==='Supervisor'){
     btns=[btnOTs,btnHerramientasHistorial,btnMedico,btnVacaciones,btnSugerencia];
   } else if(rol==='Coordinador'){
-    btns=[btnHerramientasGestion,btnOTs,btnCotizaciones,btnCompra,btnMedico,btnVacaciones,btnSugerencia];
+    btns=[btnHerramientasGestion,btnOTs,btnCompra,btnCotizaciones,btnMedico,btnVacaciones,btnSugerencia];
   } else if(rol==='Gerencia'){
-    btns=[btnHerramientasGestion,btnOTs,btnCotizaciones,btnCompra];
+    btns=[btnHerramientasGestion,btnOTs,btnCompra,btnCotizaciones];
   } else if(rol==='Asistente'){
-    btns=[btnHerramientasGestion,btnOTs,btnCotizaciones,btnCompra,btnMedico,btnVacaciones,btnSugerencia];
+    btns=[btnHerramientasGestion,btnOTs,btnCompra,btnCotizaciones,btnMedico,btnVacaciones,btnSugerencia];
   } else if(rol==='Administrativa'){
-    btns=[btnHerramientasGestion,btnCotizaciones,btnCompra,btnMedico,btnVacaciones,btnSugerencia];
+    btns=[btnHerramientasGestion,btnCompra,btnCotizaciones,btnMedico,btnVacaciones,btnSugerencia];
   }
 
   btns.forEach(function(b){
