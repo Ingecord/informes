@@ -1583,18 +1583,20 @@ function renderAccesos(){
   var btnOTs={icon:'&#128221;',label:'Ordenes de trabajo',color:'#a8c0d8',action:'showOnly(\'screenModuloOTs\')'};
   var btnCotizaciones={icon:'&#128179;',label:'Cotizaciones',color:'#a8c0d8',action:'abrirCotizaciones()'};
 
+  var btnAdminClientes={icon:'&#127970;',label:'Administrar clientes',color:'#5DCAA5',action:'abrirAdminClientes()'};
+
   if(rol==='Tecnico'||rol==='Ayudante'||rol==='ServiciosProfesionales'){
     btns=[btnInforme,btnHerramienta,btnMateriales,btnMedico,btnVacaciones,btnSugerencia];
   } else if(rol==='Supervisor'){
     btns=[btnOTs,btnHerramientasHistorial,btnMedico,btnVacaciones,btnSugerencia];
   } else if(rol==='Coordinador'){
-    btns=[btnHerramientasGestion,btnOTs,btnCompra,btnCotizaciones,btnMedico,btnVacaciones,btnSugerencia];
+    btns=[btnHerramientasGestion,btnOTs,btnCompra,btnCotizaciones,btnAdminClientes,btnMedico,btnVacaciones,btnSugerencia];
   } else if(rol==='Gerencia'){
-    btns=[btnHerramientasGestion,btnOTs,btnCompra,btnCotizaciones];
+    btns=[btnHerramientasGestion,btnOTs,btnCompra,btnCotizaciones,btnAdminClientes];
   } else if(rol==='Asistente'){
-    btns=[btnHerramientasGestion,btnOTs,btnCompra,btnCotizaciones,btnMedico,btnVacaciones,btnSugerencia];
+    btns=[btnHerramientasGestion,btnOTs,btnCompra,btnCotizaciones,btnAdminClientes,btnMedico,btnVacaciones,btnSugerencia];
   } else if(rol==='Administrativa'){
-    btns=[btnHerramientasGestion,btnCompra,btnCotizaciones,btnMedico,btnVacaciones,btnSugerencia];
+    btns=[btnHerramientasGestion,btnCompra,btnCotizaciones,btnAdminClientes,btnMedico,btnVacaciones,btnSugerencia];
   }
 
   btns.forEach(function(b){
