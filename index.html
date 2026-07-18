@@ -1830,21 +1830,15 @@ function acRenderTabs(){
 function acSetTab(t){acTab=t;acRenderTabs();}
 
 function acCargarTodo(){
-  fetch(WEBHOOK_ADMIN_CLIENTES,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_CLIENTES_ALL'})})
-  .then(function(r){return r.json();}).then(function(data){
-    acClientesCache=(data||[]).map(function(c){return c.fields||c;});
-    acRenderClientes();
-  }).catch(function(){});
-  fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_SUCURSALES',payload:{clienteId:'todos'}})})
-  .then(function(r){return r.json();}).then(function(data){
-    acSucursalesCache=(data||[]).map(function(s){return s.fields||s;});
-    acRenderSucursales();
-  }).catch(function(){});
-  fetch(WEBHOOK_ADMIN_CLIENTES,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_EQUIPOS_ALL'})})
-  .then(function(r){return r.json();}).then(function(data){
-    acEquiposCache=(data||[]).map(function(e){return e.fields||e;});
-    acRenderEquipos();
-  }).catch(function(){});
+  var promClientes=fetch(WEBHOOK_ADMIN_CLIENTES,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_CLIENTES_ALL'})})
+  .then(function(r){return r.json();}).then(function(data){acClientesCache=(data||[]).map(function(c){return c.fields||c;});}).catch(function(){});
+  var promSucursales=fetch(WEBHOOK_ADMIN_CLIENTES,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_SUCURSALES',payload:{clienteId:'todos'}})})
+  .then(function(r){return r.json();}).then(function(data){acSucursalesCache=(data||[]).map(function(s){return s.fields||s;});}).catch(function(){});
+  var promEquipos=fetch(WEBHOOK_ADMIN_CLIENTES,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_EQUIPOS_ALL'})})
+  .then(function(r){return r.json();}).then(function(data){acEquiposCache=(data||[]).map(function(e){return e.fields||e;});}).catch(function(){});
+  Promise.all([promClientes,promSucursales,promEquipos]).then(function(){
+    acRenderClientes();acRenderSucursales();acRenderEquipos();
+  });
 }
 
 function acRenderClientes(q){
@@ -2103,10 +2097,10 @@ function acBuildModal(tipo,datos){
   return '';
 }
 
-function acGv(id){var e=document.getElementById(id);return e?e.value||null:null;}
+function acGv(id){var e=document.getElementById(id);return e?e.value:null;}
 
 function acGuardarCliente(id){
-  var titulo=acGv('acF_titulo');if(!titulo){alert('El nombre es obligatorio.');return;}
+  var titulo=acGv('acF_titulo');if(!titulo||titulo.trim()===''){alert('El nombre es obligatorio.');return;}
   var payload={titulo:titulo,contacto:acGv('acF_contacto'),telefono:acGv('acF_telefono'),correo:acGv('acF_correo'),tipoCliente:acGv('acF_tipoCliente'),tipoContrato:acGv('acF_tipoContrato'),frecuencia:acGv('acF_frecuencia'),notas:acGv('acF_notas')};
   var action=id?'EDITAR_CLIENTE':'CREAR_CLIENTE';
   if(id) payload.id=id;
@@ -2116,7 +2110,7 @@ function acGuardarCliente(id){
 
 function acGuardarSucursal(id){
   var titulo=acGv('acF_titulo');var clienteId=acGv('acF_clienteId');
-  if(!titulo||!clienteId){alert('Nombre y cliente son obligatorios.');return;}
+  if(!titulo||titulo.trim()===''||!clienteId||clienteId.trim()===''){alert('Nombre y cliente son obligatorios.');return;}
   var payload={titulo:titulo,clienteId:clienteId,direccion:acGv('acF_direccion'),contactoSitio:acGv('acF_contactoSitio'),telefonoSitio:acGv('acF_telefonoSitio'),correoSitio:acGv('acF_correoSitio'),notas:acGv('acF_notas')};
   var action=id?'EDITAR_SUCURSAL':'CREAR_SUCURSAL';
   if(id) payload.id=id;
@@ -2126,7 +2120,7 @@ function acGuardarSucursal(id){
 
 function acGuardarEquipo(id){
   var titulo=acGv('acF_titulo');var sucursalId=acGv('acF_sucursalId');
-  if(!titulo||!sucursalId){alert('Nombre y sucursal son obligatorios.');return;}
+  if(!titulo||titulo.trim()===''||!sucursalId||sucursalId.trim()===''){alert('Nombre y sucursal son obligatorios.');return;}
   var payload={titulo:titulo,sucursalId:sucursalId,tipoEquipo:acGv('acF_tipoEquipo'),tipoSistema:acGv('acF_tipoSistema'),refrigerante:acGv('acF_refrigerante'),marca:acGv('acF_marca'),modelo:acGv('acF_modelo'),capacidad:acGv('acF_capacidad'),ubicacion:acGv('acF_ubicacion'),notas:acGv('acF_notas')};
   var action=id?'EDITAR_EQUIPO':'CREAR_EQUIPO';
   if(id) payload.id=id;
