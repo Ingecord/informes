@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -475,7 +476,7 @@ var dxCkState={};
 var dxCkBuilt=false;
 var origenDashboard='tecnico';
 
-var SCREENS=['screenLobby','screenPin','screenModulos','screenDashboard','screenHerramientas','screenSeleccion','screenDX','screenVRF','screenSG','screenEXT','screenSolMedico','screenSolVacaciones','screenSolHerramienta','screenSolMateriales','screenSolSugerencia','screenNuevaHerramienta','screenSolCompra','screenNuevaOT','screenCotizaciones','screenDetalleCot','screenFormCot'];
+var SCREENS=['screenLobby','screenPin','screenModulos','screenDashboard','screenHerramientas','screenSeleccion','screenDX','screenVRF','screenSG','screenEXT','screenSolMedico','screenSolVacaciones','screenSolHerramienta','screenSolMateriales','screenSolSugerencia','screenNuevaHerramienta','screenSolCompra','screenNuevaOT','screenCotizaciones','screenDetalleCot','screenFormCot','screenAdminClientes'];
 
 var MENSAJES_MOT=[
   'El trabajo bien hecho es la mejor forma de hablar por uno mismo.',
@@ -499,7 +500,7 @@ function showOnly(id){
   var target=document.getElementById(id);
   if(!target) return;
   var colScreens=['screenModulos','screenDashboard','screenHerramientas'];
-  var blockScreens=['screenSeleccion','screenDX','screenVRF','screenSG','screenEXT','screenSolMedico','screenSolVacaciones','screenSolHerramienta','screenSolMateriales','screenSolSugerencia','screenNuevaHerramienta','screenSolCompra','screenNuevaOT','screenModuloOTs','screenControlOTs'];
+  var blockScreens=['screenSeleccion','screenDX','screenVRF','screenSG','screenEXT','screenSolMedico','screenSolVacaciones','screenSolHerramienta','screenSolMateriales','screenSolSugerencia','screenNuevaHerramienta','screenSolCompra','screenNuevaOT','screenModuloOTs','screenControlOTs','screenAdminClientes'];
   if(blockScreens.indexOf(id)!==-1){target.style.display='block';}
   else if(colScreens.indexOf(id)!==-1){target.style.display='flex';target.style.flexDirection='column';}
   else{target.style.display='flex';}
@@ -810,6 +811,11 @@ function renderModulos(){
   var cotRoles=['Gerencia','Coordinador','Administrativa','Asistente'];
   if(cotRoles.indexOf(rol)!==-1){
     cards.push({color:'blue',icon:'&#128179;',title:'Cotizaciones',desc:'Seguimiento de propuestas y negociaciones',action:'abrirCotizaciones()'});
+  }
+
+  var adminClientesRoles=['Gerencia','Coordinador','Asistente','Administrativa'];
+  if(adminClientesRoles.indexOf(rol)!==-1){
+    cards.push({color:'teal',icon:'&#127970;',title:'Administrar clientes',desc:'Clientes, sucursales y equipos',action:'abrirAdminClientes()'});
   }
 
   cards.forEach(function(c){
@@ -1792,6 +1798,338 @@ function submitNuevaOT(){
   });
 }
 
+var acTab='clientes';
+var acClientesCache=[];
+var acSucursalesCache=[];
+var acEquiposCache=[];
+var acClienteActivo=null;
+var acSucursalActiva=null;
+var acModal=null;
+
+function abrirAdminClientes(){
+  showOnly('screenAdminClientes');
+  acTab='clientes';
+  acRenderTabs();
+  acCargarTodo();
+}
+
+function acRenderTabs(){
+  ['clientes','sucursales','equipos'].forEach(function(t){
+    var el=document.getElementById('acTab_'+t);
+    if(el) el.className='ac-tab'+(acTab===t?' active':'');
+  });
+  document.getElementById('acPanelClientes').style.display=acTab==='clientes'?'block':'none';
+  document.getElementById('acPanelSucursales').style.display=acTab==='sucursales'?'block':'none';
+  document.getElementById('acPanelEquipos').style.display=acTab==='equipos'?'block':'none';
+}
+
+function acSetTab(t){acTab=t;acRenderTabs();}
+
+function acCargarTodo(){
+  fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_CLIENTES_ALL'})})
+  .then(function(r){return r.json();}).then(function(data){
+    acClientesCache=(data||[]).map(function(c){return c.fields||c;});
+    acRenderClientes();
+  }).catch(function(){});
+  fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_SUCURSALES',payload:{clienteId:'todos'}})})
+  .then(function(r){return r.json();}).then(function(data){
+    acSucursalesCache=(data||[]).map(function(s){return s.fields||s;});
+    acRenderSucursales();
+  }).catch(function(){});
+  fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_EQUIPOS_ALL'})})
+  .then(function(r){return r.json();}).then(function(data){
+    acEquiposCache=(data||[]).map(function(e){return e.fields||e;});
+    acRenderEquipos();
+  }).catch(function(){});
+}
+
+function acRenderClientes(q){
+  var cont=document.getElementById('acListaClientes');if(!cont)return;
+  var filtrados=acClientesCache.filter(function(c){
+    if(!q)return true;
+    return (c.Title||'').toLowerCase().indexOf(q.toLowerCase())!==-1;
+  });
+  if(!filtrados.length){cont.innerHTML='<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px">No se encontraron clientes</div>';return;}
+  cont.innerHTML=filtrados.map(function(c){
+    var id=c.id||c.ID;
+    var suc=acSucursalesCache.filter(function(s){return String(s.ClienteLookupId||s.ClienteId||s.Cliente)===String(id);});
+    var eqs=acEquiposCache.filter(function(e){return String(e.ClienteLookupId||e.ClienteId||e.Cliente)===String(id);});
+    var activo=c.Activo!==false&&c.Activo!=='No';
+    var initials=(c.Title||'?').split(' ').slice(0,2).map(function(w){return w[0];}).join('').toUpperCase();
+    return '<div class="ac-card" id="acCard_'+id+'">'
+      +'<div class="ac-card-header" onclick="acToggleCliente(\''+id+'\')">'
+      +'<div class="ac-card-left">'
+      +'<div class="ac-avatar" style="'+(activo?'background:#E1F5EE;color:#0F6E56':'background:var(--surface-1);color:var(--text-muted)')+'">'+initials+'</div>'
+      +'<div><div class="ac-card-name">'+c.Title+'</div>'
+      +'<div class="ac-card-meta">'+suc.length+' sucursal(es) · '+eqs.length+' equipo(s)</div></div></div>'
+      +'<div style="display:flex;align-items:center;gap:8px">'
+      +'<span class="'+(activo?'ac-badge-active':'ac-badge-inactive')+'">'+(activo?'Activo':'Inactivo')+'</span>'
+      +'<span class="ac-expand">&#8964;</span></div></div>'
+      +'<div class="ac-card-body" id="acBody_'+id+'" style="display:none">'
+      +acRenderSucursalesDeCliente(id,suc)
+      +'<div class="ac-add-row" onclick="acModalNuevaSucursal(\''+id+'\',\''+c.Title+'\')"><i class="ti ti-plus"></i> Agregar sucursal</div>'
+      +'</div>'
+      +'<div class="ac-card-footer">'
+      +'<button class="ac-btn-outline green" onclick="acModalEditarCliente(\''+id+'\')"><i class="ti ti-edit"></i> Editar</button>'
+      +(activo?'<button class="ac-btn-outline red" onclick="acBajaCliente(\''+id+'\',\''+c.Title+'\')"><i class="ti ti-ban"></i> Dar de baja</button>'
+              :'<button class="ac-btn-outline green" onclick="acReactivarCliente(\''+id+'\',\''+c.Title+'\')"><i class="ti ti-refresh"></i> Reactivar</button>')
+      +'</div></div>';
+  }).join('');
+}
+
+function acRenderSucursalesDeCliente(clienteId,suc){
+  if(!suc||!suc.length)return '<div style="font-size:12px;color:var(--text-muted);padding:6px 0">Sin sucursales registradas</div>';
+  return suc.map(function(s){
+    var id=s.id||s.ID;
+    var eqs=acEquiposCache.filter(function(e){return String(e.SucursalLookupId||e.SucursalId||e.Sucursal)===String(id);});
+    var activa=s.Activa!==false&&s.Activa!=='No';
+    return '<div class="ac-sucursal">'
+      +'<div class="ac-suc-header">'
+      +'<div><div class="ac-suc-name">'+s.Title+'</div>'
+      +'<div class="ac-suc-meta">'+eqs.length+' equipo(s) · '+(activa?'Activa':'Inactiva')+'</div></div>'
+      +'<div class="ac-suc-actions">'
+      +'<button class="ac-btn-sm green" onclick="acModalNuevoEquipo(\''+id+'\',\''+clienteId+'\')"><i class="ti ti-plus"></i> Equipo</button>'
+      +'<button class="ac-btn-sm" onclick="acModalEditarSucursal(\''+id+'\')"><i class="ti ti-edit"></i></button>'
+      +(activa?'<button class="ac-btn-sm red" onclick="acBajaSucursal(\''+id+'\',\''+s.Title+'\')"><i class="ti ti-ban"></i></button>':'')
+      +'</div></div>'
+      +acRenderEquiposDeSucursal(id,eqs)
+      +'</div>';
+  }).join('');
+}
+
+function acRenderEquiposDeSucursal(sucursalId,eqs){
+  if(!eqs||!eqs.length)return '';
+  return '<div class="ac-equipo-list">'
+    +eqs.map(function(e){
+      var id=e.id||e.ID;
+      var activo=e.Activo!==false&&e.Activo!=='No';
+      return '<div class="ac-equipo-row" style="'+(activo?'':'opacity:0.5')+'">'
+        +'<div class="ac-equipo-info">'
+        +'<div class="ac-equipo-name">'+e.Title+'</div>'
+        +'<div class="ac-equipo-meta">'+(e.Marca||'')+(e.TipoEquipo?' · '+e.TipoEquipo:'')+(e.Refrigerante?' · '+e.Refrigerante:'')+'</div>'
+        +'</div>'
+        +'<div class="ac-equipo-actions">'
+        +'<button class="ac-icon-btn" onclick="acModalEditarEquipo(\''+id+'\')"><i class="ti ti-edit" style="font-size:14px"></i></button>'
+        +(activo?'<button class="ac-icon-btn red" onclick="acBajaEquipo(\''+id+'\',\''+e.Title+'\')"><i class="ti ti-ban" style="font-size:14px"></i></button>'
+                :'<button class="ac-icon-btn" style="border-color:#0F6E56;color:#0F6E56" onclick="acReactivarEquipo(\''+id+'\',\''+e.Title+'\')"><i class="ti ti-refresh" style="font-size:14px"></i></button>')
+        +'</div></div>';
+    }).join('')
+    +'</div>';
+}
+
+function acRenderSucursales(q){
+  var cont=document.getElementById('acListaSucursales');if(!cont)return;
+  var filtrados=acSucursalesCache.filter(function(s){
+    if(!q)return true;
+    return (s.Title||'').toLowerCase().indexOf(q.toLowerCase())!==-1;
+  });
+  if(!filtrados.length){cont.innerHTML='<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px">No se encontraron sucursales</div>';return;}
+  cont.innerHTML=filtrados.map(function(s){
+    var id=s.id||s.ID;
+    var eqs=acEquiposCache.filter(function(e){return String(e.SucursalLookupId||e.SucursalId||e.Sucursal)===String(id);});
+    var cliente=acClientesCache.find(function(c){return String(c.id||c.ID)===String(s.ClienteLookupId||s.ClienteId);});
+    var activa=s.Activa!==false&&s.Activa!=='No';
+    return '<div class="ac-card">'
+      +'<div class="ac-card-header">'
+      +'<div class="ac-card-left">'
+      +'<div class="ac-avatar" style="'+(activa?'background:#E1F5EE;color:#0F6E56':'background:var(--surface-1);color:var(--text-muted)')+'"><i class="ti ti-building" style="font-size:16px"></i></div>'
+      +'<div><div class="ac-card-name">'+s.Title+'</div>'
+      +'<div class="ac-card-meta">'+(cliente?cliente.Title:'Sin cliente')+' · '+eqs.length+' equipo(s)</div></div></div>'
+      +'<div style="display:flex;gap:6px">'
+      +'<button class="ac-btn-sm green" onclick="acModalNuevoEquipo(\''+id+'\',\''+(s.ClienteLookupId||s.ClienteId||'')+'\')"><i class="ti ti-plus"></i> Equipo</button>'
+      +'<button class="ac-btn-sm" onclick="acModalEditarSucursal(\''+id+'\')"><i class="ti ti-edit"></i></button>'
+      +'</div></div></div>';
+  }).join('');
+}
+
+function acRenderEquipos(q){
+  var cont=document.getElementById('acListaEquipos');if(!cont)return;
+  var filtrados=acEquiposCache.filter(function(e){
+    if(!q)return true;
+    return (e.Title||'').toLowerCase().indexOf(q.toLowerCase())!==-1||(e.Marca||'').toLowerCase().indexOf(q.toLowerCase())!==-1;
+  });
+  if(!filtrados.length){cont.innerHTML='<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px">No se encontraron equipos</div>';return;}
+  cont.innerHTML=filtrados.map(function(e){
+    var id=e.id||e.ID;
+    var activo=e.Activo!==false&&e.Activo!=='No';
+    var suc=acSucursalesCache.find(function(s){return String(s.id||s.ID)===String(e.SucursalLookupId||e.SucursalId);});
+    return '<div class="ac-card">'
+      +'<div class="ac-card-header">'
+      +'<div class="ac-card-left">'
+      +'<div class="ac-avatar" style="'+(activo?'background:#E1F5EE;color:#0F6E56':'background:var(--surface-1);color:var(--text-muted)')+'"><i class="ti ti-tool" style="font-size:16px"></i></div>'
+      +'<div><div class="ac-card-name">'+e.Title+'</div>'
+      +'<div class="ac-card-meta">'+(suc?suc.Title:'Sin sucursal')+(e.TipoEquipo?' · '+e.TipoEquipo:'')+'</div></div></div>'
+      +'<div style="display:flex;gap:6px">'
+      +'<button class="ac-icon-btn" onclick="acModalEditarEquipo(\''+id+'\')"><i class="ti ti-edit" style="font-size:14px"></i></button>'
+      +(activo?'<button class="ac-icon-btn red" onclick="acBajaEquipo(\''+id+'\',\''+e.Title+'\')"><i class="ti ti-ban" style="font-size:14px"></i></button>'
+              :'<button class="ac-icon-btn" style="border-color:#0F6E56;color:#0F6E56" onclick="acReactivarEquipo(\''+id+'\',\''+e.Title+'\')"><i class="ti ti-refresh" style="font-size:14px"></i></button>')
+      +'</div></div></div>';
+  }).join('');
+}
+
+function acToggleCliente(id){
+  var body=document.getElementById('acBody_'+id);
+  if(body) body.style.display=body.style.display==='none'?'block':'none';
+}
+
+function acBajaCliente(id,nombre){
+  if(!confirm('¿Dar de baja a '+nombre+'? Sus sucursales y equipos quedarán inactivos.'))return;
+  fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'BAJA_CLIENTE',payload:{id:id}})})
+  .then(function(){acCargarTodo();}).catch(function(){alert('Error al dar de baja.');});
+}
+function acReactivarCliente(id,nombre){
+  if(!confirm('¿Reactivar a '+nombre+'?'))return;
+  fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'REACTIVAR_CLIENTE',payload:{id:id}})})
+  .then(function(){acCargarTodo();}).catch(function(){alert('Error al reactivar.');});
+}
+function acBajaSucursal(id,nombre){
+  if(!confirm('¿Dar de baja la sucursal '+nombre+'?'))return;
+  fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'BAJA_SUCURSAL',payload:{id:id}})})
+  .then(function(){acCargarTodo();}).catch(function(){alert('Error al dar de baja.');});
+}
+function acBajaEquipo(id,nombre){
+  if(!confirm('¿Dar de baja el equipo '+nombre+'?'))return;
+  fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'BAJA_EQUIPO',payload:{id:id}})})
+  .then(function(){acCargarTodo();}).catch(function(){alert('Error al dar de baja.');});
+}
+function acReactivarEquipo(id,nombre){
+  if(!confirm('¿Reactivar el equipo '+nombre+'?'))return;
+  fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'REACTIVAR_EQUIPO',payload:{id:id}})})
+  .then(function(){acCargarTodo();}).catch(function(){alert('Error al reactivar.');});
+}
+
+function acModalNuevoCliente(){acAbrirModal('nuevo_cliente',null);}
+function acModalEditarCliente(id){var c=acClientesCache.find(function(x){return String(x.id||x.ID)===String(id);});acAbrirModal('editar_cliente',c);}
+function acModalNuevaSucursal(clienteId,clienteNombre){acAbrirModal('nuevo_sucursal',{clienteId:clienteId,clienteNombre:clienteNombre});}
+function acModalEditarSucursal(id){var s=acSucursalesCache.find(function(x){return String(x.id||x.ID)===String(id);});acAbrirModal('editar_sucursal',s);}
+function acModalNuevoEquipo(sucursalId,clienteId){acAbrirModal('nuevo_equipo',{sucursalId:sucursalId,clienteId:clienteId});}
+function acModalEditarEquipo(id){var e=acEquiposCache.find(function(x){return String(x.id||x.ID)===String(id);});acAbrirModal('editar_equipo',e);}
+
+function acAbrirModal(tipo,datos){
+  var overlay=document.getElementById('acModalOverlay');
+  var content=document.getElementById('acModalContent');
+  if(!overlay||!content)return;
+  content.innerHTML=acBuildModal(tipo,datos);
+  overlay.style.display='flex';
+  acModal={tipo:tipo,datos:datos};
+}
+function acCerrarModal(){
+  var overlay=document.getElementById('acModalOverlay');
+  if(overlay) overlay.style.display='none';
+  acModal=null;
+}
+
+function acBuildModal(tipo,datos){
+  if(tipo==='nuevo_cliente'||tipo==='editar_cliente'){
+    var d=datos||{};var es=tipo==='editar_cliente';
+    return '<h3 style="margin:0 0 16px;font-size:15px;font-weight:500">'+(es?'Editar cliente':'Nuevo cliente')+'</h3>'
+      +'<label class="field-label">Nombre <span class="required-star">*</span></label>'
+      +'<input id="acF_titulo" value="'+(d.Title||'')+'" placeholder="Nombre del cliente">'
+      +'<label class="field-label" style="margin-top:10px">Contacto principal</label>'
+      +'<input id="acF_contacto" value="'+(d.ContactoPrincipal||'')+'" placeholder="Nombre del contacto">'
+      +'<label class="field-label" style="margin-top:10px">Teléfono</label>'
+      +'<input id="acF_telefono" value="'+(d.Teléfono||d.Telefono||'')+'" placeholder="+507 0000-0000">'
+      +'<label class="field-label" style="margin-top:10px">Correo</label>'
+      +'<input id="acF_correo" type="email" value="'+(d.Correo||'')+'" placeholder="correo@empresa.com">'
+      +'<label class="field-label" style="margin-top:10px">Tipo de cliente</label>'
+      +'<select id="acF_tipoCliente"><option value="">Seleccionar...</option><option '+(d.TipoCliente==='Gobierno'?'selected':'')+'>Gobierno</option><option '+(d.TipoCliente==='Banco'?'selected':'')+'>Banco</option><option '+(d.TipoCliente==='Comercial'?'selected':'')+'>Comercial</option><option '+(d.TipoCliente==='Residencial'?'selected':'')+'>Residencial</option></select>'
+      +'<label class="field-label" style="margin-top:10px">Tipo de contrato</label>'
+      +'<select id="acF_tipoContrato"><option value="">Seleccionar...</option><option '+(d.TipoContrato==='Anual'?'selected':'')+'>Anual</option><option '+(d.TipoContrato==='Mensual'?'selected':'')+'>Mensual</option><option '+(d.TipoContrato==='Por servicio'?'selected':'')+'>Por servicio</option></select>'
+      +'<label class="field-label" style="margin-top:10px">Frecuencia de mantenimiento</label>'
+      +'<select id="acF_frecuencia"><option value="">Seleccionar...</option><option '+(d.FrecuenciaMantenimiento==='Mensual'?'selected':'')+'>Mensual</option><option '+(d.FrecuenciaMantenimiento==='Bimestral'?'selected':'')+'>Bimestral</option><option '+(d.FrecuenciaMantenimiento==='Trimestral'?'selected':'')+'>Trimestral</option><option '+(d.FrecuenciaMantenimiento==='Semestral'?'selected':'')+'>Semestral</option><option '+(d.FrecuenciaMantenimiento==='Anual'?'selected':'')+'>Anual</option></select>'
+      +'<label class="field-label" style="margin-top:10px">Notas</label>'
+      +'<textarea id="acF_notas" placeholder="Observaciones...">'+(d.Notas||'')+'</textarea>'
+      +'<div style="display:flex;gap:8px;margin-top:16px">'
+      +'<button class="ac-btn-outline" onclick="acCerrarModal()" style="flex:1">Cancelar</button>'
+      +'<button class="ac-btn-green" style="flex:2" onclick="acGuardarCliente('+(es?'\''+String(d.id||d.ID)+'\'':'null')+')">'+(es?'Guardar cambios':'Crear cliente')+'</button>'
+      +'</div>';
+  }
+  if(tipo==='nuevo_sucursal'||tipo==='editar_sucursal'){
+    var d=datos||{};var es=tipo==='editar_sucursal';
+    var optsClientes=acClientesCache.map(function(c){return '<option value="'+(c.id||c.ID)+'" '+(String(c.id||c.ID)===String(d.clienteId||d.ClienteLookupId||d.ClienteId)?'selected':'')+'>'+c.Title+'</option>';}).join('');
+    return '<h3 style="margin:0 0 16px;font-size:15px;font-weight:500">'+(es?'Editar sucursal':'Nueva sucursal')+'</h3>'
+      +'<label class="field-label">Nombre <span class="required-star">*</span></label>'
+      +'<input id="acF_titulo" value="'+(d.Title||'')+'" placeholder="Nombre de la sucursal">'
+      +'<label class="field-label" style="margin-top:10px">Cliente <span class="required-star">*</span></label>'
+      +'<select id="acF_clienteId"><option value="">Seleccionar...</option>'+optsClientes+'</select>'
+      +'<label class="field-label" style="margin-top:10px">Dirección</label>'
+      +'<input id="acF_direccion" value="'+(d.Direccion||'')+'" placeholder="Dirección física">'
+      +'<label class="field-label" style="margin-top:10px">Contacto en sitio</label>'
+      +'<input id="acF_contactoSitio" value="'+(d.ContactoSitio||'')+'" placeholder="Nombre del contacto">'
+      +'<label class="field-label" style="margin-top:10px">Teléfono sitio</label>'
+      +'<input id="acF_telefonoSitio" value="'+(d.TeléfonoSitio||d.TelefonoSitio||'')+'" placeholder="+507 0000-0000">'
+      +'<label class="field-label" style="margin-top:10px">Correo sitio</label>'
+      +'<input id="acF_correoSitio" type="email" value="'+(d.CorreoSitio||'')+'" placeholder="correo@sucursal.com">'
+      +'<label class="field-label" style="margin-top:10px">Notas</label>'
+      +'<textarea id="acF_notas" placeholder="Observaciones...">'+(d.Notas||'')+'</textarea>'
+      +'<div style="display:flex;gap:8px;margin-top:16px">'
+      +'<button class="ac-btn-outline" onclick="acCerrarModal()" style="flex:1">Cancelar</button>'
+      +'<button class="ac-btn-green" style="flex:2" onclick="acGuardarSucursal('+(es?'\''+String(d.id||d.ID)+'\'':'null')+')">'+(es?'Guardar cambios':'Crear sucursal')+'</button>'
+      +'</div>';
+  }
+  if(tipo==='nuevo_equipo'||tipo==='editar_equipo'){
+    var d=datos||{};var es=tipo==='editar_equipo';
+    var optsSuc=acSucursalesCache.map(function(s){return '<option value="'+(s.id||s.ID)+'" '+(String(s.id||s.ID)===String(d.sucursalId||d.SucursalLookupId||d.SucursalId)?'selected':'')+'>'+s.Title+'</option>';}).join('');
+    return '<h3 style="margin:0 0 16px;font-size:15px;font-weight:500">'+(es?'Editar equipo':'Nuevo equipo')+'</h3>'
+      +'<label class="field-label">Nombre <span class="required-star">*</span></label>'
+      +'<input id="acF_titulo" value="'+(d.Title||'')+'" placeholder="Ej: Mini Split #1">'
+      +'<label class="field-label" style="margin-top:10px">Sucursal <span class="required-star">*</span></label>'
+      +'<select id="acF_sucursalId"><option value="">Seleccionar...</option>'+optsSuc+'</select>'
+      +'<label class="field-label" style="margin-top:10px">Tipo de equipo</label>'
+      +'<select id="acF_tipoEquipo"><option value="">Seleccionar...</option><option '+(d.TipoEquipo==='Evaporador MiniSplit'?'selected':'')+'>Evaporador MiniSplit</option><option '+(d.TipoEquipo==='Condensadora'?'selected':'')+'>Condensadora</option><option '+(d.TipoEquipo==='Manejadora de Aire'?'selected':'')+'>Manejadora de Aire</option><option '+(d.TipoEquipo==='Chiller'?'selected':'')+'>Chiller</option><option '+(d.TipoEquipo==='Autocontenida'?'selected':'')+'>Autocontenida</option><option '+(d.TipoEquipo==='Fan Coil'?'selected':'')+'>Fan Coil</option><option '+(d.TipoEquipo==='Extractor de Aire'?'selected':'')+'>Extractor de Aire</option><option '+(d.TipoEquipo==='Cassette'?'selected':'')+'>Cassette</option><option '+(d.TipoEquipo==='Piso Techo'?'selected':'')+'>Piso Techo</option><option '+(d.TipoEquipo==='VRF'?'selected':'')+'>VRF</option></select>'
+      +'<label class="field-label" style="margin-top:10px">Tipo de sistema</label>'
+      +'<select id="acF_tipoSistema"><option value="">Seleccionar...</option><option '+(d.TipoSistema==='Expansión Directa'?'selected':'')+'>Expansión Directa</option><option '+(d.TipoSistema==='VRF'?'selected':'')+'>VRF</option><option '+(d.TipoSistema==='Extracción'?'selected':'')+'>Extracción</option><option '+(d.TipoSistema==='Inyección'?'selected':'')+'>Inyección</option></select>'
+      +'<label class="field-label" style="margin-top:10px">Refrigerante</label>'
+      +'<select id="acF_refrigerante"><option value="">Seleccionar...</option><option '+(d.Refrigerante==='R-410a'?'selected':'')+'>R-410a</option><option '+(d.Refrigerante==='R-22'?'selected':'')+'>R-22</option><option '+(d.Refrigerante==='R-32'?'selected':'')+'>R-32</option><option '+(d.Refrigerante==='R-134a'?'selected':'')+'>R-134a</option><option '+(d.Refrigerante==='N/A'?'selected':'')+'>N/A</option></select>'
+      +'<label class="field-label" style="margin-top:10px">Marca</label>'
+      +'<input id="acF_marca" value="'+(d.Marca||'')+'" placeholder="Ej: Panasonic">'
+      +'<label class="field-label" style="margin-top:10px">Modelo</label>'
+      +'<input id="acF_modelo" value="'+(d.Modelo||'')+'" placeholder="Ej: CU-C24NKV">'
+      +'<label class="field-label" style="margin-top:10px">Capacidad</label>'
+      +'<input id="acF_capacidad" value="'+(d.Capacidad||'')+'" placeholder="Ej: 24000 BTU">'
+      +'<label class="field-label" style="margin-top:10px">Ubicación</label>'
+      +'<input id="acF_ubicacion" value="'+(d.Ubicación||d.Ubicacion||'')+'" placeholder="Ej: Sala de servidores">'
+      +'<label class="field-label" style="margin-top:10px">Notas</label>'
+      +'<textarea id="acF_notas" placeholder="Observaciones...">'+(d.Notas||'')+'</textarea>'
+      +'<div style="display:flex;gap:8px;margin-top:16px">'
+      +'<button class="ac-btn-outline" onclick="acCerrarModal()" style="flex:1">Cancelar</button>'
+      +'<button class="ac-btn-green" style="flex:2" onclick="acGuardarEquipo('+(es?'\''+String(d.id||d.ID)+'\'':'null')+')">'+(es?'Guardar cambios':'Crear equipo')+'</button>'
+      +'</div>';
+  }
+  return '';
+}
+
+function acGv(id){var e=document.getElementById(id);return e?e.value||null:null;}
+
+function acGuardarCliente(id){
+  var titulo=acGv('acF_titulo');if(!titulo){alert('El nombre es obligatorio.');return;}
+  var payload={titulo:titulo,contacto:acGv('acF_contacto'),telefono:acGv('acF_telefono'),correo:acGv('acF_correo'),tipoCliente:acGv('acF_tipoCliente'),tipoContrato:acGv('acF_tipoContrato'),frecuencia:acGv('acF_frecuencia'),notas:acGv('acF_notas')};
+  var action=id?'EDITAR_CLIENTE':'CREAR_CLIENTE';
+  if(id) payload.id=id;
+  fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:action,payload:payload})})
+  .then(function(){acCerrarModal();acCargarTodo();}).catch(function(){alert('Error al guardar.');});
+}
+
+function acGuardarSucursal(id){
+  var titulo=acGv('acF_titulo');var clienteId=acGv('acF_clienteId');
+  if(!titulo||!clienteId){alert('Nombre y cliente son obligatorios.');return;}
+  var payload={titulo:titulo,clienteId:clienteId,direccion:acGv('acF_direccion'),contactoSitio:acGv('acF_contactoSitio'),telefonoSitio:acGv('acF_telefonoSitio'),correoSitio:acGv('acF_correoSitio'),notas:acGv('acF_notas')};
+  var action=id?'EDITAR_SUCURSAL':'CREAR_SUCURSAL';
+  if(id) payload.id=id;
+  fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:action,payload:payload})})
+  .then(function(){acCerrarModal();acCargarTodo();}).catch(function(){alert('Error al guardar.');});
+}
+
+function acGuardarEquipo(id){
+  var titulo=acGv('acF_titulo');var sucursalId=acGv('acF_sucursalId');
+  if(!titulo||!sucursalId){alert('Nombre y sucursal son obligatorios.');return;}
+  var payload={titulo:titulo,sucursalId:sucursalId,tipoEquipo:acGv('acF_tipoEquipo'),tipoSistema:acGv('acF_tipoSistema'),refrigerante:acGv('acF_refrigerante'),marca:acGv('acF_marca'),modelo:acGv('acF_modelo'),capacidad:acGv('acF_capacidad'),ubicacion:acGv('acF_ubicacion'),notas:acGv('acF_notas')};
+  var action=id?'EDITAR_EQUIPO':'CREAR_EQUIPO';
+  if(id) payload.id=id;
+  fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:action,payload:payload})})
+  .then(function(){acCerrarModal();acCargarTodo();}).catch(function(){alert('Error al guardar.');});
+}
+
 function resetNuevaOT(){
   otClienteSeleccionado=null;otSucursalSeleccionada=null;otTecnicoSeleccionado=null;otEquiposSeleccionados=[];
   var btn=document.getElementById('btnCrearOT');
@@ -2332,6 +2670,90 @@ function renderModuloOTs(){
   </div>
 </div>
 
+
+<div id="screenAdminClientes" style="display:none">
+  <div class="inf-top-bar" style="display:flex;align-items:center;justify-content:space-between">
+    <div><div class="brand">Ingecord</div><h1>Administrar clientes</h1></div>
+    <button onclick="volverAlDashboardDesdeSOL()" style="background:rgba(255,255,255,0.15);border:none;color:white;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit">&#8592; Volver</button>
+  </div>
+  <style>
+    .ac-tabs{display:flex;border-bottom:0.5px solid var(--border);background:var(--white)}
+    .ac-tab{flex:1;padding:11px;font-size:13px;text-align:center;cursor:pointer;color:var(--text-muted);border-bottom:2px solid transparent;font-family:inherit;border-top:none;border-left:none;border-right:none;background:transparent}
+    .ac-tab.active{color:#0F6E56;border-bottom:2px solid #0F6E56;font-weight:600}
+    .ac-card{background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius);margin-bottom:10px;overflow:hidden}
+    .ac-card-header{padding:13px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+    .ac-card-left{display:flex;align-items:center;gap:10px}
+    .ac-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0}
+    .ac-card-name{font-size:14px;font-weight:600}
+    .ac-card-meta{font-size:11px;color:var(--text-muted);margin-top:2px}
+    .ac-badge-active{background:#E1F5EE;color:#085041;font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px}
+    .ac-badge-inactive{background:var(--gray-bg);color:var(--text-muted);font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px}
+    .ac-card-body{border-top:1px solid var(--border-light);padding:12px 14px;background:var(--surface)}
+    .ac-sucursal{background:var(--white);border:1px solid var(--border-light);border-radius:8px;margin-bottom:8px;overflow:hidden}
+    .ac-suc-header{padding:10px 12px;display:flex;align-items:center;justify-content:space-between}
+    .ac-suc-name{font-size:13px;font-weight:600}
+    .ac-suc-meta{font-size:11px;color:var(--text-muted);margin-top:1px}
+    .ac-suc-actions{display:flex;gap:6px;flex-shrink:0}
+    .ac-btn-sm{border:1px solid var(--border);background:transparent;border-radius:6px;padding:5px 8px;font-size:11px;color:var(--text-muted);cursor:pointer;display:flex;align-items:center;gap:3px;font-family:inherit}
+    .ac-btn-sm.green{border-color:#0F6E56;color:#0F6E56}
+    .ac-btn-sm.red{border-color:#D85A30;color:#D85A30}
+    .ac-equipo-list{border-top:1px solid var(--border-light);padding:8px 12px}
+    .ac-equipo-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border-light)}
+    .ac-equipo-row:last-child{border-bottom:none}
+    .ac-equipo-name{font-size:12px;font-weight:600}
+    .ac-equipo-meta{font-size:11px;color:var(--text-muted)}
+    .ac-equipo-actions{display:flex;gap:4px;flex-shrink:0}
+    .ac-icon-btn{width:28px;height:28px;border:1px solid var(--border);border-radius:6px;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted);font-family:inherit}
+    .ac-icon-btn.red{border-color:#D85A30;color:#D85A30}
+    .ac-add-row{display:flex;align-items:center;gap:6px;padding:8px 0 2px;color:#0F6E56;font-size:12px;cursor:pointer;font-weight:500}
+    .ac-card-footer{padding:10px 14px;border-top:1px solid var(--border-light);display:flex;gap:8px}
+    .ac-btn-outline{flex:1;border:1px solid var(--border);background:transparent;border-radius:var(--radius);padding:8px;font-size:12px;color:var(--text-muted);cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:4px}
+    .ac-btn-outline.green{border-color:#0F6E56;color:#0F6E56}
+    .ac-btn-outline.red{border-color:#D85A30;color:#D85A30}
+    .ac-btn-green{background:#0F6E56;color:#fff;border:none;border-radius:var(--radius);padding:9px 14px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;font-family:inherit;white-space:nowrap}
+    #acModalOverlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.45);z-index:999;align-items:flex-end;justify-content:center}
+    #acModalContent{background:var(--white);border-radius:14px 14px 0 0;padding:20px 16px;width:100%;max-width:500px;max-height:85vh;overflow-y:auto}
+    #acModalContent .field-label{display:block;font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em;margin:10px 0 5px}
+    #acModalContent input,#acModalContent select,#acModalContent textarea{width:100%;box-sizing:border-box}
+    #acModalContent textarea{min-height:60px}
+  </style>
+  <div class="ac-tabs">
+    <button class="ac-tab active" id="acTab_clientes" onclick="acSetTab('clientes')">Clientes</button>
+    <button class="ac-tab" id="acTab_sucursales" onclick="acSetTab('sucursales')">Sucursales</button>
+    <button class="ac-tab" id="acTab_equipos" onclick="acSetTab('equipos')">Equipos</button>
+  </div>
+  <div class="container">
+
+    <div id="acPanelClientes">
+      <div style="display:flex;gap:8px;margin:14px 0 10px">
+        <input type="text" placeholder="Buscar cliente..." oninput="acRenderClientes(this.value)" style="flex:1">
+        <button class="ac-btn-green" onclick="acModalNuevoCliente()"><i class="ti ti-plus"></i> Nuevo</button>
+      </div>
+      <div id="acListaClientes"><div style="text-align:center;padding:30px;color:var(--text-muted);font-size:13px">Cargando...</div></div>
+    </div>
+
+    <div id="acPanelSucursales" style="display:none">
+      <div style="display:flex;gap:8px;margin:14px 0 10px">
+        <input type="text" placeholder="Buscar sucursal..." oninput="acRenderSucursales(this.value)" style="flex:1">
+        <button class="ac-btn-green" onclick="acModalNuevaSucursal('','')"><i class="ti ti-plus"></i> Nueva</button>
+      </div>
+      <div id="acListaSucursales"><div style="text-align:center;padding:30px;color:var(--text-muted);font-size:13px">Cargando...</div></div>
+    </div>
+
+    <div id="acPanelEquipos" style="display:none">
+      <div style="display:flex;gap:8px;margin:14px 0 10px">
+        <input type="text" placeholder="Buscar equipo..." oninput="acRenderEquipos(this.value)" style="flex:1">
+        <button class="ac-btn-green" onclick="acModalNuevoEquipo('','')"><i class="ti ti-plus"></i> Nuevo</button>
+      </div>
+      <div id="acListaEquipos"><div style="text-align:center;padding:30px;color:var(--text-muted);font-size:13px">Cargando...</div></div>
+    </div>
+
+    <div class="bottom-space"></div>
+  </div>
+  <div id="acModalOverlay" onclick="if(event.target===this)acCerrarModal()">
+    <div id="acModalContent"></div>
+  </div>
+</div>
 
 <div id="screenModuloOTs" style="display:none">
   <div class="inf-top-bar" style="display:flex;align-items:center;justify-content:space-between">
