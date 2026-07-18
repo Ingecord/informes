@@ -1856,8 +1856,8 @@ function acRenderClientes(q){
   if(!filtrados.length){cont.innerHTML='<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px">No se encontraron clientes</div>';return;}
   cont.innerHTML=filtrados.map(function(c){
     var id=c.id||c.ID;
-    var suc=acSucursalesCache.filter(function(s){return String(s.ClienteLookupId||s.ClienteId||s.Cliente)===String(id);});
-    var eqs=acEquiposCache.filter(function(e){return String(e.ClienteLookupId||e.ClienteId||e.Cliente)===String(id);});
+    var suc=acSucursalesCache.filter(function(s){return String(s.ClienteIDLookupId||s.ClienteLookupId||s.ClienteId)===String(id);});
+    var eqs=acEquiposCache.filter(function(e){return String(e.ClienteLookupId||e.ClienteId)===String(id);});
     var activo=c.Activo!==false&&c.Activo!=='No';
     var initials=(c.Title||'?').split(' ').slice(0,2).map(function(w){return w[0];}).join('').toUpperCase();
     return '<div class="ac-card" id="acCard_'+id+'">'
@@ -1885,7 +1885,7 @@ function acRenderSucursalesDeCliente(clienteId,suc){
   if(!suc||!suc.length)return '<div style="font-size:12px;color:var(--text-muted);padding:6px 0">Sin sucursales registradas</div>';
   return suc.map(function(s){
     var id=s.id||s.ID;
-    var eqs=acEquiposCache.filter(function(e){return String(e.SucursalLookupId||e.SucursalId||e.Sucursal)===String(id);});
+    var eqs=acEquiposCache.filter(function(e){return String(e.SucursalIDLookupId||e.SucursalLookupId||e.SucursalId)===String(id);});
     var activa=s.Activa!==false&&s.Activa!=='No';
     return '<div class="ac-sucursal">'
       +'<div class="ac-suc-header">'
@@ -1930,8 +1930,8 @@ function acRenderSucursales(q){
   if(!filtrados.length){cont.innerHTML='<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px">No se encontraron sucursales</div>';return;}
   cont.innerHTML=filtrados.map(function(s){
     var id=s.id||s.ID;
-    var eqs=acEquiposCache.filter(function(e){return String(e.SucursalLookupId||e.SucursalId||e.Sucursal)===String(id);});
-    var cliente=acClientesCache.find(function(c){return String(c.id||c.ID)===String(s.ClienteLookupId||s.ClienteId);});
+    var eqs=acEquiposCache.filter(function(e){return String(e.SucursalIDLookupId||e.SucursalLookupId||e.SucursalId)===String(id);});
+    var cliente=acClientesCache.find(function(c){return String(c.id||c.ID)===String(s.ClienteIDLookupId||s.ClienteLookupId||s.ClienteId);});
     var activa=s.Activa!==false&&s.Activa!=='No';
     return '<div class="ac-card">'
       +'<div class="ac-card-header">'
@@ -1956,7 +1956,7 @@ function acRenderEquipos(q){
   cont.innerHTML=filtrados.map(function(e){
     var id=e.id||e.ID;
     var activo=e.Activo!==false&&e.Activo!=='No';
-    var suc=acSucursalesCache.find(function(s){return String(s.id||s.ID)===String(e.SucursalLookupId||e.SucursalId);});
+    var suc=acSucursalesCache.find(function(s){return String(s.id||s.ID)===String(e.SucursalIDLookupId||e.SucursalLookupId||e.SucursalId);});
     return '<div class="ac-card">'
       +'<div class="ac-card-header">'
       +'<div class="ac-card-left">'
