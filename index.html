@@ -1135,6 +1135,8 @@ function irASG(){
   OTD.ot=ot?ot.fields.Title:'';OTD.tecnico=session.nombre;OTD.tipoSistema='Servicio General';OTD.cliente=pe?pe.clienteNombre||'-':'-';OTD.sucursal=pe?pe.sucursalNombre||'-':'-';
   document.getElementById('sgOT').textContent=OTD.ot;document.getElementById('sgCliente').textContent=OTD.cliente;document.getElementById('sgSucursal').textContent=OTD.sucursal;document.getElementById('sgTecnico').textContent=OTD.tecnico;document.getElementById('sgSub').textContent=OTD.ot+' - Servicio general';
   sgTipo=null;sgEstado=null;document.querySelectorAll('#screenSG .tipo-btn').forEach(function(b){b.classList.remove('active');});document.querySelectorAll('#screenSG .estado-btn').forEach(function(b){b.classList.remove('active');});
+  ['sgDesc','sgMat'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  var sgBtn=document.getElementById('sgSubmit');if(sgBtn){sgBtn.disabled=false;sgBtn.textContent='Enviar informe';sgBtn.style.background='';}
   showOnly('screenSG');
 }
 
@@ -1142,9 +1144,11 @@ function abrirDX(){
   dxTipo=null;dxEstado=null;dxTrab=null;fotosMap.dx=[];
   document.getElementById('dxOT').textContent=OTD.ot;document.getElementById('dxCliente').textContent=OTD.cliente;document.getElementById('dxSucursal').textContent=OTD.sucursal;document.getElementById('dxEquipo').textContent=OTD.equipo;document.getElementById('dxUbicacion').textContent=OTD.ubicacion;document.getElementById('dxMarca').textContent=OTD.marca;document.getElementById('dxRef').textContent=OTD.refrigerante;document.getElementById('dxTecnico').textContent=OTD.tecnico;document.getElementById('dxSub').textContent=OTD.cliente+' - '+OTD.sucursal;
   document.getElementById('dxFotoGrid').innerHTML='';document.getElementById('dxFotoCount').textContent='';
-  if(!dxCkBuilt){buildChecklist('dxChecklist',dxCkState);dxCkBuilt=true;}
+  buildChecklist('dxChecklist',dxCkState);
   document.querySelectorAll('#screenDX .tipo-btn').forEach(function(b){b.classList.remove('active');});document.querySelectorAll('#screenDX .estado-btn').forEach(function(b){b.classList.remove('active');});
   document.getElementById('dxTrabWrap').classList.remove('visible');document.getElementById('dxTrabNo').className='toggle-btn';document.getElementById('dxTrabSi').className='toggle-btn';
+  ['dxC1VAB','dxC1VBC','dxC1VAC','dxC1AA','dxC1AB2','dxC1AC2','dxPA1','dxPB1','dxPA2','dxPB2','dxTSum','dxTRet','dxObs','dxTrabDesc'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  var dxBtn=document.getElementById('dxSubmit');if(dxBtn){dxBtn.disabled=false;dxBtn.textContent='Enviar informe';dxBtn.style.background='';}
   showOnly('screenDX');
 }
 
@@ -1153,7 +1157,9 @@ function abrirVRF(){
   document.getElementById('vrfOT').textContent=OTD.ot;document.getElementById('vrfCliente').textContent=OTD.cliente;document.getElementById('vrfSucursal').textContent=OTD.sucursal;document.getElementById('vrfSistema').textContent=OTD.equipo;document.getElementById('vrfRef').textContent=OTD.refrigerante;document.getElementById('vrfTecnico').textContent=OTD.tecnico;document.getElementById('vrfSub').textContent=OTD.ot+' - '+OTD.equipo;
   document.getElementById('vrfEvaps').innerHTML='';document.getElementById('vrfConds').innerHTML='';document.getElementById('vrfFotoGrid').innerHTML='';document.getElementById('vrfFotoCount').textContent='';
   document.querySelectorAll('#screenVRF .tipo-btn').forEach(function(b){b.classList.remove('active');});document.querySelectorAll('#screenVRF .estado-btn').forEach(function(b){b.classList.remove('active');});
-  buildChecklist('vrfChecklist',vrfCkState);showOnly('screenVRF');
+  buildChecklist('vrfChecklist',vrfCkState);
+  var vrfBtn=document.getElementById('vrfSubmit');if(vrfBtn){vrfBtn.disabled=false;vrfBtn.textContent='Enviar informe VRF';vrfBtn.style.background='';}
+  showOnly('screenVRF');
 }
 
 var CHECKLIST_EXT=[
@@ -1172,6 +1178,7 @@ function abrirEXT(){
   document.getElementById('extTrabWrap').classList.remove('visible');
   document.getElementById('extTrabNo').className='toggle-btn';document.getElementById('extTrabSi').className='toggle-btn';
   ['extVAB','extVBC','extVAC','extAmpA','extAmpB','extAmpC','extRPM','extRuido','extObs','extTrabDesc'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  var extBtn=document.getElementById('extSubmit');if(extBtn){extBtn.disabled=false;extBtn.textContent='Enviar informe';extBtn.style.background='';}
   showOnly('screenEXT');
 }
 function extSetTipo(t){extTipo=t;document.querySelectorAll('#screenEXT .tipo-btn').forEach(function(b){b.classList.remove('active');});var m={Preventivo:'extBtnPrev',Correctivo:'extBtnCorr',Inspeccion:'extBtnInsp',Diagnostico:'extBtnDiag'};if(m[t])document.getElementById(m[t]).classList.add('active');}
