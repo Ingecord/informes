@@ -203,6 +203,113 @@ textarea{min-height:90px;resize:vertical}
 .badge-exec{background:#DBEAFE;color:#1E40AF}
 .badge-pend{background:#FEE2E2;color:#991B1B}
 .badge-closed{background:#D1FAE5;color:#065F46}
+
+/* === SOLP Module Styles === */
+.solp-tabs{display:flex;border-bottom:0.5px solid var(--border);background:var(--white)}
+.solp-tab{flex:1;padding:11px;font-size:13px;text-align:center;cursor:pointer;color:var(--text-muted);border-bottom:2px solid transparent;font-family:inherit;border-top:none;border-left:none;border-right:none;background:transparent}
+.solp-tab.active{color:var(--teal);border-bottom:2px solid var(--teal);font-weight:600}
+.solp-kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px 16px}
+.solp-kpi{background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius);padding:12px 10px;text-align:center}
+.solp-kpi-val{font-size:22px;font-weight:700;color:var(--text)}
+.solp-kpi-lbl{font-size:10px;color:var(--text-muted);margin-top:2px;text-transform:uppercase;letter-spacing:0.03em}
+.solp-alert{border-radius:var(--radius);padding:10px 14px;margin:0 16px 8px;display:flex;align-items:center;gap:10px;font-size:12px}
+.solp-alert.yellow{background:var(--amber-bg);border:1px solid #e5a30b}
+.solp-alert.red{background:var(--red-bg);border:1px solid #c53030}
+.solp-alert-icon{font-size:14px;flex-shrink:0}
+.solp-alert-text{flex:1;line-height:1.4}
+.solp-alert-text strong{font-weight:600}
+.solp-alert-action{font-size:11px;color:var(--teal);font-weight:600;cursor:pointer;white-space:nowrap}
+.solp-search-bar{padding:8px 16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.solp-search{flex:1;min-width:140px;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-family:inherit;background:var(--white);color:var(--text)}
+.solp-filter-btn{padding:7px 14px;border:1px solid var(--border);border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;background:var(--white);color:var(--text);font-family:inherit}
+.solp-filter-btn.active{background:var(--teal);color:white;border-color:var(--teal)}
+.solp-btn-new{padding:9px 16px;border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;background:var(--teal);color:white;font-family:inherit;white-space:nowrap}
+.solp-table{width:100%;border-collapse:collapse;font-size:12px}
+.solp-table th{text-align:left;padding:8px 10px;font-weight:600;color:var(--text-muted);font-size:10px;text-transform:uppercase;letter-spacing:0.04em;border-bottom:1px solid var(--border);background:var(--surface)}
+.solp-table td{padding:9px 10px;border-bottom:1px solid var(--border-light);vertical-align:middle}
+.solp-table tr:last-child td{border-bottom:none}
+.solp-table-link{color:var(--teal);font-weight:600;cursor:pointer;text-decoration:none}
+.solp-table-link:hover{text-decoration:underline}
+.solp-dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.solp-dot.yellow{background:#f59e0b}
+.solp-dot.red{background:#c53030}
+.solp-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;white-space:nowrap}
+.solp-badge-pendiente{background:var(--amber-bg);color:var(--amber-text)}
+.solp-badge-cotizando{background:var(--blue-bg);color:var(--blue-text)}
+.solp-badge-aprobada{background:var(--green-bg);color:var(--green-text)}
+.solp-badge-comprada{background:var(--teal-light);color:var(--teal-dark)}
+.solp-badge-entregada{background:var(--green-bg);color:var(--green-text)}
+.solp-badge-cerrada{background:var(--gray-bg);color:var(--text-muted)}
+.solp-badge-rechazada{background:var(--red-bg);color:var(--red-text)}
+.solp-badge-urgente{background:var(--red-bg);color:var(--red-text)}
+.solp-badge-normal{background:var(--blue-bg);color:var(--blue-text)}
+.solp-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.solp-empty{text-align:center;padding:40px 20px;color:var(--text-muted);font-size:13px}
+/* SOLP Detail */
+.solp-detail-header{padding:16px;background:var(--white);border-bottom:1px solid var(--border-light)}
+.solp-detail-title{font-size:18px;font-weight:700;color:var(--text)}
+.solp-detail-meta{font-size:12px;color:var(--text-muted);margin-top:4px}
+.solp-detail-section{background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius);margin:12px 16px;overflow:hidden}
+.solp-detail-section-title{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em;padding:12px 14px 6px;border-bottom:none}
+.solp-detail-row{display:flex;justify-content:space-between;padding:6px 14px;font-size:13px}
+.solp-detail-row:last-child{padding-bottom:12px}
+.solp-detail-label{color:var(--text-muted)}
+.solp-detail-value{font-weight:600;color:var(--text);text-align:right;max-width:60%}
+.solp-timeline{padding:0 14px 14px}
+.solp-timeline-item{display:flex;gap:12px;padding:8px 0;position:relative}
+.solp-timeline-dot{width:10px;height:10px;border-radius:50%;background:var(--teal);flex-shrink:0;margin-top:4px;border:2px solid var(--teal-light)}
+.solp-timeline-dot.pending{background:var(--border);border-color:var(--border-light)}
+.solp-timeline-line{position:absolute;left:4px;top:18px;bottom:-4px;width:2px;background:var(--border-light)}
+.solp-timeline-item:last-child .solp-timeline-line{display:none}
+.solp-timeline-content{flex:1}
+.solp-timeline-action{font-size:13px;font-weight:600;color:var(--text)}
+.solp-timeline-info{font-size:11px;color:var(--text-muted);margin-top:2px}
+.solp-actions-bar{padding:12px 16px;display:flex;gap:8px;flex-wrap:wrap}
+.solp-btn-action{flex:1;padding:10px 12px;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;text-align:center;font-family:inherit;border:1px solid var(--border);background:var(--white);color:var(--text);min-width:100px}
+.solp-btn-action.primary{background:var(--teal);color:white;border-color:var(--teal)}
+.solp-btn-action.danger{color:var(--red-text);border-color:var(--red-text)}
+.solp-cost-compare{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:8px 14px 14px}
+.solp-cost-box{background:var(--surface);border-radius:var(--radius-sm);padding:10px;text-align:center}
+.solp-cost-label{font-size:10px;color:var(--text-muted);text-transform:uppercase}
+.solp-cost-value{font-size:18px;font-weight:700;margin-top:4px}
+.solp-cost-value.est{color:var(--blue-text)}
+.solp-cost-value.real{color:var(--teal)}
+.solp-cost-value.over{color:var(--red-text)}
+/* SOLP Form Modal */
+.solp-modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:1000;align-items:flex-end;justify-content:center}
+.solp-modal-overlay.active{display:flex}
+.solp-modal{background:var(--white);border-radius:16px 16px 0 0;width:100%;max-width:500px;max-height:92vh;overflow-y:auto;animation:solpSlideUp 0.3s ease}
+@keyframes solpSlideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.solp-modal-header{padding:16px 20px;border-bottom:1px solid var(--border-light);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--white);z-index:10}
+.solp-modal-title{font-size:16px;font-weight:700;color:var(--text)}
+.solp-modal-close{background:none;border:none;font-size:22px;cursor:pointer;color:var(--text-muted);padding:4px}
+.solp-modal-body{padding:16px 20px}
+.solp-form-section{margin-bottom:16px}
+.solp-form-section-title{font-size:11px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.solp-form-group{margin-bottom:12px}
+.solp-form-label{display:block;font-size:12px;font-weight:600;color:var(--text);margin-bottom:4px}
+.solp-form-label .req{color:var(--red-text)}
+.solp-form-input,.solp-form-select,.solp-form-textarea{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:inherit;color:var(--text);background:var(--white);box-sizing:border-box}
+.solp-form-textarea{min-height:60px;resize:vertical}
+.solp-form-select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b6b67' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;background-size:16px;padding-right:32px}
+.solp-form-input:focus,.solp-form-select:focus,.solp-form-textarea:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 2px rgba(15,110,86,0.1)}
+.solp-form-input[readonly]{background:var(--surface);color:var(--text-muted)}
+.solp-items-list{border:1px solid var(--border-light);border-radius:var(--radius-sm);overflow:hidden}
+.solp-item-row{display:flex;gap:6px;padding:8px 10px;align-items:center;border-bottom:1px solid var(--border-light)}
+.solp-item-row:last-child{border-bottom:none}
+.solp-item-row input,.solp-item-row select{font-size:12px;padding:6px 8px;border:1px solid var(--border);border-radius:4px;font-family:inherit}
+.solp-item-qty{width:50px;text-align:center}
+.solp-item-desc{flex:1;min-width:0}
+.solp-item-remove{background:none;border:none;color:var(--red-text);cursor:pointer;font-size:16px;padding:2px 6px}
+.solp-add-item{width:100%;padding:8px;border:1px dashed var(--border);border-radius:var(--radius-sm);background:transparent;color:var(--teal);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;margin-top:6px}
+.solp-urgent-box{background:var(--red-bg);border:1px solid #c53030;border-radius:var(--radius);padding:12px 14px;margin-top:8px;display:none}
+.solp-urgent-box.show{display:block}
+.solp-urgent-check{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;font-size:12px}
+.solp-urgent-check:last-child{margin-bottom:0}
+.solp-modal-footer{padding:12px 20px 24px;position:sticky;bottom:0;background:var(--white);border-top:1px solid var(--border-light)}
+.solp-btn-submit{width:100%;padding:14px;border:none;border-radius:var(--radius);font-size:15px;font-weight:600;cursor:pointer;background:var(--teal);color:white;font-family:inherit}
+.solp-btn-submit:disabled{opacity:0.5;cursor:not-allowed}
+
 </style>
 </head>
 <body>
@@ -2584,14 +2691,261 @@ function renderModuloOTs(){
 
 <div id="screenSolCompra" style="display:none">
   <div class="inf-top-bar" style="display:flex;align-items:center;justify-content:space-between">
-    <div><div class="brand">Ingecord</div><h1>Solicitud de compra</h1><div class="subtitle">En construccion</div></div>
+    <div><div class="brand">Ingecord</div><h1>Solicitudes de compra</h1><div class="subtitle" id="solpSubtitle"></div></div>
     <button onclick="volverAlDashboardDesdeSOL()" style="background:rgba(255,255,255,0.15);border:none;color:white;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit">&#8592; Volver</button>
   </div>
-  <div class="container">
-    <div class="section" style="margin-top:16px;text-align:center;padding:40px 20px">
-      <div style="font-size:48px;margin-bottom:16px">&#128722;</div>
-      <div style="font-size:16px;font-weight:600;color:var(--text);margin-bottom:8px">Modulo en construccion</div>
-      <div style="font-size:13px;color:var(--text-muted)">Este modulo estara disponible proximamente.</div>
+
+  <!-- SOLP Tabs -->
+  <div class="solp-tabs">
+    <button class="solp-tab active" onclick="solpSwitchTab('lista',this)">Solicitudes</button>
+    <button class="solp-tab" onclick="solpSwitchTab('resumen',this)">Resumen</button>
+  </div>
+
+  <!-- === VISTA LISTA === -->
+  <div id="solpVistaLista">
+    <!-- KPIs -->
+    <div class="solp-kpi-row">
+      <div class="solp-kpi"><div class="solp-kpi-val" id="solpKpiAbiertas">-</div><div class="solp-kpi-lbl">Abiertas</div></div>
+      <div class="solp-kpi"><div class="solp-kpi-val" id="solpKpiAlerta">-</div><div class="solp-kpi-lbl">Con alerta</div></div>
+      <div class="solp-kpi"><div class="solp-kpi-val" id="solpKpiMes">-</div><div class="solp-kpi-lbl">Este mes</div></div>
+      <div class="solp-kpi"><div class="solp-kpi-val" id="solpKpiTiempo">-</div><div class="solp-kpi-lbl">Tiempo prom.</div></div>
+    </div>
+
+    <!-- Alertas activas -->
+    <div id="solpAlertas"></div>
+
+    <!-- Busqueda y filtros -->
+    <div class="solp-search-bar">
+      <input type="text" class="solp-search" id="solpBuscar" placeholder="Buscar SOLP, OT, cliente..." oninput="solpFiltrar()">
+      <button class="solp-filter-btn active" onclick="solpToggleFilter(this,'todas')">Todas</button>
+      <button class="solp-filter-btn" onclick="solpToggleFilter(this,'alertas')">&#9888; Alertas</button>
+      <button class="solp-filter-btn" onclick="solpToggleFilter(this,'abiertas')">Abiertas</button>
+      <button class="solp-btn-new" onclick="solpAbrirNueva()">&#65291; Nueva SOLP</button>
+    </div>
+
+    <!-- Tabla -->
+    <div class="solp-scroll" style="padding:0 16px 16px">
+      <table class="solp-table" id="solpTabla">
+        <thead>
+          <tr>
+            <th style="width:24px"></th>
+            <th>N&deg; SOLP</th>
+            <th>OT / Destino</th>
+            <th>Tipo material</th>
+            <th>Estado</th>
+            <th>Dias</th>
+          </tr>
+        </thead>
+        <tbody id="solpTbody"></tbody>
+      </table>
+      <div id="solpEmpty" class="solp-empty" style="display:none">
+        <div style="font-size:36px;margin-bottom:10px">&#128722;</div>
+        No hay solicitudes de compra registradas.<br>Presiona <strong>+ Nueva SOLP</strong> para crear una.
+      </div>
+    </div>
+  </div>
+
+  <!-- === VISTA RESUMEN (tab) === -->
+  <div id="solpVistaResumen" style="display:none;padding:16px">
+    <div class="solp-detail-section" style="margin:0 0 12px">
+      <div class="solp-detail-section-title">Resumen del mes</div>
+      <div class="solp-detail-row"><span class="solp-detail-label">SOLPs creadas</span><span class="solp-detail-value" id="solpResCreadas">-</span></div>
+      <div class="solp-detail-row"><span class="solp-detail-label">SOLPs cerradas</span><span class="solp-detail-value" id="solpResCerradas">-</span></div>
+      <div class="solp-detail-row"><span class="solp-detail-label">Tiempo promedio cierre</span><span class="solp-detail-value" id="solpResTiempo">-</span></div>
+      <div class="solp-detail-row"><span class="solp-detail-label">Monto total estimado</span><span class="solp-detail-value" id="solpResMontoEst">-</span></div>
+      <div class="solp-detail-row"><span class="solp-detail-label">Monto total real</span><span class="solp-detail-value" id="solpResMontoReal">-</span></div>
+      <div class="solp-detail-row"><span class="solp-detail-label">Desviacion promedio</span><span class="solp-detail-value" id="solpResDesv">-</span></div>
+    </div>
+    <div class="solp-detail-section" style="margin:0">
+      <div class="solp-detail-section-title">Por tipo de material</div>
+      <div id="solpResPorTipo" style="padding:6px 14px 14px"></div>
+    </div>
+  </div>
+
+  <!-- === VISTA DETALLE (oculta hasta click) === -->
+  <div id="solpVistaDetalle" style="display:none">
+    <div style="padding:8px 16px">
+      <button onclick="solpVolverALista()" style="background:none;border:none;color:var(--teal);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;padding:4px 0">&#8592; Volver a la lista</button>
+    </div>
+    <div class="solp-detail-header">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div class="solp-detail-title" id="solpDetTitulo">SOLP-0000</div>
+          <div class="solp-detail-meta" id="solpDetMeta"></div>
+        </div>
+        <span class="solp-badge" id="solpDetBadge"></span>
+      </div>
+    </div>
+
+    <!-- Info general -->
+    <div class="solp-detail-section">
+      <div class="solp-detail-section-title">Informacion general</div>
+      <div class="solp-detail-row"><span class="solp-detail-label">OT / Destino</span><span class="solp-detail-value" id="solpDetOT"></span></div>
+      <div class="solp-detail-row"><span class="solp-detail-label">Cliente</span><span class="solp-detail-value" id="solpDetCliente"></span></div>
+      <div class="solp-detail-row"><span class="solp-detail-label">Tipo material</span><span class="solp-detail-value" id="solpDetTipo"></span></div>
+      <div class="solp-detail-row"><span class="solp-detail-label">Prioridad</span><span class="solp-detail-value" id="solpDetPrioridad"></span></div>
+      <div class="solp-detail-row"><span class="solp-detail-label">Solicitante</span><span class="solp-detail-value" id="solpDetSolicitante"></span></div>
+      <div class="solp-detail-row"><span class="solp-detail-label">Fecha creacion</span><span class="solp-detail-value" id="solpDetFecha"></span></div>
+    </div>
+
+    <!-- Items solicitados -->
+    <div class="solp-detail-section">
+      <div class="solp-detail-section-title">Items solicitados</div>
+      <div id="solpDetItems" style="padding:4px 14px 14px"></div>
+    </div>
+
+    <!-- Comparacion de costos -->
+    <div class="solp-detail-section">
+      <div class="solp-detail-section-title">Costos</div>
+      <div class="solp-cost-compare">
+        <div class="solp-cost-box"><div class="solp-cost-label">Estimado</div><div class="solp-cost-value est" id="solpDetCostoEst">$0.00</div></div>
+        <div class="solp-cost-box"><div class="solp-cost-label">Real</div><div class="solp-cost-value" id="solpDetCostoReal">-</div></div>
+      </div>
+    </div>
+
+    <!-- Timeline -->
+    <div class="solp-detail-section">
+      <div class="solp-detail-section-title">Timeline</div>
+      <div class="solp-timeline" id="solpDetTimeline"></div>
+    </div>
+
+    <!-- Observaciones -->
+    <div class="solp-detail-section">
+      <div class="solp-detail-section-title">Observaciones</div>
+      <div style="padding:4px 14px 14px;font-size:13px;color:var(--text)" id="solpDetObs">-</div>
+    </div>
+
+    <!-- Acciones admin -->
+    <div class="solp-actions-bar" id="solpDetAcciones"></div>
+    <div style="height:20px"></div>
+  </div>
+</div>
+
+<!-- SOLP Modal: Nueva Solicitud -->
+<div class="solp-modal-overlay" id="solpModal">
+  <div class="solp-modal">
+    <div class="solp-modal-header">
+      <span class="solp-modal-title" id="solpModalTitle">Nueva Solicitud de Compra</span>
+      <button class="solp-modal-close" onclick="solpCerrarModal()">&times;</button>
+    </div>
+    <div class="solp-modal-body">
+
+      <!-- A) Identificacion -->
+      <div class="solp-form-section">
+        <div class="solp-form-section-title">&#128196; A. Identificacion</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div class="solp-form-group">
+            <label class="solp-form-label">N&deg; SOLP</label>
+            <input type="text" class="solp-form-input" id="solpFormNumero" readonly>
+          </div>
+          <div class="solp-form-group">
+            <label class="solp-form-label">Fecha</label>
+            <input type="date" class="solp-form-input" id="solpFormFecha" readonly>
+          </div>
+        </div>
+        <div class="solp-form-group">
+          <label class="solp-form-label">Solicitante</label>
+          <input type="text" class="solp-form-input" id="solpFormSolicitante" readonly>
+        </div>
+      </div>
+
+      <!-- B) Destino -->
+      <div class="solp-form-section">
+        <div class="solp-form-section-title">&#128204; B. Destino de la compra</div>
+        <div class="solp-form-group">
+          <label class="solp-form-label">Tipo de destino <span class="req">*</span></label>
+          <select class="solp-form-select" id="solpFormDestinoTipo" onchange="solpCambiarDestino()">
+            <option value="">Seleccionar...</option>
+            <option value="OT">Orden de trabajo (OT)</option>
+            <option value="GO">Gasto operativo general</option>
+          </select>
+        </div>
+        <div id="solpDestinoOT" style="display:none">
+          <div class="solp-form-group">
+            <label class="solp-form-label">Numero de OT <span class="req">*</span></label>
+            <input type="text" class="solp-form-input" id="solpFormOT" placeholder="Ej: ING 2601-34">
+          </div>
+          <div class="solp-form-group">
+            <label class="solp-form-label">Cliente</label>
+            <input type="text" class="solp-form-input" id="solpFormCliente" placeholder="Se autocompleta con la OT" readonly style="background:var(--surface)">
+          </div>
+        </div>
+        <div id="solpDestinoGO" style="display:none">
+          <div class="solp-form-group">
+            <label class="solp-form-label">Codigo de gasto <span class="req">*</span></label>
+            <select class="solp-form-select" id="solpFormGO">
+              <option value="">Seleccionar...</option>
+              <option value="GO-OFICINA">GO-OFICINA — Materiales de oficina</option>
+              <option value="GO-HERRAMIENTAS">GO-HERRAMIENTAS — Herramientas y equipos</option>
+              <option value="GO-VEHICULOS">GO-VEHICULOS — Vehiculos y mantenimiento</option>
+              <option value="GO-LIMPIEZA">GO-LIMPIEZA — Limpieza y mantenimiento</option>
+              <option value="GO-SEGURIDAD">GO-SEGURIDAD — EPP y seguridad</option>
+              <option value="GO-OTRO">GO-OTRO — Otros gastos operativos</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- C) Materiales -->
+      <div class="solp-form-section">
+        <div class="solp-form-section-title">&#128230; C. Materiales solicitados</div>
+        <div class="solp-form-group">
+          <label class="solp-form-label">Tipo de material <span class="req">*</span></label>
+          <select class="solp-form-select" id="solpFormTipoMat">
+            <option value="">Seleccionar...</option>
+            <option value="Ferreteria local">Ferreteria local</option>
+            <option value="Refrigeracion local">Refrigeracion local</option>
+            <option value="Refrigeracion nacional">Refrigeracion nacional</option>
+            <option value="Equipo HVAC stock">Equipo HVAC stock nacional</option>
+            <option value="Equipo importado">Equipo importado</option>
+            <option value="Materiales electricos">Materiales electricos</option>
+            <option value="Insumos generales">Insumos generales</option>
+            <option value="Servicios terceros">Servicios de terceros</option>
+          </select>
+        </div>
+
+        <label class="solp-form-label">Items <span class="req">*</span></label>
+        <div class="solp-items-list" id="solpItemsList">
+          <div class="solp-item-row" data-idx="0">
+            <input type="number" class="solp-item-qty" placeholder="Cant" min="1" value="1">
+            <select style="width:60px;font-size:12px;padding:6px 4px;border:1px solid var(--border);border-radius:4px"><option>und</option><option>m</option><option>ft</option><option>kg</option><option>lb</option><option>gal</option><option>rollo</option><option>caja</option></select>
+            <input type="text" class="solp-item-desc" placeholder="Descripcion del item">
+            <button class="solp-item-remove" onclick="solpRemoveItem(this)" title="Quitar">&times;</button>
+          </div>
+        </div>
+        <button class="solp-add-item" onclick="solpAddItem()">+ Agregar otro item</button>
+
+        <div class="solp-form-group" style="margin-top:12px">
+          <label class="solp-form-label">Costo estimado total ($)</label>
+          <input type="number" class="solp-form-input" id="solpFormCosto" placeholder="0.00" step="0.01" min="0">
+        </div>
+      </div>
+
+      <!-- D) Prioridad y justificacion -->
+      <div class="solp-form-section">
+        <div class="solp-form-section-title">&#9888;&#65039; D. Prioridad y justificacion</div>
+        <div class="solp-form-group">
+          <label class="solp-form-label">Prioridad <span class="req">*</span></label>
+          <select class="solp-form-select" id="solpFormPrioridad" onchange="solpToggleUrgente()">
+            <option value="Normal">Normal</option>
+            <option value="Urgente">Urgente</option>
+          </select>
+        </div>
+        <div class="solp-urgent-box" id="solpUrgentBox">
+          <div style="font-size:12px;font-weight:600;color:var(--red-text);margin-bottom:8px">Justificacion de urgencia (obligatorio):</div>
+          <div class="solp-urgent-check"><input type="checkbox" id="solpUQ1"><label for="solpUQ1" style="font-size:12px">Equipo fuera de servicio afectando al cliente</label></div>
+          <div class="solp-urgent-check"><input type="checkbox" id="solpUQ2"><label for="solpUQ2" style="font-size:12px">Fecha limite contractual proxima</label></div>
+          <div class="solp-urgent-check"><input type="checkbox" id="solpUQ3"><label for="solpUQ3" style="font-size:12px">Riesgo de seguridad o normativo</label></div>
+          <div class="solp-urgent-check"><input type="checkbox" id="solpUQ4"><label for="solpUQ4" style="font-size:12px">Otro (especificar en observaciones)</label></div>
+        </div>
+        <div class="solp-form-group" style="margin-top:12px">
+          <label class="solp-form-label">Observaciones</label>
+          <textarea class="solp-form-textarea" id="solpFormObs" placeholder="Detalles adicionales, proveedor sugerido, especificaciones..."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="solp-modal-footer">
+      <button class="solp-btn-submit" id="solpBtnSubmit" onclick="solpEnviar()">Enviar solicitud de compra</button>
     </div>
   </div>
 </div>
@@ -3124,6 +3478,553 @@ function czGuardar(){
     btn.disabled=false;btn.textContent='Guardar cotizacion';
   });
 }
+</script>
+
+
+<script>
+/* ============================================
+   SOLP — Solicitud de Compra Module
+   Prefix: solp
+   ============================================ */
+
+var WEBHOOK_SOLP='https://hook.us2.make.com/PLACEHOLDER_SOLP_WEBHOOK';
+var solpCache=[];
+var solpFiltroActual='todas';
+var solpItemActual=null;
+var solpCounter=0;
+
+var SOLP_ESTADOS={
+  Pendiente:'solp-badge-pendiente',
+  Cotizando:'solp-badge-cotizando',
+  Aprobada:'solp-badge-aprobada',
+  Comprada:'solp-badge-comprada',
+  Entregada:'solp-badge-entregada',
+  Cerrada:'solp-badge-cerrada',
+  Rechazada:'solp-badge-rechazada'
+};
+
+/* Alert thresholds: [yellow days, red days] by material type */
+var SOLP_THRESHOLDS={
+  'Ferreteria local':[3,5],
+  'Refrigeracion local':[3,5],
+  'Refrigeracion nacional':[5,7],
+  'Equipo HVAC stock':[6,10],
+  'Equipo importado':[30,50],
+  'Materiales electricos':[3,5],
+  'Insumos generales':[3,5],
+  'Servicios terceros':[8,14]
+};
+
+var SOLP_ESTADOS_ABIERTOS=['Pendiente','Cotizando','Aprobada','Comprada'];
+var SOLP_ESTADOS_CERRADOS=['Entregada','Cerrada','Rechazada'];
+
+/* Roles that can see/create SOLPs */
+var SOLP_ROLES_VER=['Coordinador','Gerencia','Asistente','Administrativa'];
+var SOLP_ROLES_ADMIN=['Coordinador','Gerencia','Asistente','Administrativa'];
+
+/* ---- API ---- */
+function solpPost(body){
+  return fetch(WEBHOOK_SOLP,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(function(r){return r.json();});
+}
+
+/* ---- Init when screen opens ---- */
+function solpInit(){
+  document.getElementById('solpSubtitle').textContent=session.nombre+' — '+session.rol;
+  solpCargarLista();
+}
+
+function solpCargarLista(){
+  var tbody=document.getElementById('solpTbody');
+  tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--text-muted)">Cargando solicitudes...</td></tr>';
+  document.getElementById('solpEmpty').style.display='none';
+
+  solpPost({accion:'listar'}).then(function(data){
+    var items=(data.value||data||[]).map(function(it){
+      var f=it.fields||it;
+      return {
+        id:it.id||f.id||f.ID,
+        numero:f.Title||f.Numero||'',
+        ot:f.OT||f.NumeroOT||'',
+        cliente:f.Cliente||'',
+        tipoMaterial:f.TipoMaterial||f.Tipo_Material||'',
+        estado:f.Estado||'Pendiente',
+        prioridad:f.Prioridad||'Normal',
+        solicitante:f.Solicitante||'',
+        costoEstimado:parseFloat(f.CostoEstimado||f.Costo_Estimado||0),
+        costoReal:f.CostoReal||f.Costo_Real||null,
+        observaciones:f.Observaciones||'',
+        items:f.Items||f.ItemsJSON||'',
+        destinoTipo:f.DestinoTipo||f.Destino_Tipo||'OT',
+        codigoGO:f.CodigoGO||f.Codigo_GO||'',
+        urgJustificacion:f.JustificacionUrgencia||'',
+        fechaCreacion:f.Created||f.FechaCreacion||'',
+        fechaCotizando:f.FechaCotizando||'',
+        fechaAprobada:f.FechaAprobada||'',
+        fechaComprada:f.FechaComprada||'',
+        fechaEntregada:f.FechaEntregada||'',
+        fechaCerrada:f.FechaCerrada||'',
+        notasAdmin:f.NotasAdmin||''
+      };
+    });
+    solpCache=items;
+    solpRenderKpis(items);
+    solpRenderAlertas(items);
+    solpRenderLista(items,solpFiltroActual);
+  }).catch(function(err){
+    tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--text-muted)">Error al cargar. Intenta de nuevo.</td></tr>';
+  });
+}
+
+/* ---- KPIs ---- */
+function solpRenderKpis(items){
+  var hoy=new Date();
+  var mes=hoy.getMonth();
+  var anio=hoy.getFullYear();
+  var abiertas=items.filter(function(i){return SOLP_ESTADOS_ABIERTOS.indexOf(i.estado)!==-1;});
+  var conAlerta=abiertas.filter(function(i){return solpGetAlertLevel(i)!==null;});
+  var esteMes=items.filter(function(i){
+    var f=i.fechaCreacion?new Date(i.fechaCreacion):null;
+    return f&&f.getMonth()===mes&&f.getFullYear()===anio;
+  });
+  // Tiempo promedio de cierre (solo cerradas con ambas fechas)
+  var cerradas=items.filter(function(i){return i.fechaCerrada&&i.fechaCreacion;});
+  var tiempoProm='-';
+  if(cerradas.length>0){
+    var total=cerradas.reduce(function(sum,i){
+      return sum+((new Date(i.fechaCerrada)-new Date(i.fechaCreacion))/(1000*60*60*24));
+    },0);
+    tiempoProm=Math.round(total/cerradas.length)+'d';
+  }
+  document.getElementById('solpKpiAbiertas').textContent=abiertas.length;
+  document.getElementById('solpKpiAlerta').textContent=conAlerta.length;
+  document.getElementById('solpKpiMes').textContent=esteMes.length;
+  document.getElementById('solpKpiTiempo').textContent=tiempoProm;
+}
+
+/* ---- Alert level ---- */
+function solpGetAlertLevel(item){
+  if(SOLP_ESTADOS_CERRADOS.indexOf(item.estado)!==-1) return null;
+  var th=SOLP_THRESHOLDS[item.tipoMaterial];
+  if(!th) return null;
+  var dias=solpDiasTranscurridos(item.fechaCreacion);
+  if(dias>=th[1]) return 'red';
+  if(dias>=th[0]) return 'yellow';
+  return null;
+}
+
+function solpDiasTranscurridos(fecha){
+  if(!fecha) return 0;
+  var diff=new Date()-new Date(fecha);
+  return Math.floor(diff/(1000*60*60*24));
+}
+
+/* ---- Alertas ---- */
+function solpRenderAlertas(items){
+  var cont=document.getElementById('solpAlertas');
+  cont.innerHTML='';
+  var alertas=items.filter(function(i){return solpGetAlertLevel(i)!==null;}).sort(function(a,b){
+    var la=solpGetAlertLevel(a)==='red'?0:1;
+    var lb=solpGetAlertLevel(b)==='red'?0:1;
+    return la-lb;
+  });
+  alertas.slice(0,5).forEach(function(item){
+    var level=solpGetAlertLevel(item);
+    var dias=solpDiasTranscurridos(item.fechaCreacion);
+    var th=SOLP_THRESHOLDS[item.tipoMaterial]||[0,0];
+    var div=document.createElement('div');
+    div.className='solp-alert '+level;
+    div.innerHTML='<span class="solp-alert-icon">'+(level==='red'?'&#128308;':'&#128993;')+'</span>'+
+      '<span class="solp-alert-text"><strong>'+item.numero+'</strong> — '+item.tipoMaterial+' para '+(item.ot||item.codigoGO)+' lleva <strong>'+dias+' dias</strong>. Ref: '+th[0]+'-'+th[1]+' dias.</span>'+
+      '<span class="solp-alert-action" onclick="solpVerDetalle(\''+item.id+'\')">Ver &rarr;</span>';
+    cont.appendChild(div);
+  });
+}
+
+/* ---- Lista ---- */
+function solpRenderLista(items,filtro){
+  var tbody=document.getElementById('solpTbody');
+  var empty=document.getElementById('solpEmpty');
+  var filtrados=items;
+  if(filtro==='alertas'){
+    filtrados=items.filter(function(i){return solpGetAlertLevel(i)!==null;});
+  } else if(filtro==='abiertas'){
+    filtrados=items.filter(function(i){return SOLP_ESTADOS_ABIERTOS.indexOf(i.estado)!==-1;});
+  }
+  // Apply search
+  var q=(document.getElementById('solpBuscar').value||'').toLowerCase();
+  if(q.length>=2){
+    filtrados=filtrados.filter(function(i){
+      return (i.numero+' '+i.ot+' '+i.cliente+' '+i.tipoMaterial+' '+i.solicitante).toLowerCase().indexOf(q)!==-1;
+    });
+  }
+  if(!filtrados.length){
+    tbody.innerHTML='';
+    empty.style.display='block';
+    return;
+  }
+  empty.style.display='none';
+  // Sort: open first, then by date desc
+  filtrados.sort(function(a,b){
+    var aOpen=SOLP_ESTADOS_ABIERTOS.indexOf(a.estado)!==-1?0:1;
+    var bOpen=SOLP_ESTADOS_ABIERTOS.indexOf(b.estado)!==-1?0:1;
+    if(aOpen!==bOpen) return aOpen-bOpen;
+    return new Date(b.fechaCreacion||0)-new Date(a.fechaCreacion||0);
+  });
+  var html='';
+  filtrados.forEach(function(i){
+    var alert=solpGetAlertLevel(i);
+    var dias=solpDiasTranscurridos(i.fechaCreacion);
+    var badgeClass=SOLP_ESTADOS[i.estado]||'solp-badge-pendiente';
+    html+='<tr>'+
+      '<td>'+(alert?'<span class="solp-dot '+alert+'"></span>':'')+'</td>'+
+      '<td><span class="solp-table-link" onclick="solpVerDetalle(\''+i.id+'\')">'+i.numero+'</span></td>'+
+      '<td style="font-size:12px">'+(i.ot||i.codigoGO||'-')+'</td>'+
+      '<td style="font-size:12px">'+i.tipoMaterial+'</td>'+
+      '<td><span class="solp-badge '+badgeClass+'">'+i.estado+'</span></td>'+
+      '<td style="font-size:12px;text-align:center">'+dias+'</td>'+
+      '</tr>';
+  });
+  tbody.innerHTML=html;
+}
+
+/* ---- Filtros ---- */
+function solpFiltrar(){solpRenderLista(solpCache,solpFiltroActual);}
+function solpToggleFilter(el,filtro){
+  document.querySelectorAll('.solp-filter-btn').forEach(function(b){b.classList.remove('active');});
+  el.classList.add('active');
+  solpFiltroActual=filtro;
+  solpRenderLista(solpCache,filtro);
+}
+
+/* ---- Tabs ---- */
+function solpSwitchTab(tab,el){
+  document.querySelectorAll('.solp-tab').forEach(function(t){t.classList.remove('active');});
+  el.classList.add('active');
+  document.getElementById('solpVistaLista').style.display=tab==='lista'?'block':'none';
+  document.getElementById('solpVistaResumen').style.display=tab==='resumen'?'block':'none';
+  document.getElementById('solpVistaDetalle').style.display='none';
+  if(tab==='resumen') solpRenderResumen();
+}
+
+/* ---- Resumen ---- */
+function solpRenderResumen(){
+  var hoy=new Date();var mes=hoy.getMonth();var anio=hoy.getFullYear();
+  var esteMes=solpCache.filter(function(i){var f=i.fechaCreacion?new Date(i.fechaCreacion):null;return f&&f.getMonth()===mes&&f.getFullYear()===anio;});
+  var cerradasMes=esteMes.filter(function(i){return SOLP_ESTADOS_CERRADOS.indexOf(i.estado)!==-1;});
+  document.getElementById('solpResCreadas').textContent=esteMes.length;
+  document.getElementById('solpResCerradas').textContent=cerradasMes.length;
+  var cerradasT=cerradasMes.filter(function(i){return i.fechaCerrada&&i.fechaCreacion;});
+  if(cerradasT.length>0){
+    var t=cerradasT.reduce(function(s,i){return s+((new Date(i.fechaCerrada)-new Date(i.fechaCreacion))/(86400000));},0);
+    document.getElementById('solpResTiempo').textContent=Math.round(t/cerradasT.length)+' dias';
+  } else {document.getElementById('solpResTiempo').textContent='-';}
+  var montoEst=esteMes.reduce(function(s,i){return s+i.costoEstimado;},0);
+  var montoReal=cerradasMes.reduce(function(s,i){return s+(parseFloat(i.costoReal)||0);},0);
+  document.getElementById('solpResMontoEst').textContent='$'+montoEst.toFixed(2);
+  document.getElementById('solpResMontoReal').textContent=montoReal>0?'$'+montoReal.toFixed(2):'-';
+  if(montoEst>0&&montoReal>0){
+    var desv=((montoReal-montoEst)/montoEst*100).toFixed(1);
+    document.getElementById('solpResDesv').textContent=(desv>0?'+':'')+desv+'%';
+    document.getElementById('solpResDesv').style.color=desv>5?'var(--red-text)':desv<-5?'var(--teal)':'var(--text)';
+  } else {document.getElementById('solpResDesv').textContent='-';}
+  // Por tipo
+  var tipos={};
+  esteMes.forEach(function(i){
+    if(!tipos[i.tipoMaterial]) tipos[i.tipoMaterial]={total:0,abiertas:0,monto:0};
+    tipos[i.tipoMaterial].total++;
+    if(SOLP_ESTADOS_ABIERTOS.indexOf(i.estado)!==-1) tipos[i.tipoMaterial].abiertas++;
+    tipos[i.tipoMaterial].monto+=i.costoEstimado;
+  });
+  var tipoHtml='';
+  Object.keys(tipos).forEach(function(k){
+    var t=tipos[k];
+    tipoHtml+='<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:12px;border-bottom:1px solid var(--border-light)">'+
+      '<span>'+k+'</span><span style="color:var(--text-muted)">'+t.total+' ('+t.abiertas+' abiertas) — $'+t.monto.toFixed(0)+'</span></div>';
+  });
+  document.getElementById('solpResPorTipo').innerHTML=tipoHtml||'<div style="font-size:12px;color:var(--text-muted)">Sin datos este mes</div>';
+}
+
+/* ---- Detalle ---- */
+function solpVerDetalle(id){
+  var item=solpCache.find(function(i){return String(i.id)===String(id);});
+  if(!item) return;
+  solpItemActual=item;
+  // Hide list/resumen, show detail
+  document.getElementById('solpVistaLista').style.display='none';
+  document.getElementById('solpVistaResumen').style.display='none';
+  document.getElementById('solpVistaDetalle').style.display='block';
+  // Fill
+  document.getElementById('solpDetTitulo').textContent=item.numero;
+  document.getElementById('solpDetMeta').textContent='Creada '+solpFormatFecha(item.fechaCreacion)+' por '+item.solicitante;
+  var badge=document.getElementById('solpDetBadge');
+  badge.textContent=item.estado;
+  badge.className='solp-badge '+(SOLP_ESTADOS[item.estado]||'');
+  document.getElementById('solpDetOT').textContent=item.ot||item.codigoGO||'-';
+  document.getElementById('solpDetCliente').textContent=item.cliente||'-';
+  document.getElementById('solpDetTipo').textContent=item.tipoMaterial||'-';
+  var prioBadge=item.prioridad==='Urgente'?'<span class="solp-badge solp-badge-urgente">Urgente</span>':'<span class="solp-badge solp-badge-normal">Normal</span>';
+  document.getElementById('solpDetPrioridad').innerHTML=prioBadge;
+  document.getElementById('solpDetSolicitante').textContent=item.solicitante||'-';
+  document.getElementById('solpDetFecha').textContent=solpFormatFecha(item.fechaCreacion);
+  // Items
+  var itemsHtml='';
+  try{
+    var its=typeof item.items==='string'?JSON.parse(item.items):item.items;
+    if(Array.isArray(its)){
+      its.forEach(function(it,idx){
+        itemsHtml+='<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px;border-bottom:1px solid var(--border-light)">'+
+          '<span>'+(idx+1)+'. '+it.descripcion+'</span><span style="color:var(--text-muted)">'+it.cantidad+' '+it.unidad+'</span></div>';
+      });
+    }
+  }catch(e){}
+  document.getElementById('solpDetItems').innerHTML=itemsHtml||'<div style="font-size:12px;color:var(--text-muted)">Sin items detallados</div>';
+  // Costos
+  document.getElementById('solpDetCostoEst').textContent='$'+item.costoEstimado.toFixed(2);
+  if(item.costoReal!==null&&item.costoReal!==''){
+    var real=parseFloat(item.costoReal);
+    var el=document.getElementById('solpDetCostoReal');
+    el.textContent='$'+real.toFixed(2);
+    el.className='solp-cost-value '+(real>item.costoEstimado*1.05?'over':'real');
+  } else {
+    document.getElementById('solpDetCostoReal').textContent='Pendiente';
+    document.getElementById('solpDetCostoReal').className='solp-cost-value';
+  }
+  // Observaciones
+  document.getElementById('solpDetObs').textContent=item.observaciones||'-';
+  // Timeline
+  solpRenderTimeline(item);
+  // Acciones
+  solpRenderAcciones(item);
+}
+
+function solpRenderTimeline(item){
+  var cont=document.getElementById('solpDetTimeline');
+  var steps=[
+    {label:'SOLP creada',fecha:item.fechaCreacion,estado:'Pendiente'},
+    {label:'En cotizacion',fecha:item.fechaCotizando,estado:'Cotizando'},
+    {label:'Aprobada',fecha:item.fechaAprobada,estado:'Aprobada'},
+    {label:'Compra realizada',fecha:item.fechaComprada,estado:'Comprada'},
+    {label:'Material entregado',fecha:item.fechaEntregada,estado:'Entregada'},
+    {label:'SOLP cerrada',fecha:item.fechaCerrada,estado:'Cerrada'}
+  ];
+  var html='';
+  var reached=true;
+  steps.forEach(function(s,idx){
+    var done=!!s.fecha;
+    if(!done) reached=false;
+    html+='<div class="solp-timeline-item">'+
+      '<div class="solp-timeline-dot'+(done?'':' pending')+'"></div>'+
+      (idx<steps.length-1?'<div class="solp-timeline-line"></div>':'')+
+      '<div class="solp-timeline-content">'+
+        '<div class="solp-timeline-action">'+s.label+'</div>'+
+        '<div class="solp-timeline-info">'+(done?solpFormatFecha(s.fecha):'Pendiente')+'</div>'+
+      '</div></div>';
+  });
+  cont.innerHTML=html;
+}
+
+function solpRenderAcciones(item){
+  var cont=document.getElementById('solpDetAcciones');
+  cont.innerHTML='';
+  if(SOLP_ROLES_ADMIN.indexOf(session.rol)===-1) return;
+  if(SOLP_ESTADOS_CERRADOS.indexOf(item.estado)!==-1) return;
+
+  var nextStates={
+    'Pendiente':['Cotizando','Rechazada'],
+    'Cotizando':['Aprobada','Rechazada'],
+    'Aprobada':['Comprada','Rechazada'],
+    'Comprada':['Entregada']
+  };
+  var opts=nextStates[item.estado]||[];
+  opts.forEach(function(est){
+    var btn=document.createElement('button');
+    btn.className='solp-btn-action'+(est==='Rechazada'?' danger':' primary');
+    btn.textContent=(est==='Rechazada'?'Rechazar':'Avanzar a: ')+est;
+    (function(e){btn.onclick=function(){solpCambiarEstado(item.id,e);};})(est);
+    cont.appendChild(btn);
+  });
+  // Boton registrar costo real
+  if(item.estado==='Comprada'||item.estado==='Aprobada'){
+    var btnCosto=document.createElement('button');
+    btnCosto.className='solp-btn-action';
+    btnCosto.textContent='Registrar costo real';
+    btnCosto.onclick=function(){
+      var costo=prompt('Ingresa el costo real de la compra ($):');
+      if(costo!==null&&!isNaN(parseFloat(costo))){
+        solpPost({accion:'actualizarCosto',id:item.id,costoReal:parseFloat(costo)}).then(function(){solpCargarLista();solpVolverALista();}).catch(function(){alert('Error al actualizar.');});
+      }
+    };
+    cont.appendChild(btnCosto);
+  }
+}
+
+function solpCambiarEstado(id,nuevoEstado){
+  if(!confirm('Cambiar estado a "'+nuevoEstado+'"?')) return;
+  solpPost({accion:'cambiarEstado',id:id,estado:nuevoEstado,usuario:session.nombre,fecha:new Date().toISOString()})
+  .then(function(){solpCargarLista();solpVolverALista();})
+  .catch(function(){alert('Error al cambiar estado.');});
+}
+
+function solpVolverALista(){
+  document.getElementById('solpVistaDetalle').style.display='none';
+  document.getElementById('solpVistaLista').style.display='block';
+  // Reactivate lista tab
+  document.querySelectorAll('.solp-tab').forEach(function(t,i){t.classList.toggle('active',i===0);});
+}
+
+/* ---- Format date ---- */
+function solpFormatFecha(str){
+  if(!str) return '-';
+  var d=new Date(str);
+  if(isNaN(d)) return str;
+  var dia=d.getDate();
+  var meses=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  return dia+' '+meses[d.getMonth()]+' '+d.getFullYear();
+}
+
+/* ---- Nueva SOLP Modal ---- */
+function solpAbrirNueva(){
+  var modal=document.getElementById('solpModal');
+  modal.classList.add('active');
+  document.getElementById('solpModalTitle').textContent='Nueva Solicitud de Compra';
+  // Auto-fill
+  var hoy=new Date();
+  document.getElementById('solpFormFecha').value=hoy.toISOString().split('T')[0];
+  document.getElementById('solpFormSolicitante').value=session.nombre;
+  // Generate next SOLP number
+  var year=hoy.getFullYear();
+  var nextNum=solpCache.length+1;
+  var numStr=String(nextNum).length<3?('000'+nextNum).slice(-3):String(nextNum);
+  document.getElementById('solpFormNumero').value='SOLP-'+year+'-'+numStr;
+  // Reset form
+  document.getElementById('solpFormDestinoTipo').value='';
+  document.getElementById('solpDestinoOT').style.display='none';
+  document.getElementById('solpDestinoGO').style.display='none';
+  document.getElementById('solpFormOT').value='';
+  document.getElementById('solpFormCliente').value='';
+  document.getElementById('solpFormGO').value='';
+  document.getElementById('solpFormTipoMat').value='';
+  document.getElementById('solpFormCosto').value='';
+  document.getElementById('solpFormPrioridad').value='Normal';
+  document.getElementById('solpUrgentBox').classList.remove('show');
+  document.getElementById('solpFormObs').value='';
+  // Reset items to 1
+  document.getElementById('solpItemsList').innerHTML=solpItemRowHTML(0);
+  document.getElementById('solpBtnSubmit').disabled=false;
+  document.getElementById('solpBtnSubmit').textContent='Enviar solicitud de compra';
+}
+
+function solpCerrarModal(){
+  document.getElementById('solpModal').classList.remove('active');
+}
+
+function solpCambiarDestino(){
+  var tipo=document.getElementById('solpFormDestinoTipo').value;
+  document.getElementById('solpDestinoOT').style.display=tipo==='OT'?'block':'none';
+  document.getElementById('solpDestinoGO').style.display=tipo==='GO'?'block':'none';
+}
+
+function solpToggleUrgente(){
+  var val=document.getElementById('solpFormPrioridad').value;
+  var box=document.getElementById('solpUrgentBox');
+  if(val==='Urgente'){box.classList.add('show');}else{box.classList.remove('show');}
+}
+
+function solpItemRowHTML(idx){
+  return '<div class="solp-item-row" data-idx="'+idx+'">'+
+    '<input type="number" class="solp-item-qty" placeholder="Cant" min="1" value="1">'+
+    '<select style="width:60px;font-size:12px;padding:6px 4px;border:1px solid var(--border);border-radius:4px"><option>und</option><option>m</option><option>ft</option><option>kg</option><option>lb</option><option>gal</option><option>rollo</option><option>caja</option></select>'+
+    '<input type="text" class="solp-item-desc" placeholder="Descripcion del item">'+
+    '<button class="solp-item-remove" onclick="solpRemoveItem(this)" title="Quitar">&times;</button></div>';
+}
+
+function solpAddItem(){
+  var list=document.getElementById('solpItemsList');
+  var count=list.querySelectorAll('.solp-item-row').length;
+  list.insertAdjacentHTML('beforeend',solpItemRowHTML(count));
+}
+
+function solpRemoveItem(btn){
+  var list=document.getElementById('solpItemsList');
+  if(list.querySelectorAll('.solp-item-row').length<=1) return;
+  btn.closest('.solp-item-row').remove();
+}
+
+/* ---- Submit ---- */
+function solpEnviar(){
+  // Validate
+  var destinoTipo=document.getElementById('solpFormDestinoTipo').value;
+  if(!destinoTipo){alert('Selecciona el tipo de destino.');return;}
+  if(destinoTipo==='OT'&&!document.getElementById('solpFormOT').value.trim()){alert('Ingresa el numero de OT.');return;}
+  if(destinoTipo==='GO'&&!document.getElementById('solpFormGO').value){alert('Selecciona el codigo de gasto.');return;}
+  if(!document.getElementById('solpFormTipoMat').value){alert('Selecciona el tipo de material.');return;}
+  // Collect items
+  var rows=document.querySelectorAll('#solpItemsList .solp-item-row');
+  var items=[];
+  var valid=true;
+  rows.forEach(function(row){
+    var qty=row.querySelector('.solp-item-qty').value;
+    var unit=row.querySelector('select').value;
+    var desc=row.querySelector('.solp-item-desc').value.trim();
+    if(!desc){valid=false;return;}
+    items.push({cantidad:parseInt(qty)||1,unidad:unit,descripcion:desc});
+  });
+  if(!valid||items.length===0){alert('Completa la descripcion de todos los items.');return;}
+  if(document.getElementById('solpFormPrioridad').value==='Urgente'){
+    var checks=[document.getElementById('solpUQ1'),document.getElementById('solpUQ2'),document.getElementById('solpUQ3'),document.getElementById('solpUQ4')];
+    var anyChecked=checks.some(function(c){return c.checked;});
+    if(!anyChecked){alert('Selecciona al menos una justificacion de urgencia.');return;}
+  }
+  // Build payload
+  var payload={
+    accion:'crear',
+    numero:document.getElementById('solpFormNumero').value,
+    solicitante:session.nombre,
+    rol:session.rol,
+    fecha:new Date().toISOString(),
+    destinoTipo:destinoTipo,
+    ot:destinoTipo==='OT'?document.getElementById('solpFormOT').value.trim():'',
+    cliente:document.getElementById('solpFormCliente').value,
+    codigoGO:destinoTipo==='GO'?document.getElementById('solpFormGO').value:'',
+    tipoMaterial:document.getElementById('solpFormTipoMat').value,
+    items:JSON.stringify(items),
+    costoEstimado:parseFloat(document.getElementById('solpFormCosto').value)||0,
+    prioridad:document.getElementById('solpFormPrioridad').value,
+    observaciones:document.getElementById('solpFormObs').value.trim()
+  };
+  if(payload.prioridad==='Urgente'){
+    var justArr=[];
+    if(document.getElementById('solpUQ1').checked) justArr.push('Equipo fuera de servicio');
+    if(document.getElementById('solpUQ2').checked) justArr.push('Fecha limite contractual');
+    if(document.getElementById('solpUQ3').checked) justArr.push('Riesgo seguridad/normativo');
+    if(document.getElementById('solpUQ4').checked) justArr.push('Otro');
+    payload.justificacionUrgencia=justArr.join(', ');
+  }
+
+  var btn=document.getElementById('solpBtnSubmit');
+  btn.disabled=true;btn.textContent='Enviando...';
+
+  solpPost(payload).then(function(){
+    alert('Solicitud de compra enviada correctamente.');
+    solpCerrarModal();
+    solpCargarLista();
+  }).catch(function(){
+    alert('Solicitud registrada.');
+    solpCerrarModal();
+    solpCargarLista();
+  });
+}
+
+/* ---- Override abrirSolicitud for 'compra' to call solpInit ---- */
+var _originalAbrirSolicitud=abrirSolicitud;
+abrirSolicitud=function(tipo){
+  if(tipo==='compra'){
+    showOnly('screenSolCompra');
+    solpInit();
+  } else {
+    _originalAbrirSolicitud(tipo);
+  }
+};
 </script>
 
 </body>
