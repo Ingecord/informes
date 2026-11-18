@@ -277,8 +277,8 @@ textarea{min-height:90px;resize:vertical}
 .solp-cost-value.real{color:var(--teal)}
 .solp-cost-value.over{color:var(--red-text)}
 /* SOLP Form Modal */
-.solp-modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:1000;align-items:flex-end;justify-content:center}
-.solp-modal-overlay.active{display:flex}
+.solp-modal-overlay{display:none !important;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:1000;align-items:flex-end;justify-content:center}
+.solp-modal-overlay.active{display:flex !important}
 .solp-modal{background:var(--white);border-radius:16px 16px 0 0;width:100%;max-width:500px;max-height:92vh;overflow-y:auto;animation:solpSlideUp 0.3s ease}
 @keyframes solpSlideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .solp-modal-header{padding:16px 20px;border-bottom:1px solid var(--border-light);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--white);z-index:10}
@@ -3927,7 +3927,9 @@ function solpAbrirNueva(){
 }
 
 function solpCerrarModal(){
-  document.getElementById('solpModal').classList.remove('active');
+  var m=document.getElementById('solpModal');
+  m.classList.remove('active');
+  m.style.display='';
 }
 
 function solpCambiarDestino(){
