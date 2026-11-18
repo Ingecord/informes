@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -3142,6 +3141,47 @@ function renderModuloOTs(){
   </div>
 </div>
 
+<!-- Modal: Registrar Costo Real por Item -->
+<div class="solp-modal-overlay" id="solpCostoModal">
+  <div class="solp-modal" style="max-width:700px">
+    <div class="solp-modal-header">
+      <span class="solp-modal-title">💰 Registrar Costo Real por Ítem</span>
+      <button class="solp-modal-close" onclick="solpCerrarCostoModal()">×</button>
+    </div>
+    <div class="solp-modal-body" style="padding:16px 24px">
+      <p style="font-size:13px;color:var(--text-muted);margin:0 0 16px">Ingresa el precio real unitario de cada ítem. El total y la desviación se calculan automáticamente.</p>
+      <table class="solp-det-items" id="solpCostoItemsTable">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Descripción</th>
+            <th>Cant.</th>
+            <th style="text-align:right">P.Unit Est.</th>
+            <th style="text-align:right;width:110px">P.Unit Real</th>
+            <th style="text-align:right">Subtotal Real</th>
+          </tr>
+        </thead>
+        <tbody id="solpCostoItemsBody"></tbody>
+        <tfoot>
+          <tr>
+            <td colspan="3" style="text-align:right;font-weight:700">Totales:</td>
+            <td style="text-align:right;font-weight:600" id="solpCostoTotalEst">$0.00</td>
+            <td></td>
+            <td style="text-align:right;font-weight:700" id="solpCostoTotalReal">$0.00</td>
+          </tr>
+          <tr>
+            <td colspan="5" style="text-align:right;font-weight:600;color:var(--text-muted)">Desviación:</td>
+            <td style="text-align:right;font-weight:700" id="solpCostoDesv">0.0%</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    <div class="solp-modal-footer">
+      <button class="solp-btn-cancel" onclick="solpCerrarCostoModal()">Cancelar</button>
+      <button class="solp-btn-submit" id="solpBtnCostoSubmit" onclick="solpEnviarCostoReal()">✓ Guardar costos reales</button>
+    </div>
+  </div>
+</div>
 
 <div id="screenNuevaOT" style="display:none">
   <div class="inf-top-bar" style="display:flex;align-items:center;justify-content:space-between">
@@ -3758,7 +3798,8 @@ function solpCargarLista(){
         notasAdmin:f.NotasAdmin||'',
         ordenVenta:f.OrdenVenta||'',
         ubicacion:f.Ubicacion||'',
-        proveedor:f.Proveedor||''
+        proveedor:f.Proveedor||'',
+        costoRealDetalle:f.CostoRealDetalle||''
       };
     });
     solpCache=items;
@@ -4036,13 +4077,25 @@ function solpVerDetalle(id){
       its=JSON.parse(raw.replace(/'/g,'"'));
     }
     if(Array.isArray(its)&&its.length){
-      itemsHtml='<table class="solp-det-items"><thead><tr><th>#</th><th>Descripción</th><th>Cant.</th><th>Und</th><th style="text-align:right">P.Unit</th><th style="text-align:right">Subtotal</th></tr></thead><tbody>';
+      // Parse real cost detail if available
+      var realPrices=[];
+      if(item.costoRealDetalle){realPrices=item.costoRealDetalle.split('|').map(function(v){return parseFloat(v)||0;});}
+      var hasReal=realPrices.length>0&&realPrices.some(function(v){return v>0;});
+      itemsHtml='<table class="solp-det-items"><thead><tr><th>#</th><th>Descripción</th><th>Cant.</th><th>Und</th><th style="text-align:right">P.Unit Est.</th>'+(hasReal?'<th style="text-align:right">P.Unit Real</th>':'')+'<th style="text-align:right">Sub. Est.</th>'+(hasReal?'<th style="text-align:right">Sub. Real</th><th style="text-align:right">Desv.</th>':'')+'</tr></thead><tbody>';
       its.forEach(function(it,idx){
         var pu=it.precioUnit||0;
-        var sub=pu*it.cantidad;
+        var subEst=pu*it.cantidad;
+        var puReal=realPrices[idx]||0;
+        var subReal=puReal*it.cantidad;
+        var desvItem=subEst>0?((subReal-subEst)/subEst*100):0;
+        var desvStr=hasReal&&puReal>0?((desvItem>=0?'+':'')+desvItem.toFixed(1)+'%'):'-';
+        var desvColor=desvItem>5?'var(--solp-red)':desvItem<-5?'var(--solp-green)':'inherit';
         itemsHtml+='<tr><td>'+(idx+1)+'</td><td>'+it.descripcion+'</td><td>'+it.cantidad+'</td><td>'+it.unidad+'</td>'+
           '<td style="text-align:right">'+(pu>0?'$'+pu.toFixed(2):'-')+'</td>'+
-          '<td style="text-align:right">'+(sub>0?'$'+sub.toFixed(2):'-')+'</td></tr>';
+          (hasReal?'<td style="text-align:right">'+(puReal>0?'$'+puReal.toFixed(2):'-')+'</td>':'')+
+          '<td style="text-align:right">'+(subEst>0?'$'+subEst.toFixed(2):'-')+'</td>'+
+          (hasReal?'<td style="text-align:right">'+(subReal>0?'$'+subReal.toFixed(2):'-')+'</td><td style="text-align:right;color:'+desvColor+'">'+desvStr+'</td>':'')+
+          '</tr>';
       });
       itemsHtml+='</tbody></table>';
     }
@@ -4142,12 +4195,102 @@ function solpRenderAcciones(item){
 }
 
 function solpRegistrarCostoReal(id){
-  var costo=prompt('Ingresa el costo real de la compra ($):');
-  if(costo!==null&&!isNaN(parseFloat(costo))){
-    solpPost({accion:'actualizarCosto',datos:{itemId:String(id),costoReal:parseFloat(costo),notasAdmin:''}})
-    .then(function(){solpCargarLista();solpVolverALista();})
-    .catch(function(){alert('Error al actualizar.');});
+  var item=solpCache.find(function(i){return String(i.id)===String(id);});
+  if(!item) return;
+  solpCostoItemId=id;
+  // Parse items from pipe-delimited
+  var its=[];
+  try{
+    var raw=item.itemsRaw||'';
+    if(raw.indexOf(';;')!==-1||raw.indexOf('|')!==-1){
+      raw.split(';;').forEach(function(seg){
+        var p=seg.split('|');
+        if(p.length>=3) its.push({cantidad:parseInt(p[0])||1,unidad:p[1],descripcion:p[2],precioUnit:p[3]?parseFloat(p[3]):0});
+      });
+    } else if(raw){
+      its=JSON.parse(raw.replace(/'/g,'"'));
+    }
+  }catch(e){}
+  if(!its.length){alert('Esta SOLP no tiene items detallados.');return;}
+  // Build table rows
+  var tbody=document.getElementById('solpCostoItemsBody');
+  var totalEst=0;
+  var html='';
+  its.forEach(function(it,idx){
+    var subEst=it.cantidad*(it.precioUnit||0);
+    totalEst+=subEst;
+    html+='<tr>'+
+      '<td>'+(idx+1)+'</td>'+
+      '<td>'+it.descripcion+'</td>'+
+      '<td style="text-align:center">'+it.cantidad+' '+it.unidad+'</td>'+
+      '<td style="text-align:right">'+(it.precioUnit>0?'$'+it.precioUnit.toFixed(2):'-')+'</td>'+
+      '<td style="text-align:right"><input type="number" class="solp-costo-real-input" data-qty="'+it.cantidad+'" placeholder="0.00" step="0.01" min="0" oninput="solpCalcCostoReal()" style="width:100px;text-align:right;padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px"></td>'+
+      '<td style="text-align:right" class="solp-costo-sub-real">$0.00</td>'+
+      '</tr>';
+  });
+  tbody.innerHTML=html;
+  document.getElementById('solpCostoTotalEst').textContent='$'+totalEst.toFixed(2);
+  document.getElementById('solpCostoTotalReal').textContent='$0.00';
+  document.getElementById('solpCostoDesv').textContent='0.0%';
+  document.getElementById('solpCostoDesv').style.color='inherit';
+  // Show modal
+  document.getElementById('solpCostoModal').classList.add('active');
+}
+var solpCostoItemId=null;
+
+function solpCalcCostoReal(){
+  var inputs=document.querySelectorAll('.solp-costo-real-input');
+  var subs=document.querySelectorAll('.solp-costo-sub-real');
+  var totalReal=0;
+  inputs.forEach(function(inp,idx){
+    var qty=parseFloat(inp.getAttribute('data-qty'))||1;
+    var priceReal=parseFloat(inp.value)||0;
+    var sub=qty*priceReal;
+    totalReal+=sub;
+    subs[idx].textContent=sub>0?'$'+sub.toFixed(2):'$0.00';
+  });
+  document.getElementById('solpCostoTotalReal').textContent='$'+totalReal.toFixed(2);
+  // Deviation
+  var estText=document.getElementById('solpCostoTotalEst').textContent.replace(/[$,]/g,'');
+  var totalEst=parseFloat(estText)||0;
+  if(totalEst>0){
+    var desv=((totalReal-totalEst)/totalEst*100);
+    var sign=desv>=0?'+':'';
+    document.getElementById('solpCostoDesv').textContent=sign+desv.toFixed(1)+'%';
+    document.getElementById('solpCostoDesv').style.color=desv>5?'var(--solp-red)':desv<-5?'var(--solp-green)':'inherit';
+  } else {
+    document.getElementById('solpCostoDesv').textContent='-';
   }
+}
+
+function solpEnviarCostoReal(){
+  var inputs=document.querySelectorAll('.solp-costo-real-input');
+  var totalReal=0;
+  var anyFilled=false;
+  inputs.forEach(function(inp){
+    var qty=parseFloat(inp.getAttribute('data-qty'))||1;
+    var pr=parseFloat(inp.value)||0;
+    if(pr>0) anyFilled=true;
+    totalReal+=qty*pr;
+  });
+  if(!anyFilled){alert('Ingresa al menos un precio real.');return;}
+  // Build real-price pipe-delimited string for storage
+  var realPrices=[];
+  inputs.forEach(function(inp){realPrices.push(parseFloat(inp.value)||0);});
+  var realPricesStr=realPrices.join('|');
+  document.getElementById('solpBtnCostoSubmit').disabled=true;
+  document.getElementById('solpBtnCostoSubmit').textContent='Guardando...';
+  solpPost({accion:'actualizarCosto',datos:{itemId:String(solpCostoItemId),costoReal:totalReal,costoRealDetalle:realPricesStr,notasAdmin:''}})
+  .then(function(){solpCerrarCostoModal();solpCargarLista();solpVolverALista();})
+  .catch(function(){alert('Error al actualizar.');document.getElementById('solpBtnCostoSubmit').disabled=false;document.getElementById('solpBtnCostoSubmit').textContent='✓ Guardar costos reales';});
+}
+
+function solpCerrarCostoModal(){
+  var m=document.getElementById('solpCostoModal');
+  m.classList.remove('active');
+  m.style.display='';
+  document.getElementById('solpBtnCostoSubmit').disabled=false;
+  document.getElementById('solpBtnCostoSubmit').textContent='✓ Guardar costos reales';
 }
 
 function solpAsignarOrdenVenta(id){
