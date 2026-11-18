@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -3487,7 +3488,7 @@ function czGuardar(){
    Prefix: solp
    ============================================ */
 
-var WEBHOOK_SOLP='https://hook.us2.make.com/PLACEHOLDER_SOLP_WEBHOOK';
+var WEBHOOK_SOLP='https://hook.us2.make.com/uzu06d9bxs6aqt7el578ukt9l1set5n2';
 var solpCache=[];
 var solpFiltroActual='todas';
 var solpItemActual=null;
@@ -3553,7 +3554,7 @@ function solpCargarLista(){
         costoEstimado:parseFloat(f.CostoEstimado||f.Costo_Estimado||0),
         costoReal:f.CostoReal||f.Costo_Real||null,
         observaciones:f.Observaciones||'',
-        items:f.Items||f.ItemsJSON||'',
+        itemsRaw:f.Items||f.ItemsJSON||'',
         destinoTipo:f.DestinoTipo||f.Destino_Tipo||'OT',
         codigoGO:f.CodigoGO||f.Codigo_GO||'',
         urgJustificacion:f.JustificacionUrgencia||'',
@@ -3766,10 +3767,20 @@ function solpVerDetalle(id){
   document.getElementById('solpDetPrioridad').innerHTML=prioBadge;
   document.getElementById('solpDetSolicitante').textContent=item.solicitante||'-';
   document.getElementById('solpDetFecha').textContent=solpFormatFecha(item.fechaCreacion);
-  // Items
+  // Items — supports pipe-delimited (qty|unit|desc;;qty|unit|desc) and legacy JSON
   var itemsHtml='';
   try{
-    var its=typeof item.items==='string'?JSON.parse(item.items):item.items;
+    var raw=item.itemsRaw||'';
+    var its=[];
+    if(raw.indexOf(';;')!==-1||raw.indexOf('|')!==-1){
+      // Pipe-delimited format
+      raw.split(';;').forEach(function(seg){
+        var p=seg.split('|');
+        if(p.length>=3) its.push({cantidad:parseInt(p[0])||1,unidad:p[1],descripcion:p[2]});
+      });
+    } else if(raw){
+      its=JSON.parse(raw.replace(/'/g,'"'));
+    }
     if(Array.isArray(its)){
       its.forEach(function(it,idx){
         itemsHtml+='<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px;border-bottom:1px solid var(--border-light)">'+
@@ -3851,7 +3862,7 @@ function solpRenderAcciones(item){
     btnCosto.onclick=function(){
       var costo=prompt('Ingresa el costo real de la compra ($):');
       if(costo!==null&&!isNaN(parseFloat(costo))){
-        solpPost({accion:'actualizarCosto',id:item.id,costoReal:parseFloat(costo)}).then(function(){solpCargarLista();solpVolverALista();}).catch(function(){alert('Error al actualizar.');});
+        solpPost({accion:'actualizarCosto',datos:{itemId:String(item.id),costoReal:parseFloat(costo),notasAdmin:''}}).then(function(){solpCargarLista();solpVolverALista();}).catch(function(){alert('Error al actualizar.');});
       }
     };
     cont.appendChild(btnCosto);
@@ -3860,7 +3871,8 @@ function solpRenderAcciones(item){
 
 function solpCambiarEstado(id,nuevoEstado){
   if(!confirm('Cambiar estado a "'+nuevoEstado+'"?')) return;
-  solpPost({accion:'cambiarEstado',id:id,estado:nuevoEstado,usuario:session.nombre,fecha:new Date().toISOString()})
+  var camposFecha={Cotizando:'FechaCotizando',Aprobada:'FechaAprobada',Comprada:'FechaComprada',Entregada:'FechaEntregada',Cerrada:'FechaCerrada',Rechazada:'FechaCerrada'};
+  solpPost({accion:'cambiarEstado',datos:{itemId:String(id),nuevoEstado:nuevoEstado,campoFecha:camposFecha[nuevoEstado]||'FechaCerrada'}})
   .then(function(){solpCargarLista();solpVolverALista();})
   .catch(function(){alert('Error al cambiar estado.');});
 }
@@ -3975,31 +3987,39 @@ function solpEnviar(){
     var anyChecked=checks.some(function(c){return c.checked;});
     if(!anyChecked){alert('Selecciona al menos una justificacion de urgencia.');return;}
   }
-  // Build payload
-  var payload={
-    accion:'crear',
-    numero:document.getElementById('solpFormNumero').value,
-    solicitante:session.nombre,
-    rol:session.rol,
-    fecha:new Date().toISOString(),
-    destinoTipo:destinoTipo,
-    ot:destinoTipo==='OT'?document.getElementById('solpFormOT').value.trim():'',
-    cliente:document.getElementById('solpFormCliente').value,
-    codigoGO:destinoTipo==='GO'?document.getElementById('solpFormGO').value:'',
-    tipoMaterial:document.getElementById('solpFormTipoMat').value,
-    items:JSON.stringify(items),
-    costoEstimado:parseFloat(document.getElementById('solpFormCosto').value)||0,
-    prioridad:document.getElementById('solpFormPrioridad').value,
-    observaciones:document.getElementById('solpFormObs').value.trim()
-  };
-  if(payload.prioridad==='Urgente'){
+  // Build items as pipe-delimited: qty|unit|desc;;qty|unit|desc
+  var itemsStr=items.map(function(it){return it.cantidad+'|'+it.unidad+'|'+it.descripcion;}).join(';;');
+
+  // Build urgencia
+  var justUrgencia='';
+  if(document.getElementById('solpFormPrioridad').value==='Urgente'){
     var justArr=[];
     if(document.getElementById('solpUQ1').checked) justArr.push('Equipo fuera de servicio');
     if(document.getElementById('solpUQ2').checked) justArr.push('Fecha limite contractual');
     if(document.getElementById('solpUQ3').checked) justArr.push('Riesgo seguridad/normativo');
     if(document.getElementById('solpUQ4').checked) justArr.push('Otro');
-    payload.justificacionUrgencia=justArr.join(', ');
+    justUrgencia=justArr.join(', ');
   }
+
+  // Build payload matching Make.com scenario structure
+  var payload={
+    accion:'crear',
+    datos:{
+      Title:document.getElementById('solpFormNumero').value,
+      DestinoTipo:destinoTipo,
+      NumeroOT:destinoTipo==='OT'?document.getElementById('solpFormOT').value.trim():'',
+      CodigoGO:destinoTipo==='GO'?document.getElementById('solpFormGO').value:'',
+      Cliente:document.getElementById('solpFormCliente').value,
+      TipoMaterial:document.getElementById('solpFormTipoMat').value,
+      Estado:'Pendiente',
+      Prioridad:document.getElementById('solpFormPrioridad').value,
+      Solicitante:session.nombre,
+      CostoEstimado:parseFloat(document.getElementById('solpFormCosto').value)||0,
+      ItemsJSON:itemsStr,
+      Observaciones:document.getElementById('solpFormObs').value.trim(),
+      JustificacionUrgencia:justUrgencia
+    }
+  };
 
   var btn=document.getElementById('solpBtnSubmit');
   btn.disabled=true;btn.textContent='Enviando...';
