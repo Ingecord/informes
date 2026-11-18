@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -276,40 +275,58 @@ textarea{min-height:90px;resize:vertical}
 .solp-cost-value.est{color:var(--blue-text)}
 .solp-cost-value.real{color:var(--teal)}
 .solp-cost-value.over{color:var(--red-text)}
-/* SOLP Form Modal */
-.solp-modal-overlay{display:none !important;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:1000;align-items:flex-end;justify-content:center}
+/* SOLP Form Modal — Full-width desktop design */
+.solp-modal-overlay{display:none !important;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:1000;justify-content:center;align-items:flex-start;padding:30px 20px;overflow-y:auto}
 .solp-modal-overlay.active{display:flex !important}
-.solp-modal{background:var(--white);border-radius:16px 16px 0 0;width:100%;max-width:500px;max-height:92vh;overflow-y:auto;animation:solpSlideUp 0.3s ease}
-@keyframes solpSlideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.solp-modal-header{padding:16px 20px;border-bottom:1px solid var(--border-light);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--white);z-index:10}
-.solp-modal-title{font-size:16px;font-weight:700;color:var(--text)}
-.solp-modal-close{background:none;border:none;font-size:22px;cursor:pointer;color:var(--text-muted);padding:4px}
-.solp-modal-body{padding:16px 20px}
-.solp-form-section{margin-bottom:16px}
-.solp-form-section-title{font-size:11px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:10px;display:flex;align-items:center;gap:6px}
-.solp-form-group{margin-bottom:12px}
-.solp-form-label{display:block;font-size:12px;font-weight:600;color:var(--text);margin-bottom:4px}
+.solp-modal{background:var(--white);border-radius:12px;width:100%;max-width:820px;box-shadow:0 20px 60px rgba(0,0,0,0.2);animation:solpFadeIn 0.25s ease}
+@keyframes solpFadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.solp-modal-header{padding:20px 24px;border-bottom:1px solid var(--border-light);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--white);z-index:10;border-radius:12px 12px 0 0}
+.solp-modal-title{font-size:17px;font-weight:700;color:var(--text)}
+.solp-modal-close{width:32px;height:32px;border:none;background:var(--surface);border-radius:6px;cursor:pointer;font-size:16px;color:var(--text-muted);display:flex;align-items:center;justify-content:center}
+.solp-modal-body{padding:24px}
+.solp-form-section{margin-bottom:24px}
+.solp-form-section-title{font-size:12px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid var(--teal-light);display:flex;align-items:center;gap:8px}
+.solp-form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.solp-form-row.triple{grid-template-columns:1fr 1fr 1fr}
+.solp-form-row.quad{grid-template-columns:1fr 1fr 1fr 1fr}
+.solp-form-group{margin-bottom:0}
+.solp-form-group.full{grid-column:1 / -1}
+.solp-form-group.standalone{margin-bottom:12px}
+.solp-form-label{display:block;font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.03em;margin-bottom:4px}
 .solp-form-label .req{color:var(--red-text)}
-.solp-form-input,.solp-form-select,.solp-form-textarea{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:inherit;color:var(--text);background:var(--white);box-sizing:border-box}
+.solp-form-label .admin-tag{background:var(--green-bg);color:var(--green-text);font-size:9px;padding:1px 5px;border-radius:3px;margin-left:4px;font-weight:700}
+.solp-form-input,.solp-form-select,.solp-form-textarea{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:inherit;color:var(--text);background:var(--white);box-sizing:border-box}
 .solp-form-textarea{min-height:60px;resize:vertical}
+.solp-form-hint{font-size:11px;color:var(--text-muted);margin-top:2px}
 .solp-form-select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b6b67' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;background-size:16px;padding-right:32px}
 .solp-form-input:focus,.solp-form-select:focus,.solp-form-textarea:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 2px rgba(15,110,86,0.1)}
 .solp-form-input[readonly]{background:var(--surface);color:var(--text-muted)}
-.solp-items-list{border:1px solid var(--border-light);border-radius:var(--radius-sm);overflow:hidden}
-.solp-item-row{display:flex;gap:6px;padding:8px 10px;align-items:center;border-bottom:1px solid var(--border-light)}
-.solp-item-row:last-child{border-bottom:none}
-.solp-item-row input,.solp-item-row select{font-size:12px;padding:6px 8px;border:1px solid var(--border);border-radius:4px;font-family:inherit}
-.solp-item-qty{width:50px;text-align:center}
-.solp-item-desc{flex:1;min-width:0}
-.solp-item-remove{background:none;border:none;color:var(--red-text);cursor:pointer;font-size:16px;padding:2px 6px}
+.solp-form-input.admin-field{background:#f0fdf4;border-color:#86efac}
+/* Items table */
+.solp-items-table{width:100%;border-collapse:collapse;margin-top:8px}
+.solp-items-table th{background:var(--surface);padding:7px 8px;font-size:10px;text-transform:uppercase;letter-spacing:0.03em;color:var(--text-muted);border:1px solid var(--border-light);font-weight:600;text-align:left}
+.solp-items-table td{padding:3px;border:1px solid var(--border-light)}
+.solp-items-table input,.solp-items-table select{width:100%;padding:7px 8px;border:1px solid transparent;border-radius:4px;font-size:12px;font-family:inherit;box-sizing:border-box;background:transparent}
+.solp-items-table input:focus,.solp-items-table select:focus{border-color:var(--teal);outline:none;background:var(--white)}
+.solp-items-table .row-num{text-align:center;color:var(--text-muted);font-size:12px;font-weight:500;background:var(--surface);width:30px;padding:7px 4px}
+.solp-items-table .subtotal-cell{text-align:right;font-weight:600;font-size:12px;padding:7px 8px;color:var(--text)}
+.solp-items-table .remove-cell{text-align:center;width:30px}
+.solp-items-table .remove-btn{background:none;border:none;color:var(--red-text);cursor:pointer;font-size:14px;padding:2px 6px;opacity:0.5}
+.solp-items-table .remove-btn:hover{opacity:1}
+.solp-items-total{background:var(--surface)}
+.solp-items-total td{font-weight:700;font-size:13px;padding:9px 8px;border-top:2px solid var(--border)}
 .solp-add-item{width:100%;padding:8px;border:1px dashed var(--border);border-radius:var(--radius-sm);background:transparent;color:var(--teal);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;margin-top:6px}
-.solp-urgent-box{background:var(--red-bg);border:1px solid #c53030;border-radius:var(--radius);padding:12px 14px;margin-top:8px;display:none}
+.solp-add-item:hover{border-color:var(--teal);background:var(--teal-light)}
+.solp-urgent-box{background:#fff7ed;border:1px solid #fed7aa;border-radius:var(--radius);padding:14px;margin-top:12px;display:none}
 .solp-urgent-box.show{display:block}
 .solp-urgent-check{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;font-size:12px}
 .solp-urgent-check:last-child{margin-bottom:0}
-.solp-modal-footer{padding:12px 20px 24px;position:sticky;bottom:0;background:var(--white);border-top:1px solid var(--border-light)}
-.solp-btn-submit{width:100%;padding:14px;border:none;border-radius:var(--radius);font-size:15px;font-weight:600;cursor:pointer;background:var(--teal);color:white;font-family:inherit}
+.solp-modal-footer{padding:16px 24px;position:sticky;bottom:0;background:var(--white);border-top:1px solid var(--border-light);display:flex;justify-content:flex-end;gap:8px;border-radius:0 0 12px 12px}
+.solp-btn-cancel{padding:10px 20px;background:var(--white);color:var(--text);border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit}
+.solp-btn-cancel:hover{background:var(--surface)}
+.solp-btn-submit{padding:10px 20px;border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;background:var(--teal);color:white;font-family:inherit;display:flex;align-items:center;gap:6px}
 .solp-btn-submit:disabled{opacity:0.5;cursor:not-allowed}
+@media (max-width:768px){.solp-form-row{grid-template-columns:1fr}.solp-form-row.triple,.solp-form-row.quad{grid-template-columns:1fr 1fr}.solp-modal{max-width:100%;border-radius:12px 12px 0 0}.solp-modal-overlay{padding:40px 0 0;align-items:flex-end}}
 
 </style>
 </head>
@@ -2822,131 +2839,185 @@ function renderModuloOTs(){
   </div>
 </div>
 
-<!-- SOLP Modal: Nueva Solicitud -->
+<!-- SOLP Modal: Nueva Solicitud — Desktop full form -->
 <div class="solp-modal-overlay" id="solpModal">
   <div class="solp-modal">
     <div class="solp-modal-header">
-      <span class="solp-modal-title" id="solpModalTitle">Nueva Solicitud de Compra</span>
+      <span class="solp-modal-title" id="solpModalTitle">Nueva Solicitud de Compra (SOLP)</span>
       <button class="solp-modal-close" onclick="solpCerrarModal()">&times;</button>
     </div>
     <div class="solp-modal-body">
 
-      <!-- A) Identificacion -->
+      <!-- A) Datos de control -->
       <div class="solp-form-section">
-        <div class="solp-form-section-title">&#128196; A. Identificacion</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div class="solp-form-section-title">&#128196; A. Datos de Control</div>
+        <div class="solp-form-row triple">
           <div class="solp-form-group">
             <label class="solp-form-label">N&deg; SOLP</label>
             <input type="text" class="solp-form-input" id="solpFormNumero" readonly>
+            <span class="solp-form-hint">Generado automaticamente</span>
           </div>
           <div class="solp-form-group">
             <label class="solp-form-label">Fecha</label>
             <input type="date" class="solp-form-input" id="solpFormFecha" readonly>
           </div>
-        </div>
-        <div class="solp-form-group">
-          <label class="solp-form-label">Solicitante</label>
-          <input type="text" class="solp-form-input" id="solpFormSolicitante" readonly>
-        </div>
-      </div>
-
-      <!-- B) Destino -->
-      <div class="solp-form-section">
-        <div class="solp-form-section-title">&#128204; B. Destino de la compra</div>
-        <div class="solp-form-group">
-          <label class="solp-form-label">Tipo de destino <span class="req">*</span></label>
-          <select class="solp-form-select" id="solpFormDestinoTipo" onchange="solpCambiarDestino()">
-            <option value="">Seleccionar...</option>
-            <option value="OT">Orden de trabajo (OT)</option>
-            <option value="GO">Gasto operativo general</option>
-          </select>
-        </div>
-        <div id="solpDestinoOT" style="display:none">
           <div class="solp-form-group">
-            <label class="solp-form-label">Numero de OT <span class="req">*</span></label>
+            <label class="solp-form-label">Prioridad <span class="req">*</span></label>
+            <select class="solp-form-select" id="solpFormPrioridad" onchange="solpToggleUrgente()">
+              <option value="Normal">Normal</option>
+              <option value="Urgente">Urgente</option>
+              <option value="Extraordinaria">Extraordinaria</option>
+            </select>
+          </div>
+        </div>
+        <div class="solp-form-row">
+          <div class="solp-form-group">
+            <label class="solp-form-label">Tipo de destino <span class="req">*</span></label>
+            <select class="solp-form-select" id="solpFormDestinoTipo" onchange="solpCambiarDestino()">
+              <option value="">Seleccionar...</option>
+              <option value="OT">Orden de trabajo (OT)</option>
+              <option value="GO">Gasto operativo general</option>
+            </select>
+          </div>
+          <div class="solp-form-group" id="solpDestinoOTField" style="display:none">
+            <label class="solp-form-label">N&uacute;mero de OT <span class="req">*</span></label>
             <input type="text" class="solp-form-input" id="solpFormOT" placeholder="Ej: ING 2601-34">
+          </div>
+          <div class="solp-form-group" id="solpDestinoGOField" style="display:none">
+            <label class="solp-form-label">C&oacute;digo de gasto <span class="req">*</span></label>
+            <select class="solp-form-select" id="solpFormGO">
+              <option value="">Seleccionar...</option>
+              <option value="GO-OFICINA">GO-OFICINA &mdash; Materiales de oficina</option>
+              <option value="GO-HERRAMIENTAS">GO-HERRAMIENTAS &mdash; Herramientas y equipos</option>
+              <option value="GO-VEHICULOS">GO-VEHICULOS &mdash; Veh&iacute;culos y mantenimiento</option>
+              <option value="GO-LIMPIEZA">GO-LIMPIEZA &mdash; Limpieza y mantenimiento</option>
+              <option value="GO-SEGURIDAD">GO-SEGURIDAD &mdash; EPP y seguridad</option>
+              <option value="GO-OTRO">GO-OTRO &mdash; Otros gastos operativos</option>
+            </select>
+          </div>
+        </div>
+        <div class="solp-form-row">
+          <div class="solp-form-group">
+            <label class="solp-form-label">Solicitante</label>
+            <input type="text" class="solp-form-input" id="solpFormSolicitante" readonly>
           </div>
           <div class="solp-form-group">
             <label class="solp-form-label">Cliente</label>
             <input type="text" class="solp-form-input" id="solpFormCliente" placeholder="Se autocompleta con la OT" readonly style="background:var(--surface)">
           </div>
         </div>
-        <div id="solpDestinoGO" style="display:none">
+      </div>
+
+      <!-- B) Clasificacion -->
+      <div class="solp-form-section">
+        <div class="solp-form-section-title">&#128194; B. Clasificaci&oacute;n</div>
+        <div class="solp-form-row triple">
           <div class="solp-form-group">
-            <label class="solp-form-label">Codigo de gasto <span class="req">*</span></label>
-            <select class="solp-form-select" id="solpFormGO">
+            <label class="solp-form-label">Categor&iacute;a / Tipo de material <span class="req">*</span></label>
+            <select class="solp-form-select" id="solpFormTipoMat">
               <option value="">Seleccionar...</option>
-              <option value="GO-OFICINA">GO-OFICINA — Materiales de oficina</option>
-              <option value="GO-HERRAMIENTAS">GO-HERRAMIENTAS — Herramientas y equipos</option>
-              <option value="GO-VEHICULOS">GO-VEHICULOS — Vehiculos y mantenimiento</option>
-              <option value="GO-LIMPIEZA">GO-LIMPIEZA — Limpieza y mantenimiento</option>
-              <option value="GO-SEGURIDAD">GO-SEGURIDAD — EPP y seguridad</option>
-              <option value="GO-OTRO">GO-OTRO — Otros gastos operativos</option>
+              <option value="Ferreteria local">Ferreter&iacute;a local</option>
+              <option value="Refrigeracion local">Refrigeraci&oacute;n local</option>
+              <option value="Refrigeracion nacional">Refrigeraci&oacute;n nacional</option>
+              <option value="Equipo HVAC stock">Equipo HVAC stock nacional</option>
+              <option value="Equipo importado">Equipo importado</option>
+              <option value="Materiales electricos">Materiales el&eacute;ctricos</option>
+              <option value="Insumos generales">Insumos generales</option>
+              <option value="Servicios terceros">Servicios de terceros</option>
             </select>
           </div>
-        </div>
-      </div>
-
-      <!-- C) Materiales -->
-      <div class="solp-form-section">
-        <div class="solp-form-section-title">&#128230; C. Materiales solicitados</div>
-        <div class="solp-form-group">
-          <label class="solp-form-label">Tipo de material <span class="req">*</span></label>
-          <select class="solp-form-select" id="solpFormTipoMat">
-            <option value="">Seleccionar...</option>
-            <option value="Ferreteria local">Ferreteria local</option>
-            <option value="Refrigeracion local">Refrigeracion local</option>
-            <option value="Refrigeracion nacional">Refrigeracion nacional</option>
-            <option value="Equipo HVAC stock">Equipo HVAC stock nacional</option>
-            <option value="Equipo importado">Equipo importado</option>
-            <option value="Materiales electricos">Materiales electricos</option>
-            <option value="Insumos generales">Insumos generales</option>
-            <option value="Servicios terceros">Servicios de terceros</option>
-          </select>
-        </div>
-
-        <label class="solp-form-label">Items <span class="req">*</span></label>
-        <div class="solp-items-list" id="solpItemsList">
-          <div class="solp-item-row" data-idx="0">
-            <input type="number" class="solp-item-qty" placeholder="Cant" min="1" value="1">
-            <select style="width:60px;font-size:12px;padding:6px 4px;border:1px solid var(--border);border-radius:4px"><option>und</option><option>m</option><option>ft</option><option>kg</option><option>lb</option><option>gal</option><option>rollo</option><option>caja</option></select>
-            <input type="text" class="solp-item-desc" placeholder="Descripcion del item">
-            <button class="solp-item-remove" onclick="solpRemoveItem(this)" title="Quitar">&times;</button>
+          <div class="solp-form-group">
+            <label class="solp-form-label">Monto estimado</label>
+            <input type="text" class="solp-form-input" id="solpFormCosto" readonly style="background:var(--surface);font-weight:700" value="$0.00">
+            <span class="solp-form-hint">Se calcula del detalle de &iacute;tems</span>
+          </div>
+          <div class="solp-form-group">
+            <label class="solp-form-label">Nivel de autorizaci&oacute;n</label>
+            <input type="text" class="solp-form-input" id="solpFormNivelAuth" readonly style="background:var(--surface)" value="">
+            <span class="solp-form-hint">&lt;$500: Coord. Ops &middot; $501-$2K: Coord. Admin &middot; &gt;$2K: Gerencia</span>
           </div>
         </div>
-        <button class="solp-add-item" onclick="solpAddItem()">+ Agregar otro item</button>
-
-        <div class="solp-form-group" style="margin-top:12px">
-          <label class="solp-form-label">Costo estimado total ($)</label>
-          <input type="number" class="solp-form-input" id="solpFormCosto" placeholder="0.00" step="0.01" min="0">
-        </div>
       </div>
 
-      <!-- D) Prioridad y justificacion -->
+      <!-- C) Detalle de items -->
       <div class="solp-form-section">
-        <div class="solp-form-section-title">&#9888;&#65039; D. Prioridad y justificacion</div>
-        <div class="solp-form-group">
-          <label class="solp-form-label">Prioridad <span class="req">*</span></label>
-          <select class="solp-form-select" id="solpFormPrioridad" onchange="solpToggleUrgente()">
-            <option value="Normal">Normal</option>
-            <option value="Urgente">Urgente</option>
-          </select>
+        <div class="solp-form-section-title">&#128230; C. Detalle de &Iacute;tems</div>
+        <div style="overflow-x:auto">
+          <table class="solp-items-table" id="solpItemsTable">
+            <thead>
+              <tr>
+                <th style="width:30px">#</th>
+                <th>Descripci&oacute;n t&eacute;cnica del &iacute;tem</th>
+                <th style="width:70px">Unidad</th>
+                <th style="width:55px">Cant.</th>
+                <th style="width:90px">P. Unit. ($)</th>
+                <th style="width:85px">Subtotal</th>
+                <th style="width:30px"></th>
+              </tr>
+            </thead>
+            <tbody id="solpItemsBody">
+              <tr data-idx="0">
+                <td class="row-num">1</td>
+                <td><input type="text" placeholder="Ej: Tuber&iacute;a cobre 3/8&quot; tipo L, rollo 15m" class="solp-item-desc"></td>
+                <td><select class="solp-item-unit" onchange="solpCalcTotals()"><option>und</option><option>m</option><option>ft</option><option>kg</option><option>lb</option><option>gal</option><option>rollo</option><option>caja</option><option>cilindro</option></select></td>
+                <td><input type="number" class="solp-item-qty" value="1" min="1" style="text-align:center" onchange="solpCalcTotals()" oninput="solpCalcTotals()"></td>
+                <td><input type="number" class="solp-item-price" placeholder="0.00" step="0.01" min="0" style="text-align:right" onchange="solpCalcTotals()" oninput="solpCalcTotals()"></td>
+                <td class="subtotal-cell">$0.00</td>
+                <td class="remove-cell"><button class="remove-btn" onclick="solpRemoveItem(this)" title="Quitar">&times;</button></td>
+              </tr>
+              <tr data-idx="1">
+                <td class="row-num">2</td>
+                <td><input type="text" class="solp-item-desc"></td>
+                <td><select class="solp-item-unit" onchange="solpCalcTotals()"><option>und</option><option>m</option><option>ft</option><option>kg</option><option>lb</option><option>gal</option><option>rollo</option><option>caja</option><option>cilindro</option></select></td>
+                <td><input type="number" class="solp-item-qty" value="" min="1" style="text-align:center" onchange="solpCalcTotals()" oninput="solpCalcTotals()"></td>
+                <td><input type="number" class="solp-item-price" placeholder="0.00" step="0.01" min="0" style="text-align:right" onchange="solpCalcTotals()" oninput="solpCalcTotals()"></td>
+                <td class="subtotal-cell">$0.00</td>
+                <td class="remove-cell"><button class="remove-btn" onclick="solpRemoveItem(this)" title="Quitar">&times;</button></td>
+              </tr>
+              <tr data-idx="2">
+                <td class="row-num">3</td>
+                <td><input type="text" class="solp-item-desc"></td>
+                <td><select class="solp-item-unit" onchange="solpCalcTotals()"><option>und</option><option>m</option><option>ft</option><option>kg</option><option>lb</option><option>gal</option><option>rollo</option><option>caja</option><option>cilindro</option></select></td>
+                <td><input type="number" class="solp-item-qty" value="" min="1" style="text-align:center" onchange="solpCalcTotals()" oninput="solpCalcTotals()"></td>
+                <td><input type="number" class="solp-item-price" placeholder="0.00" step="0.01" min="0" style="text-align:right" onchange="solpCalcTotals()" oninput="solpCalcTotals()"></td>
+                <td class="subtotal-cell">$0.00</td>
+                <td class="remove-cell"><button class="remove-btn" onclick="solpRemoveItem(this)" title="Quitar">&times;</button></td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr class="solp-items-total">
+                <td colspan="5" style="text-align:right;font-weight:700">TOTAL ESTIMADO</td>
+                <td style="text-align:right;font-weight:700;font-size:14px" id="solpItemsTotal">$0.00</td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
         </div>
+        <button class="solp-add-item" onclick="solpAddItem()">&#65291; Agregar l&iacute;nea</button>
+      </div>
+
+      <!-- D) Justificacion -->
+      <div class="solp-form-section">
+        <div class="solp-form-section-title">&#128203; D. Justificaci&oacute;n</div>
+        <div class="solp-form-group standalone">
+          <label class="solp-form-label">Justificaci&oacute;n de la compra <span class="req">*</span></label>
+          <textarea class="solp-form-textarea" id="solpFormObs" placeholder="Explique POR QU&Eacute; se necesita esta compra, no QU&Eacute; se compra. Ej: Reemplazo de condensadora da&ntilde;ada en piso 12, fuga no reparable en compresor. Sin material en almac&eacute;n." style="min-height:70px"></textarea>
+          <span class="solp-form-hint">M&iacute;nimo 20 caracteres. Describa el porqu&eacute;, no el qu&eacute;.</span>
+        </div>
+
+        <!-- Urgent questions (shown when priority is Urgente/Extraordinaria) -->
         <div class="solp-urgent-box" id="solpUrgentBox">
-          <div style="font-size:12px;font-weight:600;color:var(--red-text);margin-bottom:8px">Justificacion de urgencia (obligatorio):</div>
-          <div class="solp-urgent-check"><input type="checkbox" id="solpUQ1"><label for="solpUQ1" style="font-size:12px">Equipo fuera de servicio afectando al cliente</label></div>
-          <div class="solp-urgent-check"><input type="checkbox" id="solpUQ2"><label for="solpUQ2" style="font-size:12px">Fecha limite contractual proxima</label></div>
-          <div class="solp-urgent-check"><input type="checkbox" id="solpUQ3"><label for="solpUQ3" style="font-size:12px">Riesgo de seguridad o normativo</label></div>
-          <div class="solp-urgent-check"><input type="checkbox" id="solpUQ4"><label for="solpUQ4" style="font-size:12px">Otro (especificar en observaciones)</label></div>
-        </div>
-        <div class="solp-form-group" style="margin-top:12px">
-          <label class="solp-form-label">Observaciones</label>
-          <textarea class="solp-form-textarea" id="solpFormObs" placeholder="Detalles adicionales, proveedor sugerido, especificaciones..."></textarea>
+          <div style="font-size:12px;font-weight:700;color:#854F0B;margin-bottom:8px">&#9888; Preguntas de control &mdash; Prioridad Urgente/Extraordinaria</div>
+          <div class="solp-urgent-check"><input type="checkbox" id="solpUQ1"><label for="solpUQ1">&#191;Se verific&oacute; que no hay material en almac&eacute;n o sobrante de otra OT?</label></div>
+          <div class="solp-urgent-check"><input type="checkbox" id="solpUQ2"><label for="solpUQ2">&#191;Se intent&oacute; planificar esta compra con anticipaci&oacute;n?</label></div>
+          <div class="solp-urgent-check"><input type="checkbox" id="solpUQ3"><label for="solpUQ3">&#191;Se identific&oacute; el impacto de no recibir el material a tiempo?</label></div>
+          <div class="solp-urgent-check"><input type="checkbox" id="solpUQ4"><label for="solpUQ4">&#191;Se notific&oacute; a la Coordinadora Administrativa de la urgencia?</label></div>
         </div>
       </div>
     </div>
     <div class="solp-modal-footer">
-      <button class="solp-btn-submit" id="solpBtnSubmit" onclick="solpEnviar()">Enviar solicitud de compra</button>
+      <button class="solp-btn-cancel" onclick="solpCerrarModal()">Cancelar</button>
+      <button class="solp-btn-submit" id="solpBtnSubmit" onclick="solpEnviar()">&#128228; Enviar solicitud de compra</button>
     </div>
   </div>
 </div>
@@ -3898,7 +3969,7 @@ function solpFormatFecha(str){
 function solpAbrirNueva(){
   var modal=document.getElementById('solpModal');
   modal.classList.add('active');
-  document.getElementById('solpModalTitle').textContent='Nueva Solicitud de Compra';
+  document.getElementById('solpModalTitle').textContent='Nueva Solicitud de Compra (SOLP)';
   // Auto-fill
   var hoy=new Date();
   document.getElementById('solpFormFecha').value=hoy.toISOString().split('T')[0];
@@ -3910,20 +3981,23 @@ function solpAbrirNueva(){
   document.getElementById('solpFormNumero').value='SOLP-'+year+'-'+numStr;
   // Reset form
   document.getElementById('solpFormDestinoTipo').value='';
-  document.getElementById('solpDestinoOT').style.display='none';
-  document.getElementById('solpDestinoGO').style.display='none';
+  document.getElementById('solpDestinoOTField').style.display='none';
+  document.getElementById('solpDestinoGOField').style.display='none';
   document.getElementById('solpFormOT').value='';
   document.getElementById('solpFormCliente').value='';
   document.getElementById('solpFormGO').value='';
   document.getElementById('solpFormTipoMat').value='';
-  document.getElementById('solpFormCosto').value='';
+  document.getElementById('solpFormCosto').value='$0.00';
+  document.getElementById('solpFormNivelAuth').value='';
   document.getElementById('solpFormPrioridad').value='Normal';
   document.getElementById('solpUrgentBox').classList.remove('show');
   document.getElementById('solpFormObs').value='';
-  // Reset items to 1
-  document.getElementById('solpItemsList').innerHTML=solpItemRowHTML(0);
+  ['solpUQ1','solpUQ2','solpUQ3','solpUQ4'].forEach(function(id){document.getElementById(id).checked=false;});
+  // Reset items table to 3 empty rows
+  document.getElementById('solpItemsBody').innerHTML=solpItemRowHTML(0)+solpItemRowHTML(1)+solpItemRowHTML(2);
+  document.getElementById('solpItemsTotal').textContent='$0.00';
   document.getElementById('solpBtnSubmit').disabled=false;
-  document.getElementById('solpBtnSubmit').textContent='Enviar solicitud de compra';
+  document.getElementById('solpBtnSubmit').innerHTML='&#128228; Enviar solicitud de compra';
 }
 
 function solpCerrarModal(){
@@ -3934,34 +4008,70 @@ function solpCerrarModal(){
 
 function solpCambiarDestino(){
   var tipo=document.getElementById('solpFormDestinoTipo').value;
-  document.getElementById('solpDestinoOT').style.display=tipo==='OT'?'block':'none';
-  document.getElementById('solpDestinoGO').style.display=tipo==='GO'?'block':'none';
+  document.getElementById('solpDestinoOTField').style.display=tipo==='OT'?'':'none';
+  document.getElementById('solpDestinoGOField').style.display=tipo==='GO'?'':'none';
 }
 
 function solpToggleUrgente(){
   var val=document.getElementById('solpFormPrioridad').value;
   var box=document.getElementById('solpUrgentBox');
-  if(val==='Urgente'){box.classList.add('show');}else{box.classList.remove('show');}
+  if(val==='Urgente'||val==='Extraordinaria'){box.classList.add('show');}else{box.classList.remove('show');}
 }
 
 function solpItemRowHTML(idx){
-  return '<div class="solp-item-row" data-idx="'+idx+'">'+
-    '<input type="number" class="solp-item-qty" placeholder="Cant" min="1" value="1">'+
-    '<select style="width:60px;font-size:12px;padding:6px 4px;border:1px solid var(--border);border-radius:4px"><option>und</option><option>m</option><option>ft</option><option>kg</option><option>lb</option><option>gal</option><option>rollo</option><option>caja</option></select>'+
-    '<input type="text" class="solp-item-desc" placeholder="Descripcion del item">'+
-    '<button class="solp-item-remove" onclick="solpRemoveItem(this)" title="Quitar">&times;</button></div>';
+  return '<tr data-idx="'+idx+'">'+
+    '<td class="row-num">'+(idx+1)+'</td>'+
+    '<td><input type="text" placeholder="Ej: Tubería cobre 3/8" tipo L" class="solp-item-desc"></td>'+
+    '<td><select class="solp-item-unit" onchange="solpCalcTotals()"><option>und</option><option>m</option><option>ft</option><option>kg</option><option>lb</option><option>gal</option><option>rollo</option><option>caja</option><option>cilindro</option></select></td>'+
+    '<td><input type="number" class="solp-item-qty" value="" min="1" style="text-align:center" onchange="solpCalcTotals()" oninput="solpCalcTotals()"></td>'+
+    '<td><input type="number" class="solp-item-price" placeholder="0.00" step="0.01" min="0" style="text-align:right" onchange="solpCalcTotals()" oninput="solpCalcTotals()"></td>'+
+    '<td class="subtotal-cell">$0.00</td>'+
+    '<td class="remove-cell"><button class="remove-btn" onclick="solpRemoveItem(this)" title="Quitar">&times;</button></td>'+
+    '</tr>';
 }
 
 function solpAddItem(){
-  var list=document.getElementById('solpItemsList');
-  var count=list.querySelectorAll('.solp-item-row').length;
-  list.insertAdjacentHTML('beforeend',solpItemRowHTML(count));
+  var body=document.getElementById('solpItemsBody');
+  var count=body.querySelectorAll('tr').length;
+  body.insertAdjacentHTML('beforeend',solpItemRowHTML(count));
+  // Focus the new description field
+  var rows=body.querySelectorAll('tr');
+  var lastRow=rows[rows.length-1];
+  var descInput=lastRow.querySelector('.solp-item-desc');
+  if(descInput) descInput.focus();
 }
 
 function solpRemoveItem(btn){
-  var list=document.getElementById('solpItemsList');
-  if(list.querySelectorAll('.solp-item-row').length<=1) return;
-  btn.closest('.solp-item-row').remove();
+  var body=document.getElementById('solpItemsBody');
+  if(body.querySelectorAll('tr').length<=1) return;
+  btn.closest('tr').remove();
+  // Renumber rows
+  body.querySelectorAll('tr').forEach(function(tr,i){
+    tr.setAttribute('data-idx',i);
+    tr.querySelector('.row-num').textContent=i+1;
+  });
+  solpCalcTotals();
+}
+
+function solpCalcTotals(){
+  var body=document.getElementById('solpItemsBody');
+  var rows=body.querySelectorAll('tr');
+  var grandTotal=0;
+  rows.forEach(function(row){
+    var qty=parseFloat(row.querySelector('.solp-item-qty').value)||0;
+    var price=parseFloat(row.querySelector('.solp-item-price').value)||0;
+    var sub=qty*price;
+    row.querySelector('.subtotal-cell').textContent=sub>0?('$'+sub.toFixed(2)):'$0.00';
+    grandTotal+=sub;
+  });
+  document.getElementById('solpItemsTotal').textContent='$'+grandTotal.toFixed(2);
+  document.getElementById('solpFormCosto').value='$'+grandTotal.toFixed(2);
+  // Update authorization level
+  var lvl='';
+  if(grandTotal<=500) lvl='Coord. Operaciones';
+  else if(grandTotal<=2000) lvl='Coord. Administrativa';
+  else lvl='Gerencia General';
+  document.getElementById('solpFormNivelAuth').value=grandTotal>0?lvl:'';
 }
 
 /* ---- Submit ---- */
@@ -3971,35 +4081,44 @@ function solpEnviar(){
   if(!destinoTipo){alert('Selecciona el tipo de destino.');return;}
   if(destinoTipo==='OT'&&!document.getElementById('solpFormOT').value.trim()){alert('Ingresa el numero de OT.');return;}
   if(destinoTipo==='GO'&&!document.getElementById('solpFormGO').value){alert('Selecciona el codigo de gasto.');return;}
-  if(!document.getElementById('solpFormTipoMat').value){alert('Selecciona el tipo de material.');return;}
-  // Collect items
-  var rows=document.querySelectorAll('#solpItemsList .solp-item-row');
+  if(!document.getElementById('solpFormTipoMat').value){alert('Selecciona la categoria de material.');return;}
+  // Validate justification
+  var obs=document.getElementById('solpFormObs').value.trim();
+  if(!obs||obs.length<20){alert('La justificacion debe tener al menos 20 caracteres. Explica POR QUE se necesita la compra.');return;}
+  // Collect items from table
+  var rows=document.querySelectorAll('#solpItemsBody tr');
   var items=[];
   var valid=true;
   rows.forEach(function(row){
-    var qty=row.querySelector('.solp-item-qty').value;
-    var unit=row.querySelector('select').value;
     var desc=row.querySelector('.solp-item-desc').value.trim();
+    var qty=row.querySelector('.solp-item-qty').value;
+    var unit=row.querySelector('.solp-item-unit').value;
+    var price=row.querySelector('.solp-item-price').value;
+    if(!desc&&!qty&&!price) return; // skip entirely empty rows
     if(!desc){valid=false;return;}
-    items.push({cantidad:parseInt(qty)||1,unidad:unit,descripcion:desc});
+    items.push({cantidad:parseInt(qty)||1,unidad:unit,descripcion:desc,precioUnit:parseFloat(price)||0});
   });
-  if(!valid||items.length===0){alert('Completa la descripcion de todos los items.');return;}
-  if(document.getElementById('solpFormPrioridad').value==='Urgente'){
+  if(!valid||items.length===0){alert('Completa la descripcion de todos los items (filas con datos deben tener descripcion).');return;}
+  var prioridad=document.getElementById('solpFormPrioridad').value;
+  if(prioridad==='Urgente'||prioridad==='Extraordinaria'){
     var checks=[document.getElementById('solpUQ1'),document.getElementById('solpUQ2'),document.getElementById('solpUQ3'),document.getElementById('solpUQ4')];
     var anyChecked=checks.some(function(c){return c.checked;});
-    if(!anyChecked){alert('Selecciona al menos una justificacion de urgencia.');return;}
+    if(!anyChecked){alert('Selecciona al menos una pregunta de control para solicitudes urgentes.');return;}
   }
-  // Build items as pipe-delimited: qty|unit|desc;;qty|unit|desc
-  var itemsStr=items.map(function(it){return it.cantidad+'|'+it.unidad+'|'+it.descripcion;}).join(';;');
+  // Build items as pipe-delimited: qty|unit|desc|unitprice;;qty|unit|desc|unitprice
+  var itemsStr=items.map(function(it){return it.cantidad+'|'+it.unidad+'|'+it.descripcion+'|'+it.precioUnit;}).join(';;');
+
+  // Calculate total from items
+  var totalEstimado=items.reduce(function(sum,it){return sum+(it.cantidad*it.precioUnit);},0);
 
   // Build urgencia
   var justUrgencia='';
-  if(document.getElementById('solpFormPrioridad').value==='Urgente'){
+  if(prioridad==='Urgente'||prioridad==='Extraordinaria'){
     var justArr=[];
-    if(document.getElementById('solpUQ1').checked) justArr.push('Equipo fuera de servicio');
-    if(document.getElementById('solpUQ2').checked) justArr.push('Fecha limite contractual');
-    if(document.getElementById('solpUQ3').checked) justArr.push('Riesgo seguridad/normativo');
-    if(document.getElementById('solpUQ4').checked) justArr.push('Otro');
+    if(document.getElementById('solpUQ1').checked) justArr.push('Verifico almacen');
+    if(document.getElementById('solpUQ2').checked) justArr.push('Intento planificar');
+    if(document.getElementById('solpUQ3').checked) justArr.push('Impacto identificado');
+    if(document.getElementById('solpUQ4').checked) justArr.push('Coord. Admin notificada');
     justUrgencia=justArr.join(', ');
   }
 
@@ -4014,17 +4133,17 @@ function solpEnviar(){
       Cliente:document.getElementById('solpFormCliente').value,
       TipoMaterial:document.getElementById('solpFormTipoMat').value,
       Estado:'Pendiente',
-      Prioridad:document.getElementById('solpFormPrioridad').value,
+      Prioridad:prioridad,
       Solicitante:session.nombre,
-      CostoEstimado:parseFloat(document.getElementById('solpFormCosto').value)||0,
+      CostoEstimado:totalEstimado,
       ItemsJSON:itemsStr,
-      Observaciones:document.getElementById('solpFormObs').value.trim(),
+      Observaciones:obs,
       JustificacionUrgencia:justUrgencia
     }
   };
 
   var btn=document.getElementById('solpBtnSubmit');
-  btn.disabled=true;btn.textContent='Enviando...';
+  btn.disabled=true;btn.innerHTML='&#9203; Enviando...';
 
   solpPost(payload).then(function(){
     alert('Solicitud de compra enviada correctamente.');
