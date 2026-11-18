@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -204,14 +205,24 @@ textarea{min-height:90px;resize:vertical}
 .badge-pend{background:#FEE2E2;color:#991B1B}
 .badge-closed{background:#D1FAE5;color:#065F46}
 
-/* === SOLP Module Styles === */
+/* === SOLP Module Styles — Mockup-matched === */
+/* Color vars for SOLP */
+:root{--solp-navy:#1a3a5c;--solp-blue:#185FA5;--solp-red:#A32D2D;--solp-amber:#854F0B;--solp-green:#0F6E56}
 .solp-tabs{display:flex;border-bottom:0.5px solid var(--border);background:var(--white)}
 .solp-tab{flex:1;padding:11px;font-size:13px;text-align:center;cursor:pointer;color:var(--text-muted);border-bottom:2px solid transparent;font-family:inherit;border-top:none;border-left:none;border-right:none;background:transparent}
 .solp-tab.active{color:var(--teal);border-bottom:2px solid var(--teal);font-weight:600}
-.solp-kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px 16px}
-.solp-kpi{background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius);padding:12px 10px;text-align:center}
-.solp-kpi-val{font-size:22px;font-weight:700;color:var(--text)}
-.solp-kpi-lbl{font-size:10px;color:var(--text-muted);margin-top:2px;text-transform:uppercase;letter-spacing:0.03em}
+/* KPI row — 5 columns */
+.solp-kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;padding:16px}
+.solp-kpi{background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius);padding:14px 10px;text-align:center}
+.solp-kpi-val{font-size:24px;font-weight:700;color:var(--text)}
+.solp-kpi-val.navy{color:var(--solp-navy)}
+.solp-kpi-val.red{color:var(--solp-red)}
+.solp-kpi-val.blue{color:var(--solp-blue)}
+.solp-kpi-val.amber{color:var(--solp-amber)}
+.solp-kpi-val.green{color:var(--solp-green)}
+.solp-kpi-lbl{font-size:10px;color:var(--text-muted);margin-top:2px;text-transform:uppercase;letter-spacing:0.03em;font-weight:600}
+.solp-kpi-sub{font-size:10px;color:var(--text-muted);margin-top:4px}
+/* Alert bars */
 .solp-alert{border-radius:var(--radius);padding:10px 14px;margin:0 16px 8px;display:flex;align-items:center;gap:10px;font-size:12px}
 .solp-alert.yellow{background:var(--amber-bg);border:1px solid #e5a30b}
 .solp-alert.red{background:var(--red-bg);border:1px solid #c53030}
@@ -219,62 +230,133 @@ textarea{min-height:90px;resize:vertical}
 .solp-alert-text{flex:1;line-height:1.4}
 .solp-alert-text strong{font-weight:600}
 .solp-alert-action{font-size:11px;color:var(--teal);font-weight:600;cursor:pointer;white-space:nowrap}
-.solp-search-bar{padding:8px 16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.solp-search{flex:1;min-width:140px;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-family:inherit;background:var(--white);color:var(--text)}
+/* Toolbar — search + filters + new button */
+.solp-search-bar{padding:10px 16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.solp-search{width:220px;padding:9px 12px 9px 32px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-family:inherit;background:var(--white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M21 21l-4.35-4.35'/%3E%3C/svg%3E") 8px center/16px no-repeat;color:var(--text)}
 .solp-filter-btn{padding:7px 14px;border:1px solid var(--border);border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;background:var(--white);color:var(--text);font-family:inherit}
 .solp-filter-btn.active{background:var(--teal);color:white;border-color:var(--teal)}
-.solp-btn-new{padding:9px 16px;border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;background:var(--teal);color:white;font-family:inherit;white-space:nowrap}
+.solp-btn-new{margin-left:auto;padding:9px 16px;border:none;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;background:var(--teal);color:white;font-family:inherit;white-space:nowrap}
+/* Main table — 11 columns */
 .solp-table{width:100%;border-collapse:collapse;font-size:12px}
 .solp-table th{text-align:left;padding:8px 10px;font-weight:600;color:var(--text-muted);font-size:10px;text-transform:uppercase;letter-spacing:0.04em;border-bottom:1px solid var(--border);background:var(--surface)}
 .solp-table td{padding:9px 10px;border-bottom:1px solid var(--border-light);vertical-align:middle}
 .solp-table tr:last-child td{border-bottom:none}
+.solp-table tr.solp-row-cerrada{opacity:0.6}
 .solp-table-link{color:var(--teal);font-weight:600;cursor:pointer;text-decoration:none}
 .solp-table-link:hover{text-decoration:underline}
+.solp-ot-link{color:var(--solp-navy);font-weight:500;cursor:default;font-size:12px}
+.solp-amount{text-align:right;font-variant-numeric:tabular-nums;font-size:12px}
 .solp-dot{width:8px;height:8px;border-radius:50%;display:inline-block}
 .solp-dot.yellow{background:#f59e0b}
 .solp-dot.red{background:#c53030}
+/* Status badges */
 .solp-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;white-space:nowrap}
-.solp-badge-pendiente{background:var(--amber-bg);color:var(--amber-text)}
-.solp-badge-cotizando{background:var(--blue-bg);color:var(--blue-text)}
-.solp-badge-aprobada{background:var(--green-bg);color:var(--green-text)}
-.solp-badge-comprada{background:var(--teal-light);color:var(--teal-dark)}
-.solp-badge-entregada{background:var(--green-bg);color:var(--green-text)}
+.solp-badge-pendiente,.solp-badge-borrador{background:#fef3c7;color:#92400e}
+.solp-badge-cotizando,.solp-badge-enviada{background:#dbeafe;color:#1e40af}
+.solp-badge-aprobada,.solp-badge-gestion{background:#dcfce7;color:#166534}
+.solp-badge-comprada,.solp-badge-comprado{background:var(--teal-light);color:var(--teal-dark)}
+.solp-badge-entregada,.solp-badge-entregado{background:#dcfce7;color:#166534}
 .solp-badge-cerrada{background:var(--gray-bg);color:var(--text-muted)}
 .solp-badge-rechazada{background:var(--red-bg);color:var(--red-text)}
-.solp-badge-urgente{background:var(--red-bg);color:var(--red-text)}
-.solp-badge-normal{background:var(--blue-bg);color:var(--blue-text)}
+/* Priority badges */
+.solp-badge-urgente,.solp-badge-prio-urgente{background:var(--red-bg);color:var(--red-text)}
+.solp-badge-normal,.solp-badge-prio-normal{background:var(--blue-bg);color:var(--blue-text)}
+.solp-badge-prio-extraordinaria{background:#fce7f3;color:#9d174d}
+/* Time badge */
+.solp-time-badge{font-size:11px;padding:2px 8px;border-radius:10px;font-weight:500;background:#f1f5f9;color:#64748b}
+.solp-time-badge.warning{background:#fef3c7;color:#92400e}
+.solp-time-badge.danger{background:#fecaca;color:#991b1b}
 .solp-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .solp-empty{text-align:center;padding:40px 20px;color:var(--text-muted);font-size:13px}
-/* SOLP Detail */
-.solp-detail-header{padding:16px;background:var(--white);border-bottom:1px solid var(--border-light)}
-.solp-detail-title{font-size:18px;font-weight:700;color:var(--text)}
-.solp-detail-meta{font-size:12px;color:var(--text-muted);margin-top:4px}
+/* === SOLP Detail — 2-column layout === */
+.solp-detail-grid{display:grid;grid-template-columns:1fr 320px;gap:20px;padding:16px}
+.solp-detail-main{min-width:0}
+.solp-detail-sidebar{display:flex;flex-direction:column;gap:12px}
+/* Detail panel */
+.solp-detail-panel{background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius);overflow:hidden}
+.solp-detail-header{padding:16px 20px;border-bottom:1px solid var(--border-light)}
+.solp-detail-title{font-size:20px;font-weight:700;color:var(--text)}
+.solp-detail-meta-line{font-size:12px;color:var(--text-muted);margin-top:4px}
+.solp-detail-badges{display:flex;gap:6px;margin-top:8px}
+/* Meta grid (2-col) */
+.solp-detail-meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid var(--border-light)}
+.solp-detail-meta-item{padding:12px 20px;border-bottom:1px solid var(--border-light)}
+.solp-detail-meta-item:nth-child(odd){border-right:1px solid var(--border-light)}
+.solp-detail-meta-label{font-size:10px;text-transform:uppercase;letter-spacing:0.04em;color:var(--text-muted);font-weight:600;margin-bottom:2px}
+.solp-detail-meta-value{font-size:13px;font-weight:600;color:var(--text)}
+.solp-detail-meta-value .solp-so-check{color:var(--solp-green);font-weight:700;margin-left:4px}
+/* Cost comparison — 3 boxes */
+.solp-cost-compare{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;padding:16px 20px}
+.solp-cost-box{border-radius:var(--radius);padding:14px;text-align:center}
+.solp-cost-box.est{background:#eff6ff;border:1px solid #bfdbfe}
+.solp-cost-box.real{background:#f0fdf4;border:1px solid #bbf7d0}
+.solp-cost-box.desv{background:#f1f5f9;border:1px solid #e2e8f0}
+.solp-cost-label{font-size:10px;color:var(--text-muted);text-transform:uppercase;font-weight:600}
+.solp-cost-value{font-size:20px;font-weight:700;margin-top:4px}
+.solp-cost-value.est{color:var(--solp-navy)}
+.solp-cost-value.real{color:var(--solp-green)}
+.solp-cost-value.over{color:var(--solp-red)}
+.solp-cost-value.pending{color:var(--text-muted);font-size:14px}
+/* Detail items table (read-only) */
+.solp-det-items{width:100%;border-collapse:collapse;margin:0}
+.solp-det-items th{background:var(--surface);padding:8px 12px;font-size:10px;text-transform:uppercase;letter-spacing:0.03em;color:var(--text-muted);font-weight:600;text-align:left;border-bottom:1px solid var(--border)}
+.solp-det-items td{padding:8px 12px;font-size:13px;border-bottom:1px solid var(--border-light)}
+.solp-det-items tfoot td{font-weight:700;border-top:2px solid var(--border);background:var(--surface)}
+/* Justification block */
+.solp-det-justification{padding:16px 20px;font-size:13px;color:var(--text);line-height:1.6;border-top:1px solid var(--border-light)}
+.solp-det-justification-label{font-size:10px;text-transform:uppercase;letter-spacing:0.04em;color:var(--text-muted);font-weight:600;margin-bottom:6px}
+/* Sidebar boxes */
+.solp-sidebar-box{background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius);padding:16px}
+.solp-sidebar-box h4{font-size:12px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:0.04em;margin:0 0 12px}
+.solp-sidebar-actions{display:flex;flex-direction:column;gap:8px}
+.solp-sidebar-btn{width:100%;padding:10px 12px;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;text-align:center;font-family:inherit;border:1px solid var(--border);background:var(--white);color:var(--text)}
+.solp-sidebar-btn.primary{background:var(--teal);color:white;border-color:var(--teal)}
+.solp-sidebar-btn.danger{color:var(--solp-red);border-color:var(--solp-red);background:var(--white)}
+.solp-sidebar-btn.secondary{color:var(--solp-blue);border-color:var(--solp-blue)}
+.solp-btn-action{width:100%;padding:10px 12px;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;text-align:center;font-family:inherit;border:1px solid var(--border);background:var(--white);color:var(--text)}
+.solp-btn-action.primary{background:var(--teal);color:white;border-color:var(--teal)}
+.solp-btn-action.danger{color:var(--solp-red);border-color:var(--solp-red);background:var(--white)}
+.solp-btn-action.secondary{color:var(--solp-blue);border-color:var(--solp-blue)}
+/* Meta grid for detail view */
+.solp-meta-item{display:flex;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border-light);font-size:13px}
+.solp-meta-item:last-child{border-bottom:none}
+.solp-meta-key{color:var(--text-muted);font-weight:500}
+.solp-meta-val{font-weight:600;color:var(--text);text-align:right;max-width:60%}
+/* Time alert box */
+.solp-time-alert{border-radius:var(--radius);padding:14px;border:1px solid}
+.solp-time-alert.red{background:#fef2f2;border-color:#fecaca}
+.solp-time-alert.yellow{background:#fffbeb;border-color:#fde68a}
+.solp-time-alert h4{font-size:12px;font-weight:700;margin:0 0 6px}
+.solp-time-alert.red h4{color:var(--solp-red)}
+.solp-time-alert.yellow h4{color:var(--solp-amber)}
+.solp-time-alert p{font-size:12px;color:var(--text);margin:3px 0;line-height:1.4}
+/* Timeline — mockup style with numbered/icon dots */
+.solp-timeline{padding:4px 0}
+.solp-timeline-step{display:flex;gap:12px;align-items:center;position:relative;padding:6px 0}
+.solp-timeline-step::before{content:'';position:absolute;left:13px;top:34px;bottom:-6px;width:2px;background:var(--border-light)}
+.solp-timeline-step:last-child::before{display:none}
+.solp-timeline-dot{width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;position:relative;z-index:1}
+.solp-timeline-dot.blue{background:var(--solp-blue)}
+.solp-timeline-dot.green{background:var(--solp-green)}
+.solp-timeline-dot.amber{background:#f59e0b}
+.solp-timeline-dot.red-dot{background:var(--solp-red)}
+.solp-timeline-dot.gray{background:#cbd5e1;color:#64748b}
+.solp-timeline-info{flex:1;font-size:13px;color:var(--text)}
+/* Legacy timeline item — kept for compat */
+.solp-timeline-item{display:flex;gap:12px;padding:0;position:relative;min-height:48px;align-items:flex-start}
+.solp-timeline-item::before{content:'';position:absolute;left:13px;top:28px;bottom:-20px;width:2px;background:var(--border-light)}
+.solp-timeline-item:last-child::before{display:none}
+.solp-timeline-content{flex:1;padding:4px 0 16px}
+.solp-timeline-action{font-size:13px;font-weight:600;color:var(--text)}
+/* Old flat detail rows — kept for Resumen tab */
 .solp-detail-section{background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius);margin:12px 16px;overflow:hidden}
 .solp-detail-section-title{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.04em;padding:12px 14px 6px;border-bottom:none}
 .solp-detail-row{display:flex;justify-content:space-between;padding:6px 14px;font-size:13px}
 .solp-detail-row:last-child{padding-bottom:12px}
 .solp-detail-label{color:var(--text-muted)}
 .solp-detail-value{font-weight:600;color:var(--text);text-align:right;max-width:60%}
-.solp-timeline{padding:0 14px 14px}
-.solp-timeline-item{display:flex;gap:12px;padding:8px 0;position:relative}
-.solp-timeline-dot{width:10px;height:10px;border-radius:50%;background:var(--teal);flex-shrink:0;margin-top:4px;border:2px solid var(--teal-light)}
-.solp-timeline-dot.pending{background:var(--border);border-color:var(--border-light)}
-.solp-timeline-line{position:absolute;left:4px;top:18px;bottom:-4px;width:2px;background:var(--border-light)}
-.solp-timeline-item:last-child .solp-timeline-line{display:none}
-.solp-timeline-content{flex:1}
-.solp-timeline-action{font-size:13px;font-weight:600;color:var(--text)}
-.solp-timeline-info{font-size:11px;color:var(--text-muted);margin-top:2px}
 .solp-actions-bar{padding:12px 16px;display:flex;gap:8px;flex-wrap:wrap}
-.solp-btn-action{flex:1;padding:10px 12px;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;text-align:center;font-family:inherit;border:1px solid var(--border);background:var(--white);color:var(--text);min-width:100px}
-.solp-btn-action.primary{background:var(--teal);color:white;border-color:var(--teal)}
-.solp-btn-action.danger{color:var(--red-text);border-color:var(--red-text)}
-.solp-cost-compare{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:8px 14px 14px}
-.solp-cost-box{background:var(--surface);border-radius:var(--radius-sm);padding:10px;text-align:center}
-.solp-cost-label{font-size:10px;color:var(--text-muted);text-transform:uppercase}
-.solp-cost-value{font-size:18px;font-weight:700;margin-top:4px}
-.solp-cost-value.est{color:var(--blue-text)}
-.solp-cost-value.real{color:var(--teal)}
-.solp-cost-value.over{color:var(--red-text)}
+@media(max-width:900px){.solp-detail-grid{grid-template-columns:1fr;}.solp-detail-sidebar{order:-1}}
 /* SOLP Form Modal — Full-width desktop design */
 .solp-modal-overlay{display:none !important;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:1000;justify-content:center;align-items:flex-start;padding:30px 20px;overflow-y:auto}
 .solp-modal-overlay.active{display:flex !important}
@@ -2721,37 +2803,64 @@ function renderModuloOTs(){
 
   <!-- === VISTA LISTA === -->
   <div id="solpVistaLista">
-    <!-- KPIs -->
+    <!-- KPIs — 5 cards matching mockup -->
     <div class="solp-kpi-row">
-      <div class="solp-kpi"><div class="solp-kpi-val" id="solpKpiAbiertas">-</div><div class="solp-kpi-lbl">Abiertas</div></div>
-      <div class="solp-kpi"><div class="solp-kpi-val" id="solpKpiAlerta">-</div><div class="solp-kpi-lbl">Con alerta</div></div>
-      <div class="solp-kpi"><div class="solp-kpi-val" id="solpKpiMes">-</div><div class="solp-kpi-lbl">Este mes</div></div>
-      <div class="solp-kpi"><div class="solp-kpi-val" id="solpKpiTiempo">-</div><div class="solp-kpi-lbl">Tiempo prom.</div></div>
+      <div class="solp-kpi">
+        <div class="solp-kpi-lbl">SOLPs Abiertas</div>
+        <div class="solp-kpi-val navy" id="solpKpiAbiertas">-</div>
+        <div class="solp-kpi-sub" id="solpKpiAbiertasSub">pendientes de cierre</div>
+      </div>
+      <div class="solp-kpi">
+        <div class="solp-kpi-lbl">Con Alerta</div>
+        <div class="solp-kpi-val red" id="solpKpiAlerta">-</div>
+        <div class="solp-kpi-sub" id="solpKpiAlertaSub">requieren atenci&oacute;n</div>
+      </div>
+      <div class="solp-kpi">
+        <div class="solp-kpi-lbl">Gasto Acum. Semana</div>
+        <div class="solp-kpi-val blue" id="solpKpiGasto">-</div>
+        <div class="solp-kpi-sub" id="solpKpiGastoSub">estimado aprobado</div>
+      </div>
+      <div class="solp-kpi">
+        <div class="solp-kpi-lbl">Tiempo Prom. Gesti&oacute;n</div>
+        <div class="solp-kpi-val amber" id="solpKpiTiempo">-</div>
+        <div class="solp-kpi-sub" id="solpKpiTiempoSub">d&iacute;as promedio</div>
+      </div>
+      <div class="solp-kpi">
+        <div class="solp-kpi-lbl">Desviaci&oacute;n Costo</div>
+        <div class="solp-kpi-val green" id="solpKpiDesv">-</div>
+        <div class="solp-kpi-sub" id="solpKpiDesvSub">real vs estimado</div>
+      </div>
     </div>
 
     <!-- Alertas activas -->
     <div id="solpAlertas"></div>
 
-    <!-- Busqueda y filtros -->
+    <!-- Toolbar — search + filters + new -->
     <div class="solp-search-bar">
       <input type="text" class="solp-search" id="solpBuscar" placeholder="Buscar SOLP, OT, cliente..." oninput="solpFiltrar()">
       <button class="solp-filter-btn active" onclick="solpToggleFilter(this,'todas')">Todas</button>
-      <button class="solp-filter-btn" onclick="solpToggleFilter(this,'alertas')">&#9888; Alertas</button>
       <button class="solp-filter-btn" onclick="solpToggleFilter(this,'abiertas')">Abiertas</button>
+      <button class="solp-filter-btn" onclick="solpToggleFilter(this,'alertas')">Con alertas</button>
+      <button class="solp-filter-btn" onclick="solpToggleFilter(this,'cerradas')">Cerradas</button>
       <button class="solp-btn-new" onclick="solpAbrirNueva()">&#65291; Nueva SOLP</button>
     </div>
 
-    <!-- Tabla -->
+    <!-- Tabla — 11 columns -->
     <div class="solp-scroll" style="padding:0 16px 16px">
       <table class="solp-table" id="solpTabla">
         <thead>
           <tr>
-            <th style="width:24px"></th>
+            <th style="width:30px"></th>
             <th>N&deg; SOLP</th>
-            <th>OT / Destino</th>
-            <th>Tipo material</th>
+            <th>OT</th>
+            <th>SO Zoho</th>
+            <th>Cliente</th>
+            <th>Categor&iacute;a</th>
+            <th style="text-align:right">Estimado</th>
+            <th style="text-align:right">Real</th>
             <th>Estado</th>
-            <th>Dias</th>
+            <th>Tiempo</th>
+            <th>Prioridad</th>
           </tr>
         </thead>
         <tbody id="solpTbody"></tbody>
@@ -2780,61 +2889,56 @@ function renderModuloOTs(){
     </div>
   </div>
 
-  <!-- === VISTA DETALLE (oculta hasta click) === -->
+  <!-- === VISTA DETALLE — 2-column grid matching mockup === -->
   <div id="solpVistaDetalle" style="display:none">
     <div style="padding:8px 16px">
       <button onclick="solpVolverALista()" style="background:none;border:none;color:var(--teal);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;padding:4px 0">&#8592; Volver a la lista</button>
     </div>
-    <div class="solp-detail-header">
-      <div style="display:flex;align-items:center;justify-content:space-between">
-        <div>
-          <div class="solp-detail-title" id="solpDetTitulo">SOLP-0000</div>
-          <div class="solp-detail-meta" id="solpDetMeta"></div>
+
+    <div class="solp-detail-grid">
+      <!-- MAIN COLUMN -->
+      <div class="solp-detail-main">
+        <div class="solp-detail-panel">
+          <!-- Header -->
+          <div class="solp-detail-header">
+            <div class="solp-detail-title" id="solpDetTitulo">SOLP-0000</div>
+            <div class="solp-detail-meta-line" id="solpDetMeta"></div>
+            <div class="solp-detail-badges" id="solpDetBadges"></div>
+          </div>
+          <!-- Meta grid -->
+          <div class="solp-detail-meta-grid" id="solpDetMetaGrid"></div>
+          <!-- Cost comparison — 3 boxes -->
+          <div class="solp-cost-compare">
+            <div class="solp-cost-box est"><div class="solp-cost-label">Estimado</div><div class="solp-cost-value est" id="solpDetCostoEst">$0.00</div></div>
+            <div class="solp-cost-box real"><div class="solp-cost-label">Costo Real</div><div class="solp-cost-value" id="solpDetCostoReal">Pendiente</div></div>
+            <div class="solp-cost-box desv"><div class="solp-cost-label">Desviaci&oacute;n</div><div class="solp-cost-value" id="solpDetDesv">-</div></div>
+          </div>
+          <!-- Items table -->
+          <div id="solpDetItems"></div>
+          <!-- Justification -->
+          <div class="solp-det-justification">
+            <div class="solp-det-justification-label">Justificaci&oacute;n</div>
+            <div id="solpDetObs">-</div>
+          </div>
         </div>
-        <span class="solp-badge" id="solpDetBadge"></span>
+      </div>
+
+      <!-- SIDEBAR -->
+      <div class="solp-detail-sidebar">
+        <!-- Actions box -->
+        <div class="solp-sidebar-box">
+          <h4>Acciones</h4>
+          <div class="solp-sidebar-actions" id="solpDetAcciones"></div>
+        </div>
+        <!-- Time alert box -->
+        <div id="solpDetTimeAlert"></div>
+        <!-- Timeline box -->
+        <div class="solp-sidebar-box">
+          <h4>Timeline</h4>
+          <div class="solp-timeline" id="solpDetTimeline"></div>
+        </div>
       </div>
     </div>
-
-    <!-- Info general -->
-    <div class="solp-detail-section">
-      <div class="solp-detail-section-title">Informacion general</div>
-      <div class="solp-detail-row"><span class="solp-detail-label">OT / Destino</span><span class="solp-detail-value" id="solpDetOT"></span></div>
-      <div class="solp-detail-row"><span class="solp-detail-label">Cliente</span><span class="solp-detail-value" id="solpDetCliente"></span></div>
-      <div class="solp-detail-row"><span class="solp-detail-label">Tipo material</span><span class="solp-detail-value" id="solpDetTipo"></span></div>
-      <div class="solp-detail-row"><span class="solp-detail-label">Prioridad</span><span class="solp-detail-value" id="solpDetPrioridad"></span></div>
-      <div class="solp-detail-row"><span class="solp-detail-label">Solicitante</span><span class="solp-detail-value" id="solpDetSolicitante"></span></div>
-      <div class="solp-detail-row"><span class="solp-detail-label">Fecha creacion</span><span class="solp-detail-value" id="solpDetFecha"></span></div>
-    </div>
-
-    <!-- Items solicitados -->
-    <div class="solp-detail-section">
-      <div class="solp-detail-section-title">Items solicitados</div>
-      <div id="solpDetItems" style="padding:4px 14px 14px"></div>
-    </div>
-
-    <!-- Comparacion de costos -->
-    <div class="solp-detail-section">
-      <div class="solp-detail-section-title">Costos</div>
-      <div class="solp-cost-compare">
-        <div class="solp-cost-box"><div class="solp-cost-label">Estimado</div><div class="solp-cost-value est" id="solpDetCostoEst">$0.00</div></div>
-        <div class="solp-cost-box"><div class="solp-cost-label">Real</div><div class="solp-cost-value" id="solpDetCostoReal">-</div></div>
-      </div>
-    </div>
-
-    <!-- Timeline -->
-    <div class="solp-detail-section">
-      <div class="solp-detail-section-title">Timeline</div>
-      <div class="solp-timeline" id="solpDetTimeline"></div>
-    </div>
-
-    <!-- Observaciones -->
-    <div class="solp-detail-section">
-      <div class="solp-detail-section-title">Observaciones</div>
-      <div style="padding:4px 14px 14px;font-size:13px;color:var(--text)" id="solpDetObs">-</div>
-    </div>
-
-    <!-- Acciones admin -->
-    <div class="solp-actions-bar" id="solpDetAcciones"></div>
     <div style="height:20px"></div>
   </div>
 </div>
@@ -2885,7 +2989,7 @@ function renderModuloOTs(){
           </div>
           <div class="solp-form-group" id="solpDestinoGOField" style="display:none">
             <label class="solp-form-label">C&oacute;digo de gasto <span class="req">*</span></label>
-            <select class="solp-form-select" id="solpFormGO">
+            <select class="solp-form-select" id="solpFormGO" onchange="solpCalcTotals()">
               <option value="">Seleccionar...</option>
               <option value="GO-OFICINA">GO-OFICINA &mdash; Materiales de oficina</option>
               <option value="GO-HERRAMIENTAS">GO-HERRAMIENTAS &mdash; Herramientas y equipos</option>
@@ -2894,6 +2998,17 @@ function renderModuloOTs(){
               <option value="GO-SEGURIDAD">GO-SEGURIDAD &mdash; EPP y seguridad</option>
               <option value="GO-OTRO">GO-OTRO &mdash; Otros gastos operativos</option>
             </select>
+          </div>
+        </div>
+        <!-- SO Zoho (admin field) — after OT/GO row -->
+        <div class="solp-form-row">
+          <div class="solp-form-group" id="solpDestinoOTField2" style="display:none">
+            <!-- Placeholder: OT is shown above, this keeps grid alignment -->
+          </div>
+          <div class="solp-form-group">
+            <label class="solp-form-label">N&deg; Orden de Venta <span class="admin-tag">ADMIN</span></label>
+            <input type="text" class="solp-form-input admin-field" id="solpFormOrdenVenta" readonly placeholder="SO de Zoho Books">
+            <span class="solp-form-hint">Administraci&oacute;n vincula la SO de Zoho Books</span>
           </div>
         </div>
         <div class="solp-form-row">
@@ -2905,6 +3020,11 @@ function renderModuloOTs(){
             <label class="solp-form-label">Cliente</label>
             <input type="text" class="solp-form-input" id="solpFormCliente" placeholder="Se autocompleta con la OT" readonly style="background:var(--surface)">
           </div>
+        </div>
+        <!-- Ubicación / Sitio — full width -->
+        <div class="solp-form-group full standalone">
+          <label class="solp-form-label">Ubicaci&oacute;n / Sitio</label>
+          <input type="text" class="solp-form-input" id="solpFormUbicacion" placeholder="Ej: Edificio 205, Piso 3 — Ciudad del Saber">
         </div>
       </div>
 
@@ -3607,7 +3727,7 @@ function solpInit(){
 
 function solpCargarLista(){
   var tbody=document.getElementById('solpTbody');
-  tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--text-muted)">Cargando solicitudes...</td></tr>';
+  tbody.innerHTML='<tr><td colspan="11" style="text-align:center;padding:30px;color:var(--text-muted)">Cargando solicitudes...</td></tr>';
   document.getElementById('solpEmpty').style.display='none';
 
   solpPost({accion:'listar'}).then(function(data){
@@ -3635,7 +3755,10 @@ function solpCargarLista(){
         fechaComprada:f.FechaComprada||'',
         fechaEntregada:f.FechaEntregada||'',
         fechaCerrada:f.FechaCerrada||'',
-        notasAdmin:f.NotasAdmin||''
+        notasAdmin:f.NotasAdmin||'',
+        ordenVenta:f.OrdenVenta||'',
+        ubicacion:f.Ubicacion||'',
+        proveedor:f.Proveedor||''
       };
     });
     solpCache=items;
@@ -3643,34 +3766,50 @@ function solpCargarLista(){
     solpRenderAlertas(items);
     solpRenderLista(items,solpFiltroActual);
   }).catch(function(err){
-    tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--text-muted)">Error al cargar. Intenta de nuevo.</td></tr>';
+    tbody.innerHTML='<tr><td colspan="11" style="text-align:center;padding:30px;color:var(--text-muted)">Error al cargar. Intenta de nuevo.</td></tr>';
   });
 }
 
-/* ---- KPIs ---- */
+/* ---- KPIs — 5 cards matching mockup ---- */
 function solpRenderKpis(items){
   var hoy=new Date();
-  var mes=hoy.getMonth();
-  var anio=hoy.getFullYear();
+  var mes=hoy.getMonth();var anio=hoy.getFullYear();
   var abiertas=items.filter(function(i){return SOLP_ESTADOS_ABIERTOS.indexOf(i.estado)!==-1;});
   var conAlerta=abiertas.filter(function(i){return solpGetAlertLevel(i)!==null;});
-  var esteMes=items.filter(function(i){
-    var f=i.fechaCreacion?new Date(i.fechaCreacion):null;
-    return f&&f.getMonth()===mes&&f.getFullYear()===anio;
-  });
-  // Tiempo promedio de cierre (solo cerradas con ambas fechas)
+  var rojas=conAlerta.filter(function(i){return solpGetAlertLevel(i)==='red';});
+  // Gasto acumulado semana (SOLPs aprobadas/compradas esta semana)
+  var inicioSemana=new Date(hoy);inicioSemana.setDate(hoy.getDate()-hoy.getDay());inicioSemana.setHours(0,0,0,0);
+  var gastoSemana=items.filter(function(i){
+    var f=i.fechaAprobada?new Date(i.fechaAprobada):null;
+    return f&&f>=inicioSemana&&(i.estado==='Aprobada'||i.estado==='Comprada'||i.estado==='Entregada'||i.estado==='Cerrada');
+  }).reduce(function(s,i){return s+i.costoEstimado;},0);
+  // Tiempo promedio gestion (solo cerradas con ambas fechas)
   var cerradas=items.filter(function(i){return i.fechaCerrada&&i.fechaCreacion;});
-  var tiempoProm='-';
+  var tiempoProm='-';var tiempoSub='días promedio';
   if(cerradas.length>0){
-    var total=cerradas.reduce(function(sum,i){
-      return sum+((new Date(i.fechaCerrada)-new Date(i.fechaCreacion))/(1000*60*60*24));
-    },0);
+    var total=cerradas.reduce(function(sum,i){return sum+((new Date(i.fechaCerrada)-new Date(i.fechaCreacion))/(86400000));},0);
     tiempoProm=Math.round(total/cerradas.length)+'d';
+    tiempoSub='de '+cerradas.length+' cerradas';
+  }
+  // Desviacion costo promedio
+  var conReal=items.filter(function(i){return i.costoReal!==null&&i.costoReal!==''&&i.costoEstimado>0;});
+  var desvProm='-';var desvSub='real vs estimado';
+  if(conReal.length>0){
+    var desvTotal=conReal.reduce(function(s,i){return s+((parseFloat(i.costoReal)-i.costoEstimado)/i.costoEstimado*100);},0);
+    var d=Math.round(desvTotal/conReal.length);
+    desvProm=(d>0?'+':'')+d+'%';
+    desvSub='de '+conReal.length+' con costo real';
   }
   document.getElementById('solpKpiAbiertas').textContent=abiertas.length;
+  document.getElementById('solpKpiAbiertasSub').textContent='pendientes de cierre';
   document.getElementById('solpKpiAlerta').textContent=conAlerta.length;
-  document.getElementById('solpKpiMes').textContent=esteMes.length;
+  document.getElementById('solpKpiAlertaSub').textContent=rojas.length+' rojas, '+(conAlerta.length-rojas.length)+' amarillas';
+  document.getElementById('solpKpiGasto').textContent='$'+gastoSemana.toLocaleString('en',{minimumFractionDigits:0,maximumFractionDigits:0});
+  document.getElementById('solpKpiGastoSub').textContent='estimado aprobado';
   document.getElementById('solpKpiTiempo').textContent=tiempoProm;
+  document.getElementById('solpKpiTiempoSub').textContent=tiempoSub;
+  document.getElementById('solpKpiDesv').textContent=desvProm;
+  document.getElementById('solpKpiDesvSub').textContent=desvSub;
 }
 
 /* ---- Alert level ---- */
@@ -3712,7 +3851,7 @@ function solpRenderAlertas(items){
   });
 }
 
-/* ---- Lista ---- */
+/* ---- Lista — 11 columns matching mockup ---- */
 function solpRenderLista(items,filtro){
   var tbody=document.getElementById('solpTbody');
   var empty=document.getElementById('solpEmpty');
@@ -3721,12 +3860,14 @@ function solpRenderLista(items,filtro){
     filtrados=items.filter(function(i){return solpGetAlertLevel(i)!==null;});
   } else if(filtro==='abiertas'){
     filtrados=items.filter(function(i){return SOLP_ESTADOS_ABIERTOS.indexOf(i.estado)!==-1;});
+  } else if(filtro==='cerradas'){
+    filtrados=items.filter(function(i){return SOLP_ESTADOS_CERRADOS.indexOf(i.estado)!==-1;});
   }
   // Apply search
   var q=(document.getElementById('solpBuscar').value||'').toLowerCase();
   if(q.length>=2){
     filtrados=filtrados.filter(function(i){
-      return (i.numero+' '+i.ot+' '+i.cliente+' '+i.tipoMaterial+' '+i.solicitante).toLowerCase().indexOf(q)!==-1;
+      return (i.numero+' '+i.ot+' '+i.cliente+' '+i.tipoMaterial+' '+i.solicitante+' '+(i.ordenVenta||'')).toLowerCase().indexOf(q)!==-1;
     });
   }
   if(!filtrados.length){
@@ -3747,13 +3888,32 @@ function solpRenderLista(items,filtro){
     var alert=solpGetAlertLevel(i);
     var dias=solpDiasTranscurridos(i.fechaCreacion);
     var badgeClass=SOLP_ESTADOS[i.estado]||'solp-badge-pendiente';
-    html+='<tr>'+
+    var isCerrada=SOLP_ESTADOS_CERRADOS.indexOf(i.estado)!==-1;
+    // Time badge
+    var th=SOLP_THRESHOLDS[i.tipoMaterial];
+    var timeBadge='<span class="solp-time-badge">'+dias+'d</span>';
+    if(th){
+      if(dias>=th[1]) timeBadge='<span class="solp-time-badge danger">'+dias+'d</span>';
+      else if(dias>=th[0]) timeBadge='<span class="solp-time-badge warning">'+dias+'d</span>';
+    }
+    // Priority badge
+    var prioBadge='<span class="solp-badge solp-badge-prio-'+(i.prioridad||'Normal').toLowerCase()+'">'+i.prioridad+'</span>';
+    // Cost display
+    var estStr=i.costoEstimado>0?'$'+i.costoEstimado.toLocaleString('en',{minimumFractionDigits:0,maximumFractionDigits:0}):'-';
+    var realStr=(i.costoReal!==null&&i.costoReal!=='')?'$'+parseFloat(i.costoReal).toLocaleString('en',{minimumFractionDigits:0,maximumFractionDigits:0}):'-';
+
+    html+='<tr'+(isCerrada?' class="solp-row-cerrada"':'')+'>'+
       '<td>'+(alert?'<span class="solp-dot '+alert+'"></span>':'')+'</td>'+
       '<td><span class="solp-table-link" onclick="solpVerDetalle(\''+i.id+'\')">'+i.numero+'</span></td>'+
-      '<td style="font-size:12px">'+(i.ot||i.codigoGO||'-')+'</td>'+
+      '<td><span class="solp-ot-link">'+(i.ot||i.codigoGO||'-')+'</span></td>'+
+      '<td style="font-size:12px;color:var(--text-muted)">'+(i.ordenVenta||'-')+'</td>'+
+      '<td style="font-size:12px">'+(i.cliente||'-')+'</td>'+
       '<td style="font-size:12px">'+i.tipoMaterial+'</td>'+
+      '<td class="solp-amount">'+estStr+'</td>'+
+      '<td class="solp-amount">'+realStr+'</td>'+
       '<td><span class="solp-badge '+badgeClass+'">'+i.estado+'</span></td>'+
-      '<td style="font-size:12px;text-align:center">'+dias+'</td>'+
+      '<td>'+timeBadge+'</td>'+
+      '<td>'+prioBadge+'</td>'+
       '</tr>';
   });
   tbody.innerHTML=html;
@@ -3825,81 +3985,123 @@ function solpVerDetalle(id){
   document.getElementById('solpVistaLista').style.display='none';
   document.getElementById('solpVistaResumen').style.display='none';
   document.getElementById('solpVistaDetalle').style.display='block';
-  // Fill
-  document.getElementById('solpDetTitulo').textContent=item.numero;
+  // Header
+  document.getElementById('solpDetTitulo').textContent=item.numero+' — '+(item.tipoMaterial||'');
   document.getElementById('solpDetMeta').textContent='Creada '+solpFormatFecha(item.fechaCreacion)+' por '+item.solicitante;
-  var badge=document.getElementById('solpDetBadge');
-  badge.textContent=item.estado;
-  badge.className='solp-badge '+(SOLP_ESTADOS[item.estado]||'');
-  document.getElementById('solpDetOT').textContent=item.ot||item.codigoGO||'-';
-  document.getElementById('solpDetCliente').textContent=item.cliente||'-';
-  document.getElementById('solpDetTipo').textContent=item.tipoMaterial||'-';
-  var prioBadge=item.prioridad==='Urgente'?'<span class="solp-badge solp-badge-urgente">Urgente</span>':'<span class="solp-badge solp-badge-normal">Normal</span>';
-  document.getElementById('solpDetPrioridad').innerHTML=prioBadge;
-  document.getElementById('solpDetSolicitante').textContent=item.solicitante||'-';
-  document.getElementById('solpDetFecha').textContent=solpFormatFecha(item.fechaCreacion);
-  // Items — supports pipe-delimited (qty|unit|desc;;qty|unit|desc) and legacy JSON
+  // Badges row: priority + status
+  var badgesHtml='<span class="solp-badge solp-badge-prio-'+(item.prioridad||'Normal').toLowerCase()+'">'+(item.prioridad||'Normal')+'</span> ';
+  badgesHtml+='<span class="solp-badge '+(SOLP_ESTADOS[item.estado]||'')+'">'+item.estado+'</span>';
+  document.getElementById('solpDetBadges').innerHTML=badgesHtml;
+  // Meta grid (2-col key/value pairs)
+  var metaItems=[
+    {k:'OT / Código GO',v:item.ot||item.codigoGO||'-'},
+    {k:'SO Zoho',v:item.ordenVenta?'<span style="color:var(--solp-green)">✓</span> '+item.ordenVenta:'<span style="color:var(--text-muted)">Sin asignar</span>'},
+    {k:'Cliente',v:item.cliente||'-'},
+    {k:'Categoría',v:item.tipoMaterial||'-'},
+    {k:'Proveedor asignado',v:item.proveedor||'Sin asignar'},
+    {k:'Ubicación / Sitio',v:item.ubicacion||'-'}
+  ];
+  var metaHtml='';
+  metaItems.forEach(function(m){
+    metaHtml+='<div class="solp-meta-item"><span class="solp-meta-key">'+m.k+'</span><span class="solp-meta-val">'+m.v+'</span></div>';
+  });
+  document.getElementById('solpDetMetaGrid').innerHTML=metaHtml;
+  // Cost comparison — 3 boxes
+  var est=item.costoEstimado||0;
+  var real=(item.costoReal!==null&&item.costoReal!=='')?parseFloat(item.costoReal):null;
+  var desv=null;
+  document.getElementById('solpDetCostoEst').textContent='$'+est.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2});
+  if(real!==null){
+    document.getElementById('solpDetCostoReal').textContent='$'+real.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2});
+    desv=est>0?((real-est)/est*100):0;
+    var desvSign=desv>=0?'+':'';
+    document.getElementById('solpDetDesv').textContent=desvSign+desv.toFixed(1)+'%';
+    document.getElementById('solpDetDesv').style.color=desv>5?'var(--solp-red)':desv<-5?'var(--solp-green)':'inherit';
+  } else {
+    document.getElementById('solpDetCostoReal').textContent='Pendiente';
+    document.getElementById('solpDetDesv').textContent='-';
+    document.getElementById('solpDetDesv').style.color='inherit';
+  }
+  // Items table — pipe-delimited (qty|unit|desc|unitprice;;...)
   var itemsHtml='';
   try{
     var raw=item.itemsRaw||'';
     var its=[];
     if(raw.indexOf(';;')!==-1||raw.indexOf('|')!==-1){
-      // Pipe-delimited format
       raw.split(';;').forEach(function(seg){
         var p=seg.split('|');
-        if(p.length>=3) its.push({cantidad:parseInt(p[0])||1,unidad:p[1],descripcion:p[2]});
+        if(p.length>=3) its.push({cantidad:parseInt(p[0])||1,unidad:p[1],descripcion:p[2],precioUnit:p[3]?parseFloat(p[3]):null});
       });
     } else if(raw){
       its=JSON.parse(raw.replace(/'/g,'"'));
     }
-    if(Array.isArray(its)){
+    if(Array.isArray(its)&&its.length){
+      itemsHtml='<table class="solp-det-items"><thead><tr><th>#</th><th>Descripción</th><th>Cant.</th><th>Und</th><th style="text-align:right">P.Unit</th><th style="text-align:right">Subtotal</th></tr></thead><tbody>';
       its.forEach(function(it,idx){
-        itemsHtml+='<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px;border-bottom:1px solid var(--border-light)">'+
-          '<span>'+(idx+1)+'. '+it.descripcion+'</span><span style="color:var(--text-muted)">'+it.cantidad+' '+it.unidad+'</span></div>';
+        var pu=it.precioUnit||0;
+        var sub=pu*it.cantidad;
+        itemsHtml+='<tr><td>'+(idx+1)+'</td><td>'+it.descripcion+'</td><td>'+it.cantidad+'</td><td>'+it.unidad+'</td>'+
+          '<td style="text-align:right">'+(pu>0?'$'+pu.toFixed(2):'-')+'</td>'+
+          '<td style="text-align:right">'+(sub>0?'$'+sub.toFixed(2):'-')+'</td></tr>';
       });
+      itemsHtml+='</tbody></table>';
     }
   }catch(e){}
   document.getElementById('solpDetItems').innerHTML=itemsHtml||'<div style="font-size:12px;color:var(--text-muted)">Sin items detallados</div>';
-  // Costos
-  document.getElementById('solpDetCostoEst').textContent='$'+item.costoEstimado.toFixed(2);
-  if(item.costoReal!==null&&item.costoReal!==''){
-    var real=parseFloat(item.costoReal);
-    var el=document.getElementById('solpDetCostoReal');
-    el.textContent='$'+real.toFixed(2);
-    el.className='solp-cost-value '+(real>item.costoEstimado*1.05?'over':'real');
-  } else {
-    document.getElementById('solpDetCostoReal').textContent='Pendiente';
-    document.getElementById('solpDetCostoReal').className='solp-cost-value';
-  }
-  // Observaciones
-  document.getElementById('solpDetObs').textContent=item.observaciones||'-';
+  // Justification / observaciones
+  document.getElementById('solpDetObs').textContent=item.observaciones||'Sin observaciones';
+  // Sidebar — time alert
+  solpRenderTimeAlert(item);
   // Timeline
   solpRenderTimeline(item);
-  // Acciones
+  // Actions
   solpRenderAcciones(item);
+}
+
+function solpRenderTimeAlert(item){
+  var cont=document.getElementById('solpDetTimeAlert');
+  if(SOLP_ESTADOS_CERRADOS.indexOf(item.estado)!==-1){cont.innerHTML='';return;}
+  var th=SOLP_THRESHOLDS[item.tipoMaterial];
+  if(!th){cont.innerHTML='';return;}
+  var dias=solpDiasTranscurridos(item.fechaCreacion);
+  if(dias<th[0]){cont.innerHTML='';return;}
+  var isRed=dias>=th[1];
+  var cls=isRed?'solp-time-alert red':'solp-time-alert yellow';
+  cont.innerHTML='<div class="'+cls+'"><strong>'+(isRed?'⚠ Alerta roja':'⚡ Alerta amarilla')+'</strong><br>'+
+    dias+' días en gestión — límite '+(isRed?'crítico':'de advertencia')+': '+(isRed?th[1]:th[0])+' días para '+item.tipoMaterial+'</div>';
 }
 
 function solpRenderTimeline(item){
   var cont=document.getElementById('solpDetTimeline');
+  // Build dynamic steps based on actual progress
   var steps=[
-    {label:'SOLP creada',fecha:item.fechaCreacion,estado:'Pendiente'},
-    {label:'En cotizacion',fecha:item.fechaCotizando,estado:'Cotizando'},
-    {label:'Aprobada',fecha:item.fechaAprobada,estado:'Aprobada'},
-    {label:'Compra realizada',fecha:item.fechaComprada,estado:'Comprada'},
-    {label:'Material entregado',fecha:item.fechaEntregada,estado:'Entregada'},
-    {label:'SOLP cerrada',fecha:item.fechaCerrada,estado:'Cerrada'}
+    {num:'1',label:'SOLP creada',fecha:item.fechaCreacion,color:'blue'},
+    {num:'2',label:'Aprobada',fecha:item.fechaAprobada,color:'blue'}
   ];
+  if(item.ordenVenta) steps.push({num:'3',label:'SO asignada ('+item.ordenVenta+')',fecha:null,color:'green'});
+  // Check alerts
+  var th=SOLP_THRESHOLDS[item.tipoMaterial];
+  if(th&&SOLP_ESTADOS_ABIERTOS.indexOf(item.estado)!==-1){
+    var dias=solpDiasTranscurridos(item.fechaCreacion);
+    if(dias>=th[1]) steps.push({num:'⚡',label:'Alerta roja — '+dias+' días',fecha:null,color:'red-dot'});
+    else if(dias>=th[0]) steps.push({num:'⚡',label:'Alerta amarilla — '+dias+' días',fecha:null,color:'amber'});
+  }
+  if(item.fechaComprada) steps.push({num:'4',label:'Compra realizada',fecha:item.fechaComprada,color:'blue'});
+  if(item.fechaEntregada) steps.push({num:'5',label:'Material entregado',fecha:item.fechaEntregada,color:'green'});
+  if(item.fechaCerrada) steps.push({num:'6',label:'SOLP cerrada',fecha:item.fechaCerrada,color:'green'});
+  // Pending future steps
+  var stateIdx={'Pendiente':1,'Cotizando':1,'Aprobada':2,'Comprada':3,'Entregada':4};
+  var curIdx=stateIdx[item.estado]||0;
+  if(curIdx<3&&!item.fechaComprada) steps.push({num:'?',label:'Compra pendiente',fecha:null,color:'gray'});
+  if(curIdx<4&&!item.fechaEntregada) steps.push({num:'?',label:'Entrega pendiente',fecha:null,color:'gray'});
+
   var html='';
-  var reached=true;
-  steps.forEach(function(s,idx){
-    var done=!!s.fecha;
-    if(!done) reached=false;
-    html+='<div class="solp-timeline-item">'+
-      '<div class="solp-timeline-dot'+(done?'':' pending')+'"></div>'+
-      (idx<steps.length-1?'<div class="solp-timeline-line"></div>':'')+
-      '<div class="solp-timeline-content">'+
-        '<div class="solp-timeline-action">'+s.label+'</div>'+
-        '<div class="solp-timeline-info">'+(done?solpFormatFecha(s.fecha):'Pendiente')+'</div>'+
+  steps.forEach(function(s){
+    html+='<div class="solp-timeline-step">'+
+      '<div class="solp-timeline-dot '+s.color+'">'+s.num+'</div>'+
+      '<div class="solp-timeline-info">'+
+        '<span style="font-weight:500">'+s.label+'</span>'+
+        (s.fecha?'<span style="color:var(--text-muted);font-size:11px;margin-left:8px">'+solpFormatFecha(s.fecha)+'</span>':'')+
       '</div></div>';
   });
   cont.innerHTML=html;
@@ -3908,8 +4110,14 @@ function solpRenderTimeline(item){
 function solpRenderAcciones(item){
   var cont=document.getElementById('solpDetAcciones');
   cont.innerHTML='';
-  if(SOLP_ROLES_ADMIN.indexOf(session.rol)===-1) return;
-  if(SOLP_ESTADOS_CERRADOS.indexOf(item.estado)!==-1) return;
+  if(SOLP_ROLES_ADMIN.indexOf(session.rol)===-1){
+    cont.innerHTML='<p style="font-size:12px;color:var(--text-muted)">Sin permisos de administración</p>';
+    return;
+  }
+  if(SOLP_ESTADOS_CERRADOS.indexOf(item.estado)!==-1){
+    cont.innerHTML='<p style="font-size:12px;color:var(--text-muted)">SOLP cerrada — sin acciones disponibles</p>';
+    return;
+  }
 
   var nextStates={
     'Pendiente':['Cotizando','Rechazada'],
@@ -3919,24 +4127,35 @@ function solpRenderAcciones(item){
   };
   var opts=nextStates[item.estado]||[];
   opts.forEach(function(est){
-    var btn=document.createElement('button');
-    btn.className='solp-btn-action'+(est==='Rechazada'?' danger':' primary');
-    btn.textContent=(est==='Rechazada'?'Rechazar':'Avanzar a: ')+est;
-    (function(e){btn.onclick=function(){solpCambiarEstado(item.id,e);};})(est);
-    cont.appendChild(btn);
+    var cls=est==='Rechazada'?'solp-sidebar-btn danger':'solp-sidebar-btn primary';
+    var label=est==='Rechazada'?'✕ Rechazar SOLP':'▶ Avanzar a: '+est;
+    cont.innerHTML+='<button class="'+cls+'" onclick="solpCambiarEstado(\''+item.id+'\',\''+est+'\')">'+label+'</button>';
   });
-  // Boton registrar costo real
+  // Register real cost
   if(item.estado==='Comprada'||item.estado==='Aprobada'){
-    var btnCosto=document.createElement('button');
-    btnCosto.className='solp-btn-action';
-    btnCosto.textContent='Registrar costo real';
-    btnCosto.onclick=function(){
-      var costo=prompt('Ingresa el costo real de la compra ($):');
-      if(costo!==null&&!isNaN(parseFloat(costo))){
-        solpPost({accion:'actualizarCosto',datos:{itemId:String(item.id),costoReal:parseFloat(costo),notasAdmin:''}}).then(function(){solpCargarLista();solpVolverALista();}).catch(function(){alert('Error al actualizar.');});
-      }
-    };
-    cont.appendChild(btnCosto);
+    cont.innerHTML+='<button class="solp-sidebar-btn" onclick="solpRegistrarCostoReal(\''+item.id+'\')">💰 Registrar costo real</button>';
+  }
+  // Assign Orden de Venta
+  if(!item.ordenVenta){
+    cont.innerHTML+='<button class="solp-sidebar-btn" onclick="solpAsignarOrdenVenta(\''+item.id+'\')">📋 Asignar Orden de Venta</button>';
+  }
+}
+
+function solpRegistrarCostoReal(id){
+  var costo=prompt('Ingresa el costo real de la compra ($):');
+  if(costo!==null&&!isNaN(parseFloat(costo))){
+    solpPost({accion:'actualizarCosto',datos:{itemId:String(id),costoReal:parseFloat(costo),notasAdmin:''}})
+    .then(function(){solpCargarLista();solpVolverALista();})
+    .catch(function(){alert('Error al actualizar.');});
+  }
+}
+
+function solpAsignarOrdenVenta(id){
+  var ov=prompt('Ingresa el N° de Orden de Venta (SO de Zoho Books):');
+  if(ov!==null&&ov.trim()){
+    solpPost({accion:'asignarOrdenVenta',datos:{itemId:String(id),ordenVenta:ov.trim()}})
+    .then(function(){solpCargarLista();solpVolverALista();})
+    .catch(function(){alert('Error al asignar Orden de Venta.');});
   }
 }
 
@@ -3992,6 +4211,9 @@ function solpAbrirNueva(){
   document.getElementById('solpFormPrioridad').value='Normal';
   document.getElementById('solpUrgentBox').classList.remove('show');
   document.getElementById('solpFormObs').value='';
+  // Reset new fields
+  var ovField=document.getElementById('solpFormOrdenVenta');if(ovField)ovField.value='';
+  var ubField=document.getElementById('solpFormUbicacion');if(ubField)ubField.value='';
   ['solpUQ1','solpUQ2','solpUQ3','solpUQ4'].forEach(function(id){document.getElementById(id).checked=false;});
   // Reset items table to 3 empty rows
   document.getElementById('solpItemsBody').innerHTML=solpItemRowHTML(0)+solpItemRowHTML(1)+solpItemRowHTML(2);
@@ -4010,6 +4232,7 @@ function solpCambiarDestino(){
   var tipo=document.getElementById('solpFormDestinoTipo').value;
   document.getElementById('solpDestinoOTField').style.display=tipo==='OT'?'':'none';
   document.getElementById('solpDestinoGOField').style.display=tipo==='GO'?'':'none';
+  solpCalcTotals();
 }
 
 function solpToggleUrgente(){
@@ -4066,11 +4289,17 @@ function solpCalcTotals(){
   });
   document.getElementById('solpItemsTotal').textContent='$'+grandTotal.toFixed(2);
   document.getElementById('solpFormCosto').value='$'+grandTotal.toFixed(2);
-  // Update authorization level
+  // Update authorization level — GO-OFICINA always goes to Coord. Administrativa
   var lvl='';
-  if(grandTotal<=500) lvl='Coord. Operaciones';
-  else if(grandTotal<=2000) lvl='Coord. Administrativa';
-  else lvl='Gerencia General';
+  var destinoTipo=document.getElementById('solpFormDestinoTipo').value;
+  var codigoGO=document.getElementById('solpFormGO').value;
+  if(destinoTipo==='GO'&&codigoGO==='GO-OFICINA'){
+    lvl='Coord. Administrativa';
+  } else {
+    if(grandTotal<=500) lvl='Coord. Operaciones';
+    else if(grandTotal<=2000) lvl='Coord. Administrativa';
+    else lvl='Gerencia General';
+  }
   document.getElementById('solpFormNivelAuth').value=grandTotal>0?lvl:'';
 }
 
@@ -4138,7 +4367,8 @@ function solpEnviar(){
       CostoEstimado:totalEstimado,
       ItemsJSON:itemsStr,
       Observaciones:obs,
-      JustificacionUrgencia:justUrgencia
+      JustificacionUrgencia:justUrgencia,
+      Ubicacion:(document.getElementById('solpFormUbicacion')||{}).value||''
     }
   };
 
