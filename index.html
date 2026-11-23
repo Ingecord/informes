@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -2984,7 +2985,9 @@ function renderModuloOTs(){
           </div>
           <div class="solp-form-group" id="solpDestinoOTField" style="display:none">
             <label class="solp-form-label">N&uacute;mero de OT <span class="req">*</span></label>
-            <input type="text" class="solp-form-input" id="solpFormOT" placeholder="Ej: ING 2601-34">
+            <select class="solp-form-select" id="solpFormOT" onchange="solpSeleccionarOT()">
+              <option value="">Cargando OTs...</option>
+            </select>
           </div>
           <div class="solp-form-group" id="solpDestinoGOField" style="display:none">
             <label class="solp-form-label">C&oacute;digo de gasto <span class="req">*</span></label>
@@ -3735,6 +3738,10 @@ var SOLP_ESTADOS={
   Rechazada:'solp-badge-rechazada'
 };
 
+/* Cache de OTs abiertas (cargadas desde SharePoint) */
+var solpOTsCache=[];
+var solpOTsCargadas=false;
+
 /* Alert thresholds: [yellow days, red days] by material type */
 var SOLP_THRESHOLDS={
   'Ferreteria local':[3,5],
@@ -4327,6 +4334,41 @@ function solpFormatFecha(str){
   return dia+' '+meses[d.getMonth()]+' '+d.getFullYear();
 }
 
+/* ---- Cargar OTs abiertas desde SharePoint ---- */
+function solpCargarOTs(){
+  var sel=document.getElementById('solpFormOT');
+  sel.innerHTML='<option value="">Cargando OTs...</option>';
+  solpPost({accion:'listarOTs'}).then(function(data){
+    var ots=(data.value||data||[]).map(function(it){
+      var f=it.fields||it;
+      return {numero:f.Title||'',cliente:f.Cliente||'',sucursal:f.Sucursal||'',estado:f.Estado||''};
+    });
+    // Ordenar por numero descendente
+    ots.sort(function(a,b){return a.numero>b.numero?-1:1;});
+    solpOTsCache=ots;
+    solpOTsCargadas=true;
+    sel.innerHTML='<option value="">Seleccionar OT...</option>';
+    ots.forEach(function(ot){
+      var label=ot.numero+(ot.cliente?' — '+ot.cliente:'')+(ot.sucursal?' ('+ot.sucursal+')':'');
+      sel.innerHTML+='<option value="'+ot.numero+'" data-cliente="'+ot.cliente.replace(/"/g,'&quot;')+'" data-sucursal="'+ot.sucursal.replace(/"/g,'&quot;')+'">'+label+'</option>';
+    });
+  }).catch(function(){
+    sel.innerHTML='<option value="">Error al cargar OTs</option>';
+  });
+}
+
+function solpSeleccionarOT(){
+  var sel=document.getElementById('solpFormOT');
+  var opt=sel.options[sel.selectedIndex];
+  if(opt&&opt.value){
+    document.getElementById('solpFormCliente').value=opt.getAttribute('data-cliente')||'';
+    var ubField=document.getElementById('solpFormUbicacion');
+    if(ubField&&!ubField.value) ubField.value=opt.getAttribute('data-sucursal')||'';
+  } else {
+    document.getElementById('solpFormCliente').value='';
+  }
+}
+
 /* ---- Nueva SOLP Modal ---- */
 function solpAbrirNueva(){
   var modal=document.getElementById('solpModal');
@@ -4347,6 +4389,7 @@ function solpAbrirNueva(){
   document.getElementById('solpDestinoGOField').style.display='none';
   document.getElementById('solpFormOT').value='';
   document.getElementById('solpFormCliente').value='';
+  solpOTsCargadas=false; // Forzar recarga de OTs al abrir nueva SOLP
   document.getElementById('solpFormGO').value='';
   document.getElementById('solpFormTipoMat').value='';
   document.getElementById('solpFormCosto').value='$0.00';
@@ -4375,6 +4418,8 @@ function solpCambiarDestino(){
   var tipo=document.getElementById('solpFormDestinoTipo').value;
   document.getElementById('solpDestinoOTField').style.display=tipo==='OT'?'':'none';
   document.getElementById('solpDestinoGOField').style.display=tipo==='GO'?'':'none';
+  // Cargar OTs abiertas al seleccionar destino OT
+  if(tipo==='OT'&&!solpOTsCargadas) solpCargarOTs();
   solpCalcTotals();
 }
 
@@ -4451,7 +4496,7 @@ function solpEnviar(){
   // Validate
   var destinoTipo=document.getElementById('solpFormDestinoTipo').value;
   if(!destinoTipo){alert('Selecciona el tipo de destino.');return;}
-  if(destinoTipo==='OT'&&!document.getElementById('solpFormOT').value.trim()){alert('Ingresa el numero de OT.');return;}
+  if(destinoTipo==='OT'&&!document.getElementById('solpFormOT').value){alert('Selecciona una Orden de Trabajo.');return;}
   if(destinoTipo==='GO'&&!document.getElementById('solpFormGO').value){alert('Selecciona el codigo de gasto.');return;}
   if(!document.getElementById('solpFormTipoMat').value){alert('Selecciona la categoria de material.');return;}
   // Validate justification
