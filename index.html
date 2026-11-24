@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -4943,7 +4944,10 @@ function solpEnviar(){
     if(!anyChecked){alert('Selecciona al menos una pregunta de control para solicitudes urgentes.');return;}
   }
   // Build items as pipe-delimited: qty|unit|desc|unitprice;;qty|unit|desc|unitprice
-  var itemsStr=items.map(function(it){return it.cantidad+'|'+it.unidad+'|'+it.descripcion+'|'+it.precioUnit;}).join(';;');
+  var itemsStr=items.map(function(it){
+    var desc=it.descripcion.replace(/"/g,"pulg").replace(/'/g," ");
+    return it.cantidad+'|'+it.unidad+'|'+desc+'|'+it.precioUnit;
+  }).join(';;');
 
   // Calculate total from items
   var totalEstimado=items.reduce(function(sum,it){return sum+(it.cantidad*it.precioUnit);},0);
@@ -4974,7 +4978,7 @@ function solpEnviar(){
       Solicitante:session.nombre,
       CostoEstimado:totalEstimado,
       ItemsJSON:itemsStr,
-      Observaciones:obs,
+      Observaciones:obs.replace(/"/g,"'"),
       JustificacionUrgencia:justUrgencia,
       FechaRequerida:(prioridad==='Urgente'||prioridad==='Extraordinaria')?document.getElementById('solpFormFechaRequerida').value:'',
       Ubicacion:(document.getElementById('solpFormUbicacion')||{}).value||''
@@ -4988,10 +4992,9 @@ function solpEnviar(){
     alert('Solicitud de compra enviada correctamente.');
     solpCerrarModal();
     solpCargarLista();
-  }).catch(function(){
-    alert('Solicitud registrada.');
-    solpCerrarModal();
-    solpCargarLista();
+  }).catch(function(err){
+    console.error('Error SOLP:',err);
+    alert('Error al enviar la solicitud. Verifica tu conexión e intenta de nuevo.');
   });
 }
 
