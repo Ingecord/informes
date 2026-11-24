@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -3233,6 +3232,11 @@ function renderModuloOTs(){
         <!-- Urgent questions (shown when priority is Urgente/Extraordinaria) -->
         <div class="solp-urgent-box" id="solpUrgentBox">
           <div style="font-size:12px;font-weight:700;color:#854F0B;margin-bottom:8px">&#9888; Preguntas de control &mdash; Prioridad Urgente/Extraordinaria</div>
+          <div class="solp-form-group" style="margin-bottom:10px">
+            <label class="solp-form-label" style="color:#854F0B">&#128197; ¿Para cu&aacute;ndo se necesita? <span class="req">*</span></label>
+            <input type="date" class="solp-form-input" id="solpFormFechaRequerida" style="border-color:#e5a30b">
+            <span class="solp-form-hint" style="color:#854F0B">Fecha l&iacute;mite en que se necesita el material en sitio.</span>
+          </div>
           <div class="solp-urgent-check"><input type="checkbox" id="solpUQ1"><label for="solpUQ1">&#191;Se verific&oacute; que no hay material en almac&eacute;n o sobrante de otra OT?</label></div>
           <div class="solp-urgent-check"><input type="checkbox" id="solpUQ2"><label for="solpUQ2">&#191;Se intent&oacute; planificar esta compra con anticipaci&oacute;n?</label></div>
           <div class="solp-urgent-check"><input type="checkbox" id="solpUQ3"><label for="solpUQ3">&#191;Se identific&oacute; el impacto de no recibir el material a tiempo?</label></div>
@@ -3899,6 +3903,7 @@ function solpCargarLista(){
         destinoTipo:f.DestinoTipo||f.Destino_Tipo||'OT',
         codigoGO:f.CodigoGO||f.Codigo_GO||'',
         urgJustificacion:f.JustificacionUrgencia||'',
+        fechaRequerida:f.FechaRequerida||'',
         fechaCreacion:f.Created||f.FechaCreacion||'',
         fechaCotizando:f.FechaCotizando||'',
         fechaAprobada:f.FechaAprobada||'',
@@ -3979,6 +3984,11 @@ function solpDiasTranscurridos(fecha){
   var diff=new Date()-new Date(fecha);
   return Math.floor(diff/(1000*60*60*24));
 }
+function solpDiasParaFecha(fecha){
+  if(!fecha) return 999;
+  var diff=new Date(fecha)-new Date();
+  return Math.ceil(diff/(1000*60*60*24));
+}
 
 /* ---- Alertas ---- */
 function solpRenderAlertas(items){
@@ -4049,6 +4059,11 @@ function solpRenderLista(items,filtro){
     }
     // Priority badge
     var prioBadge='<span class="solp-badge solp-badge-prio-'+(i.prioridad||'Normal').toLowerCase()+'">'+i.prioridad+'</span>';
+    if(i.fechaRequerida&&(i.prioridad==='Urgente'||i.prioridad==='Extraordinaria')){
+      var diasPara=solpDiasParaFecha(i.fechaRequerida);
+      var frColor=diasPara<0?'var(--solp-red)':diasPara<=2?'#f59e0b':'var(--text-muted)';
+      prioBadge+='<div style="font-size:10px;color:'+frColor+';margin-top:2px">📅 '+solpFormatFecha(i.fechaRequerida)+'</div>';
+    }
     // Cost display
     var estStr=i.costoEstimado>0?'$'+i.costoEstimado.toLocaleString('en',{minimumFractionDigits:0,maximumFractionDigits:0}):'-';
     var realStr=(i.costoReal!==null&&i.costoReal!=='')?'$'+parseFloat(i.costoReal).toLocaleString('en',{minimumFractionDigits:0,maximumFractionDigits:0}):'-';
@@ -4437,7 +4452,8 @@ function solpVerDetalle(id){
     {k:'Cliente',v:item.cliente||'-'},
     {k:'Categoría',v:item.tipoMaterial||'-'},
     {k:'Proveedor asignado',v:item.proveedor||'Sin asignar'},
-    {k:'Ubicación / Sitio',v:item.ubicacion||'-'}
+    {k:'Ubicación / Sitio',v:item.ubicacion||'-'},
+    {k:'Fecha requerida',v:item.fechaRequerida?solpFormatFecha(item.fechaRequerida)+(solpDiasParaFecha(item.fechaRequerida)<0?' <span style="color:var(--solp-red);font-weight:600">⚠ VENCIDA</span>':solpDiasParaFecha(item.fechaRequerida)<=2?' <span style="color:#f59e0b;font-weight:600">⚡ '+solpDiasParaFecha(item.fechaRequerida)+' días</span>':''):'<span style="color:var(--text-muted)">N/A</span>'}
   ];
   var metaHtml='';
   metaItems.forEach(function(m){
@@ -4704,7 +4720,7 @@ function solpCambiarEstado(id,nuevoEstado){
   var camposFecha={Cotizando:'FechaCotizando',Aprobada:'FechaAprobada',Comprada:'FechaComprada',Entregada:'FechaEntregada',Cerrada:'FechaCerrada',Rechazada:'FechaCerrada'};
   var item=solpCache.find(function(i){return String(i.id)===String(id);});
   var estadoAnterior=item?item.estado:'';
-  solpPost({accion:'cambiarEstado',datos:{itemId:String(id),nuevoEstado:nuevoEstado,estadoAnterior:estadoAnterior,campoFecha:camposFecha[nuevoEstado]||'FechaCerrada',titulo:item?item.numero:'',ot:item?item.ot:'',codigoGO:item?item.codigoGO:'',destinoTipo:item?item.destinoTipo:'',cliente:item?item.cliente:'',tipoMaterial:item?item.tipoMaterial:'',solicitante:item?item.solicitante:'',costoEstimado:item?item.costoEstimado:0,ubicacion:item?item.ubicacion:''}})
+  solpPost({accion:'cambiarEstado',datos:{itemId:String(id),nuevoEstado:nuevoEstado,estadoAnterior:estadoAnterior,campoFecha:camposFecha[nuevoEstado]||'FechaCerrada',titulo:item?item.numero:'',ot:item?item.ot:'',codigoGO:item?item.codigoGO:'',destinoTipo:item?item.destinoTipo:'',cliente:item?item.cliente:'',tipoMaterial:item?item.tipoMaterial:'',solicitante:item?item.solicitante:'',costoEstimado:item?item.costoEstimado:0,ubicacion:item?item.ubicacion:'',prioridad:item?item.prioridad:'',fechaRequerida:item?item.fechaRequerida:''}})
   .then(function(){solpCargarLista();solpVolverALista();})
   .catch(function(){alert('Error al cambiar estado.');});
 }
@@ -4818,7 +4834,17 @@ function solpCambiarDestino(){
 function solpToggleUrgente(){
   var val=document.getElementById('solpFormPrioridad').value;
   var box=document.getElementById('solpUrgentBox');
-  if(val==='Urgente'||val==='Extraordinaria'){box.classList.add('show');}else{box.classList.remove('show');}
+  var fechaReq=document.getElementById('solpFormFechaRequerida');
+  if(val==='Urgente'||val==='Extraordinaria'){
+    box.classList.add('show');
+    // Set min date to tomorrow
+    var manana=new Date();manana.setDate(manana.getDate()+1);
+    fechaReq.min=manana.toISOString().split('T')[0];
+    fechaReq.value='';
+  }else{
+    box.classList.remove('show');
+    fechaReq.value='';
+  }
 }
 
 function solpItemRowHTML(idx){
@@ -4910,6 +4936,8 @@ function solpEnviar(){
   if(!valid||items.length===0){alert('Completa la descripcion de todos los items (filas con datos deben tener descripcion).');return;}
   var prioridad=document.getElementById('solpFormPrioridad').value;
   if(prioridad==='Urgente'||prioridad==='Extraordinaria'){
+    var fechaReq=document.getElementById('solpFormFechaRequerida').value;
+    if(!fechaReq){alert('Indica la fecha para cuando se necesita el material.');return;}
     var checks=[document.getElementById('solpUQ1'),document.getElementById('solpUQ2'),document.getElementById('solpUQ3'),document.getElementById('solpUQ4')];
     var anyChecked=checks.some(function(c){return c.checked;});
     if(!anyChecked){alert('Selecciona al menos una pregunta de control para solicitudes urgentes.');return;}
@@ -4948,6 +4976,7 @@ function solpEnviar(){
       ItemsJSON:itemsStr,
       Observaciones:obs,
       JustificacionUrgencia:justUrgencia,
+      FechaRequerida:(prioridad==='Urgente'||prioridad==='Extraordinaria')?document.getElementById('solpFormFechaRequerida').value:'',
       Ubicacion:(document.getElementById('solpFormUbicacion')||{}).value||''
     }
   };
