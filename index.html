@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -4312,7 +4311,9 @@ function solpAsignarOrdenVenta(id){
 function solpCambiarEstado(id,nuevoEstado){
   if(!confirm('Cambiar estado a "'+nuevoEstado+'"?')) return;
   var camposFecha={Cotizando:'FechaCotizando',Aprobada:'FechaAprobada',Comprada:'FechaComprada',Entregada:'FechaEntregada',Cerrada:'FechaCerrada',Rechazada:'FechaCerrada'};
-  solpPost({accion:'cambiarEstado',datos:{itemId:String(id),nuevoEstado:nuevoEstado,campoFecha:camposFecha[nuevoEstado]||'FechaCerrada'}})
+  var item=solpCache.find(function(i){return String(i.id)===String(id);});
+  var estadoAnterior=item?item.estado:'';
+  solpPost({accion:'cambiarEstado',datos:{itemId:String(id),nuevoEstado:nuevoEstado,estadoAnterior:estadoAnterior,campoFecha:camposFecha[nuevoEstado]||'FechaCerrada',titulo:item?item.numero:'',ot:item?item.ot:'',codigoGO:item?item.codigoGO:'',destinoTipo:item?item.destinoTipo:'',cliente:item?item.cliente:'',tipoMaterial:item?item.tipoMaterial:'',solicitante:item?item.solicitante:'',costoEstimado:item?item.costoEstimado:0,ubicacion:item?item.ubicacion:''}})
   .then(function(){solpCargarLista();solpVolverALista();})
   .catch(function(){alert('Error al cambiar estado.');});
 }
