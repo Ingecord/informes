@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -267,6 +268,45 @@ textarea{min-height:90px;resize:vertical}
 .solp-time-badge.danger{background:#fecaca;color:#991b1b}
 .solp-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .solp-empty{text-align:center;padding:40px 20px;color:var(--text-muted);font-size:13px}
+/* === Dashboard Gerencial === */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:16px}
+.dash-card{background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius);padding:16px;overflow:hidden}
+.dash-card.full{grid-column:1/-1}
+.dash-card-title{font-size:13px;font-weight:700;color:var(--solp-navy);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.dash-card-title .dash-icon{font-size:15px}
+.dash-kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:0 16px 16px}
+.dash-kpi{background:var(--white);border:1px solid var(--border-light);border-radius:var(--radius);padding:16px 12px;text-align:center}
+.dash-kpi-val{font-size:28px;font-weight:800}
+.dash-kpi-lbl{font-size:10px;color:var(--text-muted);margin-top:4px;text-transform:uppercase;letter-spacing:0.03em;font-weight:600}
+.dash-kpi-sub{font-size:11px;color:var(--text-muted);margin-top:4px}
+.dash-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:12px}
+.dash-bar-label{width:140px;text-align:right;color:var(--text);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0}
+.dash-bar-track{flex:1;height:20px;background:var(--surface);border-radius:4px;overflow:hidden;position:relative}
+.dash-bar-fill{height:100%;border-radius:4px;transition:width 0.4s ease}
+.dash-bar-val{width:60px;font-weight:600;color:var(--text);font-variant-numeric:tabular-nums;text-align:right;flex-shrink:0}
+.dash-table{width:100%;border-collapse:collapse;font-size:12px}
+.dash-table th{text-align:left;padding:8px 10px;font-weight:600;color:var(--text-muted);font-size:10px;text-transform:uppercase;letter-spacing:0.04em;border-bottom:1px solid var(--border);background:var(--surface)}
+.dash-table td{padding:8px 10px;border-bottom:1px solid var(--border-light);vertical-align:middle}
+.dash-table tr:last-child td{border-bottom:none}
+.dash-table .num{text-align:right;font-variant-numeric:tabular-nums}
+.dash-pct-bar{display:inline-block;height:6px;border-radius:3px;vertical-align:middle;margin-right:6px}
+.dash-legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:10px;font-size:11px;color:var(--text-muted)}
+.dash-legend-dot{width:10px;height:10px;border-radius:2px;display:inline-block;vertical-align:middle;margin-right:4px}
+.dash-mini-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;white-space:nowrap}
+.dash-red-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border-light);font-size:12px}
+.dash-red-item:last-child{border-bottom:none}
+.dash-red-days{font-weight:700;font-size:14px;min-width:40px;text-align:center}
+.dash-red-info{flex:1;line-height:1.4}
+.dash-red-title{font-weight:600;color:var(--text)}
+.dash-red-meta{color:var(--text-muted);font-size:11px}
+.dash-donut-wrap{display:flex;align-items:center;justify-content:center;gap:24px;padding:8px 0}
+.dash-donut-labels{font-size:12px;line-height:2}
+.dash-period-select{padding:4px 8px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:11px;font-family:inherit;color:var(--text);background:var(--white);cursor:pointer}
+@media(max-width:700px){
+  .dash-grid{grid-template-columns:1fr}
+  .dash-kpi-row{grid-template-columns:repeat(2,1fr)}
+  .dash-bar-label{width:100px}
+}
 /* === SOLP Detail — 2-column layout === */
 .solp-detail-grid{display:grid;grid-template-columns:1fr 320px;gap:20px;padding:16px}
 .solp-detail-main{min-width:0}
@@ -2798,6 +2838,7 @@ function renderModuloOTs(){
   <div class="solp-tabs">
     <button class="solp-tab active" onclick="solpSwitchTab('lista',this)">Solicitudes</button>
     <button class="solp-tab" onclick="solpSwitchTab('resumen',this)">Resumen</button>
+    <button class="solp-tab" onclick="solpSwitchTab('dashboard',this)">📊 Dashboard</button>
   </div>
 
   <!-- === VISTA LISTA === -->
@@ -2885,6 +2926,69 @@ function renderModuloOTs(){
     <div class="solp-detail-section" style="margin:0">
       <div class="solp-detail-section-title">Por tipo de material</div>
       <div id="solpResPorTipo" style="padding:6px 14px 14px"></div>
+    </div>
+  </div>
+
+  <!-- === VISTA DASHBOARD GERENCIAL === -->
+  <div id="solpVistaDashboard" style="display:none">
+    <!-- KPIs top row -->
+    <div class="dash-kpi-row" style="padding-top:16px">
+      <div class="dash-kpi"><div class="dash-kpi-val navy" id="dkTotal">-</div><div class="dash-kpi-lbl">Total SOLPs</div><div class="dash-kpi-sub" id="dkTotalSub"></div></div>
+      <div class="dash-kpi"><div class="dash-kpi-val amber" id="dkAbiertas">-</div><div class="dash-kpi-lbl">Abiertas</div><div class="dash-kpi-sub" id="dkAbiertasSub"></div></div>
+      <div class="dash-kpi"><div class="dash-kpi-val green" id="dkCumplimiento">-</div><div class="dash-kpi-lbl">Cumplimiento</div><div class="dash-kpi-sub">dentro de umbral</div></div>
+      <div class="dash-kpi"><div class="dash-kpi-val blue" id="dkGasto">-</div><div class="dash-kpi-lbl">Gasto total</div><div class="dash-kpi-sub" id="dkGastoSub"></div></div>
+    </div>
+
+    <div class="dash-grid">
+      <!-- Tiempo promedio por tipo de material -->
+      <div class="dash-card">
+        <div class="dash-card-title"><span class="dash-icon">⏱</span> Tiempo promedio por categoría (días)</div>
+        <div id="dashTiempoPorTipo"></div>
+      </div>
+
+      <!-- Urgentes vs Normales por mes -->
+      <div class="dash-card">
+        <div class="dash-card-title"><span class="dash-icon">🔴</span> Urgentes vs Normales</div>
+        <div id="dashUrgentes"></div>
+      </div>
+
+      <!-- Rendimiento del equipo -->
+      <div class="dash-card full">
+        <div class="dash-card-title"><span class="dash-icon">👥</span> Rendimiento del equipo</div>
+        <div style="overflow-x:auto">
+          <table class="dash-table" id="dashEquipoTable">
+            <thead><tr>
+              <th>Solicitante</th>
+              <th class="num">Total</th>
+              <th class="num">Abiertas</th>
+              <th class="num">Cerradas</th>
+              <th class="num">Prom. días</th>
+              <th class="num">Urgentes</th>
+              <th class="num">Monto est.</th>
+              <th>Cumplimiento</th>
+            </tr></thead>
+            <tbody id="dashEquipoBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Gasto por destino (OT vs GO) -->
+      <div class="dash-card">
+        <div class="dash-card-title"><span class="dash-icon">💰</span> Gasto por destino</div>
+        <div id="dashGastoDestino"></div>
+      </div>
+
+      <!-- SOLPs en zona roja -->
+      <div class="dash-card">
+        <div class="dash-card-title"><span class="dash-icon">🚨</span> SOLPs en zona roja</div>
+        <div id="dashZonaRoja"></div>
+      </div>
+
+      <!-- Embudo de proceso / cuello de botella -->
+      <div class="dash-card full">
+        <div class="dash-card-title"><span class="dash-icon">🔄</span> Análisis de cuello de botella — Tiempo promedio por etapa (días)</div>
+        <div id="dashCuelloBotella"></div>
+      </div>
     </div>
   </div>
 
@@ -3981,8 +4085,10 @@ function solpSwitchTab(tab,el){
   el.classList.add('active');
   document.getElementById('solpVistaLista').style.display=tab==='lista'?'block':'none';
   document.getElementById('solpVistaResumen').style.display=tab==='resumen'?'block':'none';
+  document.getElementById('solpVistaDashboard').style.display=tab==='dashboard'?'block':'none';
   document.getElementById('solpVistaDetalle').style.display='none';
   if(tab==='resumen') solpRenderResumen();
+  if(tab==='dashboard') solpRenderDashboard();
 }
 
 /* ---- Resumen ---- */
@@ -4021,6 +4127,291 @@ function solpRenderResumen(){
       '<span>'+k+'</span><span style="color:var(--text-muted)">'+t.total+' ('+t.abiertas+' abiertas) — $'+t.monto.toFixed(0)+'</span></div>';
   });
   document.getElementById('solpResPorTipo').innerHTML=tipoHtml||'<div style="font-size:12px;color:var(--text-muted)">Sin datos este mes</div>';
+}
+
+/* ---- Dashboard Gerencial ---- */
+function solpRenderDashboard(){
+  var items=solpCache;
+  if(!items.length){
+    document.getElementById('dkTotal').textContent='0';
+    return;
+  }
+
+  var abiertas=items.filter(function(i){return SOLP_ESTADOS_ABIERTOS.indexOf(i.estado)!==-1;});
+  var cerradas=items.filter(function(i){return SOLP_ESTADOS_CERRADOS.indexOf(i.estado)!==-1;});
+  var urgentes=items.filter(function(i){return i.prioridad==='Urgente';});
+
+  /* ---- KPIs ---- */
+  document.getElementById('dkTotal').textContent=items.length;
+  document.getElementById('dkTotalSub').textContent=cerradas.length+' cerradas';
+  document.getElementById('dkAbiertas').textContent=abiertas.length;
+  document.getElementById('dkAbiertasSub').textContent=urgentes.filter(function(u){return SOLP_ESTADOS_ABIERTOS.indexOf(u.estado)!==-1;}).length+' urgentes abiertas';
+
+  // Cumplimiento: % of closed SOLPs that were within threshold
+  var cerradasConTipo=cerradas.filter(function(i){return i.tipoMaterial&&i.fechaCreacion&&(i.fechaCerrada||i.fechaEntregada);});
+  var cumplidas=0;
+  cerradasConTipo.forEach(function(i){
+    var th=SOLP_THRESHOLDS[i.tipoMaterial];
+    if(!th) return;
+    var fin=i.fechaEntregada||i.fechaCerrada;
+    var dias=Math.floor((new Date(fin)-new Date(i.fechaCreacion))/86400000);
+    if(dias<=th[1]) cumplidas++;
+  });
+  var pctCumpl=cerradasConTipo.length>0?Math.round(cumplidas/cerradasConTipo.length*100):0;
+  document.getElementById('dkCumplimiento').textContent=pctCumpl+'%';
+  document.getElementById('dkCumplimiento').style.color=pctCumpl>=80?'var(--solp-green)':pctCumpl>=60?'var(--solp-amber)':'var(--solp-red)';
+
+  var gastoEst=items.reduce(function(s,i){return s+i.costoEstimado;},0);
+  var gastoReal=cerradas.reduce(function(s,i){return s+(parseFloat(i.costoReal)||0);},0);
+  document.getElementById('dkGasto').textContent='$'+dashFmtMoney(gastoEst);
+  document.getElementById('dkGastoSub').textContent='Real: $'+dashFmtMoney(gastoReal);
+
+  /* ---- Tiempo promedio por tipo de material ---- */
+  dashRenderTiempoPorTipo(cerradas);
+
+  /* ---- Urgentes vs Normales ---- */
+  dashRenderUrgentes(items);
+
+  /* ---- Rendimiento del equipo ---- */
+  dashRenderEquipo(items);
+
+  /* ---- Gasto por destino ---- */
+  dashRenderGastoDestino(items);
+
+  /* ---- SOLPs en zona roja ---- */
+  dashRenderZonaRoja(abiertas);
+
+  /* ---- Cuello de botella ---- */
+  dashRenderCuelloBotella(cerradas);
+}
+
+function dashFmtMoney(n){
+  if(n>=1000000) return (n/1000000).toFixed(1)+'M';
+  if(n>=1000) return (n/1000).toFixed(1)+'K';
+  return n.toFixed(0);
+}
+
+function dashMakeBar(label,value,maxVal,color,suffix){
+  var pct=maxVal>0?Math.min(value/maxVal*100,100):0;
+  return '<div class="dash-bar-row">'+
+    '<div class="dash-bar-label">'+label+'</div>'+
+    '<div class="dash-bar-track"><div class="dash-bar-fill" style="width:'+pct+'%;background:'+color+'"></div></div>'+
+    '<div class="dash-bar-val">'+value+(suffix||'')+'</div></div>';
+}
+
+function dashRenderTiempoPorTipo(cerradas){
+  var tipos={};
+  cerradas.forEach(function(i){
+    if(!i.tipoMaterial||!i.fechaCreacion) return;
+    var fin=i.fechaEntregada||i.fechaCerrada;
+    if(!fin) return;
+    var dias=Math.floor((new Date(fin)-new Date(i.fechaCreacion))/86400000);
+    if(!tipos[i.tipoMaterial]) tipos[i.tipoMaterial]={sum:0,cnt:0};
+    tipos[i.tipoMaterial].sum+=dias;
+    tipos[i.tipoMaterial].cnt++;
+  });
+  var arr=Object.keys(tipos).map(function(k){return {nombre:k,prom:Math.round(tipos[k].sum/tipos[k].cnt),cnt:tipos[k].cnt};});
+  arr.sort(function(a,b){return b.prom-a.prom;});
+  var maxVal=arr.length>0?arr[0].prom:1;
+  var html='';
+  arr.forEach(function(t){
+    var th=SOLP_THRESHOLDS[t.nombre];
+    var color='var(--solp-blue)';
+    if(th){
+      if(t.prom>=th[1]) color='var(--solp-red)';
+      else if(t.prom>=th[0]) color='#f59e0b';
+    }
+    html+=dashMakeBar(t.nombre,t.prom,maxVal,color,' d');
+  });
+  document.getElementById('dashTiempoPorTipo').innerHTML=html||'<div style="font-size:12px;color:var(--text-muted)">Sin datos</div>';
+}
+
+function dashRenderUrgentes(items){
+  // Count by month: last 6 months
+  var meses={};
+  var hoy=new Date();
+  for(var m=5;m>=0;m--){
+    var d=new Date(hoy.getFullYear(),hoy.getMonth()-m,1);
+    var key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+    meses[key]={urgente:0,normal:0,label:['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'][d.getMonth()]+' '+String(d.getFullYear()).slice(2)};
+  }
+  items.forEach(function(i){
+    if(!i.fechaCreacion) return;
+    var f=new Date(i.fechaCreacion);
+    var key=f.getFullYear()+'-'+String(f.getMonth()+1).padStart(2,'0');
+    if(!meses[key]) return;
+    if(i.prioridad==='Urgente') meses[key].urgente++;
+    else meses[key].normal++;
+  });
+  var keys=Object.keys(meses);
+  var maxVal=1;
+  keys.forEach(function(k){var t=meses[k].urgente+meses[k].normal;if(t>maxVal) maxVal=t;});
+  var html='<div class="dash-legend"><span><span class="dash-legend-dot" style="background:var(--solp-blue)"></span> Normal</span><span><span class="dash-legend-dot" style="background:var(--solp-red)"></span> Urgente</span></div>';
+  keys.forEach(function(k){
+    var m=meses[k];
+    var total=m.urgente+m.normal;
+    var pctN=maxVal>0?m.normal/maxVal*100:0;
+    var pctU=maxVal>0?m.urgente/maxVal*100:0;
+    html+='<div class="dash-bar-row"><div class="dash-bar-label">'+m.label+'</div>'+
+      '<div class="dash-bar-track">'+
+      '<div style="display:flex;height:100%">'+
+      '<div class="dash-bar-fill" style="width:'+pctN+'%;background:var(--solp-blue);border-radius:4px 0 0 4px"></div>'+
+      '<div class="dash-bar-fill" style="width:'+pctU+'%;background:var(--solp-red);border-radius:0 4px 4px 0"></div>'+
+      '</div></div>'+
+      '<div class="dash-bar-val">'+total+'</div></div>';
+  });
+  var totalUrg=items.filter(function(i){return i.prioridad==='Urgente';}).length;
+  var pctUrg=items.length>0?Math.round(totalUrg/items.length*100):0;
+  html+='<div style="margin-top:8px;font-size:11px;color:var(--text-muted)">'+pctUrg+'% del total son urgentes ('+totalUrg+' de '+items.length+')</div>';
+  document.getElementById('dashUrgentes').innerHTML=html;
+}
+
+function dashRenderEquipo(items){
+  var equipo={};
+  items.forEach(function(i){
+    var sol=i.solicitante||'Sin asignar';
+    if(!equipo[sol]) equipo[sol]={total:0,abiertas:0,cerradas:0,urgentes:0,monto:0,diasSum:0,diasCnt:0,cumplidas:0,conUmbral:0};
+    var e=equipo[sol];
+    e.total++;
+    e.monto+=i.costoEstimado;
+    if(i.prioridad==='Urgente') e.urgentes++;
+    if(SOLP_ESTADOS_ABIERTOS.indexOf(i.estado)!==-1) e.abiertas++;
+    if(SOLP_ESTADOS_CERRADOS.indexOf(i.estado)!==-1){
+      e.cerradas++;
+      var fin=i.fechaEntregada||i.fechaCerrada;
+      if(fin&&i.fechaCreacion){
+        var dias=Math.floor((new Date(fin)-new Date(i.fechaCreacion))/86400000);
+        e.diasSum+=dias;e.diasCnt++;
+        var th=SOLP_THRESHOLDS[i.tipoMaterial];
+        if(th){e.conUmbral++;if(dias<=th[1]) e.cumplidas++;}
+      }
+    }
+  });
+  var rows=Object.keys(equipo).sort(function(a,b){return equipo[b].total-equipo[a].total;});
+  var html='';
+  rows.forEach(function(sol){
+    var e=equipo[sol];
+    var promDias=e.diasCnt>0?Math.round(e.diasSum/e.diasCnt):'-';
+    var pctCumpl=e.conUmbral>0?Math.round(e.cumplidas/e.conUmbral*100):'-';
+    var cumplColor=pctCumpl==='-'?'var(--text-muted)':pctCumpl>=80?'var(--solp-green)':pctCumpl>=60?'var(--solp-amber)':'var(--solp-red)';
+    var cumplBar='';
+    if(pctCumpl!=='-'){
+      cumplBar='<div class="dash-pct-bar" style="width:'+Math.min(pctCumpl,100)*0.6+'px;background:'+cumplColor+'"></div>'+pctCumpl+'%';
+    } else {cumplBar='-';}
+    html+='<tr><td style="font-weight:600">'+sol+'</td>'+
+      '<td class="num">'+e.total+'</td>'+
+      '<td class="num">'+e.abiertas+'</td>'+
+      '<td class="num">'+e.cerradas+'</td>'+
+      '<td class="num">'+promDias+'</td>'+
+      '<td class="num">'+(e.urgentes>0?'<span style="color:var(--solp-red);font-weight:600">'+e.urgentes+'</span>':'0')+'</td>'+
+      '<td class="num">$'+dashFmtMoney(e.monto)+'</td>'+
+      '<td style="color:'+cumplColor+'">'+cumplBar+'</td></tr>';
+  });
+  document.getElementById('dashEquipoBody').innerHTML=html||'<tr><td colspan="8" style="text-align:center;color:var(--text-muted)">Sin datos</td></tr>';
+}
+
+function dashRenderGastoDestino(items){
+  var porOT={},porGO={};
+  var totalOT=0,totalGO=0;
+  items.forEach(function(i){
+    if(i.destinoTipo==='GO'){
+      var codigo=i.codigoGO||'Sin código';
+      if(!porGO[codigo]) porGO[codigo]=0;
+      porGO[codigo]+=i.costoEstimado;
+      totalGO+=i.costoEstimado;
+    } else {
+      var ot=i.ot||'Sin OT';
+      if(!porOT[ot]) porOT[ot]=0;
+      porOT[ot]+=i.costoEstimado;
+      totalOT+=i.costoEstimado;
+    }
+  });
+  var total=totalOT+totalGO;
+  var pctOT=total>0?Math.round(totalOT/total*100):0;
+  var pctGO=total>0?Math.round(totalGO/total*100):0;
+
+  var html='<div style="display:flex;align-items:center;gap:16px;margin-bottom:12px">'+
+    '<div style="flex:1;height:24px;background:var(--surface);border-radius:12px;overflow:hidden;display:flex">'+
+    '<div style="width:'+pctOT+'%;background:var(--solp-blue);border-radius:12px 0 0 12px"></div>'+
+    '<div style="width:'+pctGO+'%;background:var(--solp-amber);border-radius:0 12px 12px 0"></div>'+
+    '</div></div>';
+  html+='<div class="dash-legend"><span><span class="dash-legend-dot" style="background:var(--solp-blue)"></span> OT: $'+dashFmtMoney(totalOT)+' ('+pctOT+'%)</span>'+
+    '<span><span class="dash-legend-dot" style="background:var(--solp-amber)"></span> GO: $'+dashFmtMoney(totalGO)+' ('+pctGO+'%)</span></div>';
+
+  // Top 5 OTs by spend
+  var otArr=Object.keys(porOT).map(function(k){return {nombre:k,monto:porOT[k]};}).sort(function(a,b){return b.monto-a.monto;}).slice(0,5);
+  if(otArr.length){
+    html+='<div style="font-size:11px;font-weight:600;color:var(--text-muted);margin:10px 0 6px;text-transform:uppercase">Top OTs por gasto</div>';
+    otArr.forEach(function(o){
+      html+='<div style="display:flex;justify-content:space-between;padding:3px 0;font-size:12px"><span>'+o.nombre+'</span><span style="font-weight:600;color:var(--solp-blue)">$'+dashFmtMoney(o.monto)+'</span></div>';
+    });
+  }
+  // Top GOs
+  var goArr=Object.keys(porGO).map(function(k){return {nombre:k,monto:porGO[k]};}).sort(function(a,b){return b.monto-a.monto;}).slice(0,5);
+  if(goArr.length){
+    html+='<div style="font-size:11px;font-weight:600;color:var(--text-muted);margin:10px 0 6px;text-transform:uppercase">Top Gastos Operativos</div>';
+    goArr.forEach(function(o){
+      html+='<div style="display:flex;justify-content:space-between;padding:3px 0;font-size:12px"><span>'+o.nombre+'</span><span style="font-weight:600">$'+dashFmtMoney(o.monto)+'</span></div>';
+    });
+  }
+  document.getElementById('dashGastoDestino').innerHTML=html;
+}
+
+function dashRenderZonaRoja(abiertas){
+  var rojas=abiertas.filter(function(i){return solpGetAlertLevel(i)==='red';});
+  rojas.sort(function(a,b){return solpDiasTranscurridos(b.fechaCreacion)-solpDiasTranscurridos(a.fechaCreacion);});
+  if(!rojas.length){
+    document.getElementById('dashZonaRoja').innerHTML='<div style="text-align:center;padding:20px;color:var(--solp-green);font-size:13px">✅ No hay SOLPs en zona roja</div>';
+    return;
+  }
+  var html='<div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">'+rojas.length+' solicitud'+(rojas.length>1?'es':'')+' con tiempo excedido</div>';
+  rojas.slice(0,8).forEach(function(i){
+    var dias=solpDiasTranscurridos(i.fechaCreacion);
+    var th=SOLP_THRESHOLDS[i.tipoMaterial];
+    var exceso=th?dias-th[1]:0;
+    html+='<div class="dash-red-item">'+
+      '<div class="dash-red-days" style="color:var(--solp-red)">'+dias+'d</div>'+
+      '<div class="dash-red-info">'+
+      '<div class="dash-red-title">'+i.numero+' — '+i.tipoMaterial+'</div>'+
+      '<div class="dash-red-meta">'+i.solicitante+' · '+i.estado+(exceso>0?' · +'+exceso+'d sobre umbral':'')+'</div>'+
+      '</div></div>';
+  });
+  if(rojas.length>8) html+='<div style="font-size:11px;color:var(--text-muted);text-align:center;margin-top:6px">y '+(rojas.length-8)+' más...</div>';
+  document.getElementById('dashZonaRoja').innerHTML=html;
+}
+
+function dashRenderCuelloBotella(cerradas){
+  // Calculate avg time spent in each stage
+  var etapas=[
+    {nombre:'Pendiente → Cotizando',campo1:'fechaCreacion',campo2:'fechaCotizando',color:'#fbbf24'},
+    {nombre:'Cotizando → Aprobada',campo1:'fechaCotizando',campo2:'fechaAprobada',color:'#60a5fa'},
+    {nombre:'Aprobada → Comprada',campo1:'fechaAprobada',campo2:'fechaComprada',color:'var(--solp-green)'},
+    {nombre:'Comprada → Entregada',campo1:'fechaComprada',campo2:'fechaEntregada',color:'#a78bfa'}
+  ];
+  var maxProm=1;
+  var datos=etapas.map(function(et){
+    var sum=0,cnt=0;
+    cerradas.forEach(function(i){
+      if(i[et.campo1]&&i[et.campo2]){
+        var dias=Math.floor((new Date(i[et.campo2])-new Date(i[et.campo1]))/86400000);
+        if(dias>=0){sum+=dias;cnt++;}
+      }
+    });
+    var prom=cnt>0?Math.round(sum/cnt*10)/10:0;
+    if(prom>maxProm) maxProm=prom;
+    return {nombre:et.nombre,prom:prom,cnt:cnt,color:et.color};
+  });
+  var html='';
+  datos.forEach(function(d){
+    html+=dashMakeBar(d.nombre,d.prom,maxProm,d.color,' d');
+  });
+  // Identify bottleneck
+  var bottleneck=datos.reduce(function(max,d){return d.prom>max.prom?d:max;},{prom:0,nombre:''});
+  if(bottleneck.prom>0){
+    html+='<div style="margin-top:10px;padding:8px 12px;background:#fef3c7;border-radius:var(--radius-sm);font-size:12px">'+
+      '<strong>⚠ Cuello de botella:</strong> '+bottleneck.nombre+' ('+bottleneck.prom+' días promedio)</div>';
+  }
+  document.getElementById('dashCuelloBotella').innerHTML=html||'<div style="font-size:12px;color:var(--text-muted)">Sin datos suficientes</div>';
 }
 
 /* ---- Detalle ---- */
