@@ -1113,6 +1113,7 @@ function switchHTab(el,panelId){
 }
 
 function gv(id){var e=document.getElementById(id);return e?e.value||null:null;}
+function sanTxt(val){if(!val)return val;return val.replace(/\\/g,'/').replace(/"/g,"'").replace(/\n/g,' ').replace(/\r/g,'').replace(/\t/g,' ');}
 function post(url,body){return fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(function(r){return r.json();});}
 function fmt(d){if(!d)return '-';return new Date(d).toLocaleDateString('es-PA',{day:'2-digit',month:'short',year:'numeric'});}
 
@@ -1434,8 +1435,8 @@ function enviarEXT(){
   if(!extEstado){alert('Selecciona estado del equipo.');return;}
   if(extTrab===null){alert('Indica si hay trabajo adicional.');return;}
   var btn=document.getElementById('extSubmit');btn.disabled=true;btn.textContent='Enviando...';
-  var p={tipoFormulario:'Extraccion',ot:OTD.ot,equipoOT_ID:OTD.eqID,equipo:OTD.equipo,cliente:OTD.cliente,sucursal:OTD.sucursal,ubicacion:OTD.ubicacion,marca:OTD.marca,tecnico:OTD.tecnico,tipoEquipo:OTD.tipoEquipo,tipoMantenimiento:extTipo,fechaInforme:new Date().toISOString(),checklist:extCkState,voltAB:gv('extVAB'),voltBC:gv('extVBC'),voltAC:gv('extVAC'),ampA:gv('extAmpA'),ampB:gv('extAmpB'),ampC:gv('extAmpC'),rpm:gv('extRPM'),nivelRuido:gv('extRuido'),estadoEquipo:extEstado,trabajoAdicionalDetectado:extTrab,descripcionTrabajoAdicional:extTrab?gv('extTrabDesc'):null,observacionesTecnico:gv('extObs')};
-  getFotos('ext').then(function(fd){p.fotosArray=fd;return fetch(PA_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});}).then(function(){btn.textContent='Informe enviado';btn.style.background='var(--teal-mid)';setTimeout(function(){volverAlOrigen();},2500);}).catch(function(){btn.textContent='Informe enviado';btn.style.background='var(--teal-mid)';setTimeout(function(){volverAlOrigen();},2500);});
+  var p={tipoFormulario:'Extraccion',ot:OTD.ot,equipoOT_ID:OTD.eqID,equipo:OTD.equipo,cliente:OTD.cliente,sucursal:OTD.sucursal,ubicacion:OTD.ubicacion,marca:OTD.marca,tecnico:OTD.tecnico,tipoEquipo:OTD.tipoEquipo,tipoMantenimiento:extTipo,fechaInforme:new Date().toISOString(),checklist:extCkState,voltAB:gv('extVAB'),voltBC:gv('extVBC'),voltAC:gv('extVAC'),ampA:gv('extAmpA'),ampB:gv('extAmpB'),ampC:gv('extAmpC'),rpm:gv('extRPM'),nivelRuido:gv('extRuido'),estadoEquipo:extEstado,trabajoAdicionalDetectado:extTrab,descripcionTrabajoAdicional:sanTxt(extTrab?gv('extTrabDesc'):null),observacionesTecnico:sanTxt(gv('extObs'))};
+  getFotos('ext').then(function(fd){p.fotosArray=fd;return fetch(PA_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});}).then(function(){btn.textContent='Informe enviado';btn.style.background='var(--teal-mid)';setTimeout(function(){volverAlOrigen();},2500);}).catch(function(){btn.textContent='Error al enviar';btn.style.background='#A32D2D';btn.disabled=false;alert('Error al enviar el informe. Verifica tu conexion e intenta de nuevo.');});
 }
 
 function buildChecklistCustom(tbodyId,stateObj,items){
@@ -1566,8 +1567,8 @@ function enviarDX(){
   if(!dxEstado){alert('Selecciona estado del equipo.');return;}
   if(dxTrab===null){alert('Indica si hay trabajo adicional.');return;}
   var btn=document.getElementById('dxSubmit');btn.disabled=true;btn.textContent='Enviando...';
-  var p={tipoFormulario:OTD.tipoSistema||'Expansion Directa',ot:OTD.ot,equipoOT_ID:OTD.eqID,equipo:OTD.equipo,cliente:OTD.cliente,sucursal:OTD.sucursal,ubicacion:OTD.ubicacion,marca:OTD.marca,refrigerante:OTD.refrigerante,tecnico:OTD.tecnico,tipoEquipo:OTD.tipoEquipo,tipoMantenimiento:dxTipo,fechaInforme:new Date().toISOString(),checklist:dxCkState,c1VoltAB:gv('dxC1VAB'),c1VoltBC:gv('dxC1VBC'),c1VoltAC:gv('dxC1VAC'),c1AmpA:gv('dxC1AA'),c1AmpB:gv('dxC1AB2'),c1AmpC:gv('dxC1AC2'),presAltaC1:gv('dxPA1'),presBajaC1:gv('dxPB1'),presAltaC2:gv('dxPA2'),presBajaC2:gv('dxPB2'),tempSuministro:gv('dxTSum'),tempRetorno:gv('dxTRet'),estadoEquipo:dxEstado,trabajoAdicionalDetectado:dxTrab,descripcionTrabajoAdicional:dxTrab?gv('dxTrabDesc'):null,observacionesTecnico:gv('dxObs')};
-  getFotos('dx').then(function(fd){p.fotosArray=fd;return fetch(PA_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});}).then(function(){btn.textContent='Informe enviado';btn.style.background='var(--teal-mid)';setTimeout(function(){volverAlOrigen();},2500);}).catch(function(){btn.textContent='Informe enviado';btn.style.background='var(--teal-mid)';setTimeout(function(){volverAlOrigen();},2500);});
+  var p={tipoFormulario:OTD.tipoSistema||'Expansion Directa',ot:OTD.ot,equipoOT_ID:OTD.eqID,equipo:OTD.equipo,cliente:OTD.cliente,sucursal:OTD.sucursal,ubicacion:OTD.ubicacion,marca:OTD.marca,refrigerante:OTD.refrigerante,tecnico:OTD.tecnico,tipoEquipo:OTD.tipoEquipo,tipoMantenimiento:dxTipo,fechaInforme:new Date().toISOString(),checklist:dxCkState,c1VoltAB:gv('dxC1VAB'),c1VoltBC:gv('dxC1VBC'),c1VoltAC:gv('dxC1VAC'),c1AmpA:gv('dxC1AA'),c1AmpB:gv('dxC1AB2'),c1AmpC:gv('dxC1AC2'),presAltaC1:gv('dxPA1'),presBajaC1:gv('dxPB1'),presAltaC2:gv('dxPA2'),presBajaC2:gv('dxPB2'),tempSuministro:gv('dxTSum'),tempRetorno:gv('dxTRet'),estadoEquipo:dxEstado,trabajoAdicionalDetectado:dxTrab,descripcionTrabajoAdicional:sanTxt(dxTrab?gv('dxTrabDesc'):null),observacionesTecnico:sanTxt(gv('dxObs'))};
+  getFotos('dx').then(function(fd){p.fotosArray=fd;return fetch(PA_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});}).then(function(){btn.textContent='Informe enviado';btn.style.background='var(--teal-mid)';setTimeout(function(){volverAlOrigen();},2500);}).catch(function(){btn.textContent='Error al enviar';btn.style.background='#A32D2D';btn.disabled=false;alert('Error al enviar el informe. Verifica tu conexion e intenta de nuevo.');});
 }
 
 function enviarVRF(){
@@ -1575,16 +1576,18 @@ function enviarVRF(){
   if(!vrfEstado){alert('Selecciona estado.');return;}
   if(vrfTrab===null){alert('Indica trabajo adicional.');return;}
   var btn=document.getElementById('vrfSubmit');btn.disabled=true;btn.textContent='Enviando...';
-  var p={tipoFormulario:OTD.tipoSistema||'VRF',ot:OTD.ot,equipoOT_ID:OTD.eqID,sistemaNombre:OTD.equipo,cliente:OTD.cliente,sucursal:OTD.sucursal,refrigerante:OTD.refrigerante,tecnico:OTD.tecnico,tipoMantenimiento:vrfTipo,fechaInforme:new Date().toISOString(),checklist:vrfCkState,evaporadores:collectVRF('vrfEvap',vrfEvN),condensadores:collectVRF('vrfCond',vrfCoN),estadoEquipo:vrfEstado,trabajoAdicionalDetectado:vrfTrab,descripcionTrabajoAdicional:vrfTrab?gv('vrfTrabDesc'):null,observacionesTecnico:gv('vrfObs')};
-  getFotos('vrf').then(function(fd){p.fotosArray=fd;return fetch(PA_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});}).then(function(){btn.textContent='VRF enviado';btn.style.background='var(--teal-mid)';setTimeout(function(){volverAlOrigen();},2500);}).catch(function(){btn.textContent='VRF enviado';btn.style.background='var(--teal-mid)';setTimeout(function(){volverAlOrigen();},2500);});
+  var evaps=collectVRF('vrfEvap',vrfEvN);var conds=collectVRF('vrfCond',vrfCoN);
+  evaps.forEach(function(e){if(e.obs)e.obs=sanTxt(e.obs);});conds.forEach(function(c){if(c.obs)c.obs=sanTxt(c.obs);});
+  var p={tipoFormulario:OTD.tipoSistema||'VRF',ot:OTD.ot,equipoOT_ID:OTD.eqID,sistemaNombre:OTD.equipo,cliente:OTD.cliente,sucursal:OTD.sucursal,refrigerante:OTD.refrigerante,tecnico:OTD.tecnico,tipoMantenimiento:vrfTipo,fechaInforme:new Date().toISOString(),checklist:vrfCkState,evaporadores:evaps,condensadores:conds,estadoEquipo:vrfEstado,trabajoAdicionalDetectado:vrfTrab,descripcionTrabajoAdicional:sanTxt(vrfTrab?gv('vrfTrabDesc'):null),observacionesTecnico:sanTxt(gv('vrfObs'))};
+  getFotos('vrf').then(function(fd){p.fotosArray=fd;return fetch(PA_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});}).then(function(){btn.textContent='VRF enviado';btn.style.background='var(--teal-mid)';setTimeout(function(){volverAlOrigen();},2500);}).catch(function(){btn.textContent='Error al enviar';btn.style.background='#A32D2D';btn.disabled=false;alert('Error al enviar el informe VRF. Verifica tu conexion e intenta de nuevo.');});
 }
 function enviarSG(){
   if(!sgTipo){alert('Selecciona tipo de trabajo.');return;}
   if(!document.getElementById('sgDesc').value.trim()){alert('La descripcion es obligatoria.');return;}
   if(!sgEstado){alert('Selecciona estado.');return;}
   var btn=document.getElementById('sgSubmit');btn.disabled=true;btn.textContent='Enviando...';
-  var p={tipoFormulario:'Servicio General',ot:OTD.ot,tecnico:OTD.tecnico,tipoTrabajo:sgTipo,descripcionTrabajo:gv('sgDesc'),materialesUtilizados:gv('sgMat'),estadoTrabajo:sgEstado,fechaInforme:new Date().toISOString()};
-  getFotos('sg').then(function(fd){p.fotosArray=fd;return fetch(PA_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});}).then(function(){btn.textContent='Informe enviado';btn.style.background='var(--teal-mid)';setTimeout(function(){volverAlOrigen();},2500);}).catch(function(){btn.textContent='Informe enviado';btn.style.background='var(--teal-mid)';setTimeout(function(){volverAlOrigen();},2500);});
+  var p={tipoFormulario:'Servicio General',ot:OTD.ot,tecnico:OTD.tecnico,tipoTrabajo:sgTipo,descripcionTrabajo:sanTxt(gv('sgDesc')),materialesUtilizados:sanTxt(gv('sgMat')),estadoTrabajo:sgEstado,fechaInforme:new Date().toISOString()};
+  getFotos('sg').then(function(fd){p.fotosArray=fd;return fetch(PA_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});}).then(function(){btn.textContent='Informe enviado';btn.style.background='var(--teal-mid)';setTimeout(function(){volverAlOrigen();},2500);}).catch(function(){btn.textContent='Error al enviar';btn.style.background='#A32D2D';btn.disabled=false;alert('Error al enviar el informe. Verifica tu conexion e intenta de nuevo.');});
 }
 
 var PA_SOLICITUDES='https://defaulteb43a9912a5742808a56db939741fe.ce.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/addc3753489542bfbf94282fdcb03ce4/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=ZVeDYjVerXCuJH8fckLFuTiX02z6nxOqxTyKsG_RuY4';
