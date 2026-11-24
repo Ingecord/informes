@@ -4838,9 +4838,9 @@ function solpToggleUrgente(){
   var fechaReq=document.getElementById('solpFormFechaRequerida');
   if(val==='Urgente'||val==='Extraordinaria'){
     box.classList.add('show');
-    // Set min date to tomorrow
-    var manana=new Date();manana.setDate(manana.getDate()+1);
-    fechaReq.min=manana.toISOString().split('T')[0];
+    // Set min date to today (urgent = may need it same day)
+    var hoy=new Date();
+    fechaReq.min=hoy.toISOString().split('T')[0];
     fechaReq.value='';
   }else{
     box.classList.remove('show');
