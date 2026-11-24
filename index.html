@@ -1,5 +1,4 @@
 
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -3905,6 +3904,7 @@ function solpCargarLista(){
         codigoGO:f.CodigoGO||f.Codigo_GO||'',
         urgJustificacion:f.JustificacionUrgencia||'',
         fechaRequerida:f.FechaRequerida||'',
+        ordenCompra:f.OrdenCompra||'',
         fechaCreacion:f.Created||f.FechaCreacion||'',
         fechaCotizando:f.FechaCotizando||'',
         fechaAprobada:f.FechaAprobada||'',
@@ -4454,7 +4454,8 @@ function solpVerDetalle(id){
     {k:'Categoría',v:item.tipoMaterial||'-'},
     {k:'Proveedor asignado',v:item.proveedor||'Sin asignar'},
     {k:'Ubicación / Sitio',v:item.ubicacion||'-'},
-    {k:'Fecha requerida',v:item.fechaRequerida?solpFormatFecha(item.fechaRequerida)+(solpDiasParaFecha(item.fechaRequerida)<0?' <span style="color:var(--solp-red);font-weight:600">⚠ VENCIDA</span>':solpDiasParaFecha(item.fechaRequerida)<=2?' <span style="color:#f59e0b;font-weight:600">⚡ '+solpDiasParaFecha(item.fechaRequerida)+' días</span>':''):'<span style="color:var(--text-muted)">N/A</span>'}
+    {k:'Fecha requerida',v:item.fechaRequerida?solpFormatFecha(item.fechaRequerida)+(solpDiasParaFecha(item.fechaRequerida)<0?' <span style="color:var(--solp-red);font-weight:600">⚠ VENCIDA</span>':solpDiasParaFecha(item.fechaRequerida)<=2?' <span style="color:#f59e0b;font-weight:600">⚡ '+solpDiasParaFecha(item.fechaRequerida)+' días</span>':''):'<span style="color:var(--text-muted)">N/A</span>'},
+    {k:'Orden de Compra',v:item.ordenCompra?'<span style="color:var(--solp-green);font-weight:700">🧾 '+item.ordenCompra+'</span>':'<span style="color:var(--text-muted)">Sin asignar</span>'}
   ];
   var metaHtml='';
   metaItems.forEach(function(m){
@@ -4553,7 +4554,11 @@ function solpRenderTimeline(item){
     if(dias>=th[1]) steps.push({num:'⚡',label:'Alerta roja — '+dias+' días',fecha:null,color:'red-dot'});
     else if(dias>=th[0]) steps.push({num:'⚡',label:'Alerta amarilla — '+dias+' días',fecha:null,color:'amber'});
   }
-  if(item.fechaComprada) steps.push({num:'4',label:'Compra realizada',fecha:item.fechaComprada,color:'blue'});
+  if(item.fechaComprada){
+    var ocLabel='Compra realizada';
+    if(item.ordenCompra) ocLabel+=' — OC: '+item.ordenCompra;
+    steps.push({num:'4',label:ocLabel,fecha:item.fechaComprada,color:'blue'});
+  }
   if(item.fechaEntregada) steps.push({num:'5',label:'Material entregado',fecha:item.fechaEntregada,color:'green'});
   if(item.fechaCerrada) steps.push({num:'6',label:'SOLP cerrada',fecha:item.fechaCerrada,color:'green'});
   // Pending future steps
@@ -4718,10 +4723,17 @@ function solpAsignarOrdenVenta(id){
 
 function solpCambiarEstado(id,nuevoEstado){
   if(!confirm('Cambiar estado a "'+nuevoEstado+'"?')) return;
+  var ordenCompra='';
+  if(nuevoEstado==='Comprada'){
+    ordenCompra=prompt('Ingresa el número de Orden de Compra de Zoho:');
+    if(ordenCompra===null) return; // cancelled
+    ordenCompra=ordenCompra.trim();
+    if(!ordenCompra){alert('Debes ingresar el número de Orden de Compra para marcar como Comprada.');return;}
+  }
   var camposFecha={Cotizando:'FechaCotizando',Aprobada:'FechaAprobada',Comprada:'FechaComprada',Entregada:'FechaEntregada',Cerrada:'FechaCerrada',Rechazada:'FechaCerrada'};
   var item=solpCache.find(function(i){return String(i.id)===String(id);});
   var estadoAnterior=item?item.estado:'';
-  solpPost({accion:'cambiarEstado',datos:{itemId:String(id),nuevoEstado:nuevoEstado,estadoAnterior:estadoAnterior,campoFecha:camposFecha[nuevoEstado]||'FechaCerrada',titulo:item?item.numero:'',ot:item?item.ot:'',codigoGO:item?item.codigoGO:'',destinoTipo:item?item.destinoTipo:'',cliente:item?item.cliente:'',tipoMaterial:item?item.tipoMaterial:'',solicitante:item?item.solicitante:'',costoEstimado:item?item.costoEstimado:0,ubicacion:item?item.ubicacion:'',prioridad:item?item.prioridad:'',fechaRequerida:item?item.fechaRequerida:''}})
+  solpPost({accion:'cambiarEstado',datos:{itemId:String(id),nuevoEstado:nuevoEstado,estadoAnterior:estadoAnterior,campoFecha:camposFecha[nuevoEstado]||'FechaCerrada',titulo:item?item.numero:'',ot:item?item.ot:'',codigoGO:item?item.codigoGO:'',destinoTipo:item?item.destinoTipo:'',cliente:item?item.cliente:'',tipoMaterial:item?item.tipoMaterial:'',solicitante:item?item.solicitante:'',costoEstimado:item?item.costoEstimado:0,ubicacion:item?item.ubicacion:'',prioridad:item?item.prioridad:'',fechaRequerida:item?item.fechaRequerida:'',ordenCompra:ordenCompra}})
   .then(function(){solpCargarLista();solpVolverALista();})
   .catch(function(){alert('Error al cambiar estado.');});
 }
