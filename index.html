@@ -3834,6 +3834,7 @@ function czGuardar(){
 
 var WEBHOOK_SOLP='https://hook.us2.make.com/uzu06d9bxs6aqt7el578ukt9l1set5n2';
 var solpCache=[];
+var solpRealDetalleLocal={}; // {itemId: 'price1|price2|...'} — persists line-by-line real costs in session
 var solpFiltroActual='todas';
 var solpItemActual=null;
 var solpCounter=0;
@@ -3890,7 +3891,7 @@ function solpCargarLista(){
   solpPost({accion:'listar'}).then(function(data){
     var items=(data.value||data||[]).map(function(it){
       var f=it.fields||it;
-      return {
+      var obj={
         id:it.id||f.id||f.ID,
         numero:f.Title||f.Numero||'',
         ot:f.OT||f.NumeroOT||'',
@@ -3920,6 +3921,9 @@ function solpCargarLista(){
         proveedor:f.Proveedor||'',
         costoRealDetalle:f.CostoRealDetalle||''
       };
+      // Merge locally-saved real cost detail (survives page reload from SharePoint)
+      if(!obj.costoRealDetalle && solpRealDetalleLocal[obj.id]){obj.costoRealDetalle=solpRealDetalleLocal[obj.id];}
+      return obj;
     });
     solpCache=items;
     solpRenderKpis(items);
@@ -4703,7 +4707,11 @@ function solpEnviarCostoReal(){
   document.getElementById('solpBtnCostoSubmit').disabled=true;
   document.getElementById('solpBtnCostoSubmit').textContent='Guardando...';
   solpPost({accion:'actualizarCosto',datos:{itemId:String(solpCostoItemId),costoReal:totalReal,costoRealDetalle:realPricesStr,notasAdmin:''}})
-  .then(function(){solpCerrarCostoModal();solpCargarLista();solpVolverALista();})
+  .then(function(){
+    // Save real cost detail locally so it persists through list reloads in this session
+    solpRealDetalleLocal[String(solpCostoItemId)]=realPricesStr;
+    solpCerrarCostoModal();solpCargarLista();solpVolverALista();
+  })
   .catch(function(){alert('Error al actualizar.');document.getElementById('solpBtnCostoSubmit').disabled=false;document.getElementById('solpBtnCostoSubmit').textContent='✓ Guardar costos reales';});
 }
 
