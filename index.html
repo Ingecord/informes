@@ -5054,7 +5054,7 @@ function solpEnviar(){
       ItemsJSON:itemsStr,
       Observaciones:obs.replace(/"/g,"'"),
       JustificacionUrgencia:justUrgencia,
-      FechaRequerida:(prioridad==='Urgente'||prioridad==='Extraordinaria')?document.getElementById('solpFormFechaRequerida').value:'',
+      FechaRequerida:(function(){var v=(prioridad==='Urgente'||prioridad==='Extraordinaria')?document.getElementById('solpFormFechaRequerida').value:'';return v?'"'+v+'"':'null';}()),
       Ubicacion:(document.getElementById('solpFormUbicacion')||{}).value||''
     }
   };
