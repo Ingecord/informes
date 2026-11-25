@@ -3317,9 +3317,9 @@ function renderModuloOTs(){
             <label style="font-size:12px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px">Tipo</label>
             <select id="solpNuevoProvTipo" class="solp-form-input">
               <option value="General">General</option>
-              <option value="Ferretería">Ferretería</option>
-              <option value="Refrigeración">Refrigeración</option>
-              <option value="Eléctrico">Eléctrico</option>
+              <option value="Ferreteria">Ferreteria</option>
+              <option value="Refrigeracion">Refrigeracion</option>
+              <option value="Electrico">Electrico</option>
               <option value="HVAC">HVAC</option>
               <option value="Servicios">Servicios</option>
             </select>
@@ -3913,7 +3913,7 @@ function solpCargarProveedores(cb){
     if(res&&res.value){
       solpProveedoresCache=res.value.map(function(item){
         var f=item.fields||item;
-        return {id:item.id||f.id,nombre:f.Title||'',tipo:f.Tipo||'',ubicacion:f.Ubicacion||'',tiempoEntrega:f.TiempoEntrega||'',creditoDias:f.CreditoDias||'',contacto:f.Contacto||'',telefono:f.Telefono||''};
+        return {id:item.id||f.id,nombre:f.Title||'',tipo:f.Tipo1||'',ubicacion:f.Ubicacion||'',tiempoEntrega:f.TiempoEntrega||'',creditoDias:f.CreditoDias||'',contacto:f.Contacto||'',telefono:f.Telefono||''};
       }).sort(function(a,b){return a.nombre.localeCompare(b.nombre);});
     }
     solpProveedoresCargados=true;
