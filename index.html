@@ -3300,6 +3300,64 @@ function renderModuloOTs(){
   </div>
 </div>
 
+<div class="solp-modal-overlay" id="solpNuevoProvModal" style="z-index:10001">
+  <div class="solp-modal" style="max-width:480px">
+    <div class="solp-modal-header" style="background:var(--solp-navy)">
+      <span class="solp-modal-title">＋ Nuevo Proveedor</span>
+      <button class="solp-modal-close" onclick="solpCerrarNuevoProvModal()">×</button>
+    </div>
+    <div class="solp-modal-body" style="padding:16px 24px">
+      <div style="display:grid;gap:12px">
+        <div>
+          <label style="font-size:12px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px">Nombre *</label>
+          <input type="text" id="solpNuevoProvNombre" class="solp-form-input" placeholder="Nombre del proveedor">
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div>
+            <label style="font-size:12px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px">Tipo</label>
+            <select id="solpNuevoProvTipo" class="solp-form-input">
+              <option value="General">General</option>
+              <option value="Ferretería">Ferretería</option>
+              <option value="Refrigeración">Refrigeración</option>
+              <option value="Eléctrico">Eléctrico</option>
+              <option value="HVAC">HVAC</option>
+              <option value="Servicios">Servicios</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px">Ubicación</label>
+            <input type="text" id="solpNuevoProvUbicacion" class="solp-form-input" placeholder="Ciudad/zona">
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div>
+            <label style="font-size:12px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px">Tiempo de entrega (días)</label>
+            <input type="number" id="solpNuevoProvTiempo" class="solp-form-input" placeholder="Ej: 3" min="0">
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px">Crédito (días)</label>
+            <input type="number" id="solpNuevoProvCredito" class="solp-form-input" placeholder="Ej: 30" min="0">
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div>
+            <label style="font-size:12px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px">Contacto</label>
+            <input type="text" id="solpNuevoProvContacto" class="solp-form-input" placeholder="Nombre de contacto">
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px">Teléfono</label>
+            <input type="text" id="solpNuevoProvTelefono" class="solp-form-input" placeholder="+507 6000-0000">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="solp-modal-footer">
+      <button class="solp-btn-cancel" onclick="solpCerrarNuevoProvModal()">Cancelar</button>
+      <button class="solp-btn-submit" id="solpBtnCrearProv" onclick="solpCrearNuevoProveedor()">✓ Crear proveedor</button>
+    </div>
+  </div>
+</div>
+
 <div id="screenNuevaOT" style="display:none">
   <div class="inf-top-bar" style="display:flex;align-items:center;justify-content:space-between">
     <div><div class="brand">Ingecord</div><h1>Nueva orden de trabajo</h1></div>
@@ -3845,6 +3903,91 @@ var solpOrdenesCompraLocal={}; // {itemId: 'OC-001, OC-002'} — OC únicas para
 var solpFiltroActual='todas';
 var solpItemActual=null;
 var solpCounter=0;
+var solpProveedoresCache=[];
+var solpProveedoresCargados=false;
+
+function solpCargarProveedores(cb){
+  if(solpProveedoresCargados&&solpProveedoresCache.length>0){if(cb)cb();return;}
+  solpPost({accion:'listarProveedores',datos:{}})
+  .then(function(res){
+    if(res&&res.value){
+      solpProveedoresCache=res.value.map(function(item){
+        var f=item.fields||item;
+        return {id:item.id||f.id,nombre:f.Title||'',tipo:f.Tipo||'',ubicacion:f.Ubicacion||'',tiempoEntrega:f.TiempoEntrega||'',creditoDias:f.CreditoDias||'',contacto:f.Contacto||'',telefono:f.Telefono||''};
+      }).sort(function(a,b){return a.nombre.localeCompare(b.nombre);});
+    }
+    solpProveedoresCargados=true;
+    if(cb)cb();
+  })
+  .catch(function(){solpProveedoresCargados=true;if(cb)cb();});
+}
+
+function solpBuildProvSelect(cls,existingVal){
+  var opts='<option value="">— Seleccionar —</option>';
+  solpProveedoresCache.forEach(function(p){
+    opts+='<option value="'+p.nombre+'"'+(p.nombre===existingVal?' selected':'')+'>'+p.nombre+'</option>';
+  });
+  opts+='<option value="__nuevo__">＋ Nuevo proveedor...</option>';
+  return '<select class="'+cls+'" style="width:140px;padding:5px 6px;border:1px solid var(--border);border-radius:var(--radius);font-size:12px;background:#fff" onchange="if(this.value===\'__nuevo__\'){this.value=\'\';solpMostrarNuevoProvModal(this);}">'+opts+'</select>';
+}
+
+function solpMostrarNuevoProvModal(selectEl){
+  solpNuevoProvTarget=selectEl;
+  document.getElementById('solpNuevoProvNombre').value='';
+  document.getElementById('solpNuevoProvTipo').value='General';
+  document.getElementById('solpNuevoProvUbicacion').value='';
+  document.getElementById('solpNuevoProvTiempo').value='';
+  document.getElementById('solpNuevoProvCredito').value='';
+  document.getElementById('solpNuevoProvContacto').value='';
+  document.getElementById('solpNuevoProvTelefono').value='';
+  document.getElementById('solpNuevoProvModal').classList.add('active');
+}
+var solpNuevoProvTarget=null;
+
+function solpCrearNuevoProveedor(){
+  var nombre=document.getElementById('solpNuevoProvNombre').value.trim();
+  if(!nombre){alert('El nombre del proveedor es obligatorio.');return;}
+  var datos={
+    nombre:nombre,
+    tipo:document.getElementById('solpNuevoProvTipo').value,
+    ubicacion:document.getElementById('solpNuevoProvUbicacion').value.trim(),
+    tiempoEntrega:document.getElementById('solpNuevoProvTiempo').value.trim(),
+    creditoDias:document.getElementById('solpNuevoProvCredito').value.trim(),
+    contacto:document.getElementById('solpNuevoProvContacto').value.trim(),
+    telefono:document.getElementById('solpNuevoProvTelefono').value.trim()
+  };
+  var btn=document.getElementById('solpBtnCrearProv');
+  btn.disabled=true;btn.textContent='Creando...';
+  solpPost({accion:'crearProveedor',datos:datos})
+  .then(function(){
+    solpProveedoresCache.push({id:'',nombre:nombre,tipo:datos.tipo,ubicacion:datos.ubicacion,tiempoEntrega:datos.tiempoEntrega,creditoDias:datos.creditoDias,contacto:datos.contacto,telefono:datos.telefono});
+    solpProveedoresCache.sort(function(a,b){return a.nombre.localeCompare(b.nombre);});
+    // Update all select dropdowns in the cost modal
+    var selects=document.querySelectorAll('.solp-costo-prov-input');
+    selects.forEach(function(sel){
+      var curVal=sel.value;
+      sel.innerHTML=solpBuildProvOptionsHtml(curVal);
+    });
+    // Set the target select to the new proveedor
+    if(solpNuevoProvTarget){solpNuevoProvTarget.value=nombre;}
+    document.getElementById('solpNuevoProvModal').classList.remove('active');
+    btn.disabled=false;btn.textContent='✓ Crear proveedor';
+  })
+  .catch(function(){alert('Error al crear proveedor.');btn.disabled=false;btn.textContent='✓ Crear proveedor';});
+}
+
+function solpBuildProvOptionsHtml(selectedVal){
+  var opts='<option value="">— Seleccionar —</option>';
+  solpProveedoresCache.forEach(function(p){
+    opts+='<option value="'+p.nombre+'"'+(p.nombre===selectedVal?' selected':'')+'>'+p.nombre+'</option>';
+  });
+  opts+='<option value="__nuevo__">＋ Nuevo proveedor...</option>';
+  return opts;
+}
+
+function solpCerrarNuevoProvModal(){
+  document.getElementById('solpNuevoProvModal').classList.remove('active');
+}
 
 var SOLP_ESTADOS={
   Pendiente:'solp-badge-pendiente',
@@ -4642,6 +4785,10 @@ function solpRenderAcciones(item){
 function solpRegistrarCostoReal(id){
   var item=solpCache.find(function(i){return String(i.id)===String(id);});
   if(!item) return;
+  // Load proveedores first, then show modal
+  solpCargarProveedores(function(){solpRegistrarCostoRealUI(id,item);});
+}
+function solpRegistrarCostoRealUI(id,item){
   solpCostoItemId=id;
   // Parse items from pipe-delimited
   var its=[];
@@ -4671,7 +4818,7 @@ function solpRegistrarCostoReal(id){
       '<td style="text-align:right">'+(it.precioUnit>0?'$'+it.precioUnit.toFixed(2):'-')+'</td>'+
       '<td style="text-align:right"><input type="number" class="solp-costo-real-input" data-qty="'+it.cantidad+'" placeholder="0.00" step="0.01" min="0" oninput="solpCalcCostoReal()" style="width:100px;text-align:right;padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px"></td>'+
       '<td style="text-align:right" class="solp-costo-sub-real">$0.00</td>'+
-      '<td><input type="text" class="solp-costo-prov-input" placeholder="Proveedor" style="width:130px;padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius);font-size:12px"></td>'+
+      '<td>'+solpBuildProvSelect('solp-costo-prov-input','')+'</td>'+
       '<td><input type="text" class="solp-costo-oc-input" placeholder="OC-000" style="width:110px;padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius);font-size:12px"></td>'+
       '</tr>';
   });
