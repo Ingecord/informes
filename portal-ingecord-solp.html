@@ -3272,6 +3272,8 @@ function renderModuloOTs(){
             <th style="text-align:right">P.Unit Est.</th>
             <th style="text-align:right;width:110px">P.Unit Real</th>
             <th style="text-align:right">Subtotal Real</th>
+            <th style="width:140px">Proveedor</th>
+            <th style="width:120px">OC Zoho</th>
           </tr>
         </thead>
         <tbody id="solpCostoItemsBody"></tbody>
@@ -3281,10 +3283,12 @@ function renderModuloOTs(){
             <td style="text-align:right;font-weight:600" id="solpCostoTotalEst">$0.00</td>
             <td></td>
             <td style="text-align:right;font-weight:700" id="solpCostoTotalReal">$0.00</td>
+            <td colspan="2"></td>
           </tr>
           <tr>
             <td colspan="5" style="text-align:right;font-weight:600;color:var(--text-muted)">Desviación:</td>
             <td style="text-align:right;font-weight:700" id="solpCostoDesv">0.0%</td>
+            <td colspan="2"></td>
           </tr>
         </tfoot>
       </table>
@@ -3835,6 +3839,9 @@ function czGuardar(){
 var WEBHOOK_SOLP='https://hook.us2.make.com/uzu06d9bxs6aqt7el578ukt9l1set5n2';
 var solpCache=[];
 var solpRealDetalleLocal={}; // {itemId: 'price1|price2|...'} — persists line-by-line real costs in session
+var solpProvDetalleLocal={}; // {itemId: 'prov1|prov2|...'} — proveedores por ítem
+var solpOCDetalleLocal={}; // {itemId: 'oc1|oc2|...'} — OC Zoho por ítem
+var solpOrdenesCompraLocal={}; // {itemId: 'OC-001, OC-002'} — OC únicas para encabezado
 var solpFiltroActual='todas';
 var solpItemActual=null;
 var solpCounter=0;
@@ -3919,10 +3926,16 @@ function solpCargarLista(){
         ordenVenta:f.OrdenVenta||'',
         ubicacion:f.Ubicacion||'',
         proveedor:f.Proveedor||'',
-        costoRealDetalle:f.CostoRealDetalle||''
+        costoRealDetalle:f.CostoRealDetalle||'',
+        proveedoresDetalle:f.ProveedoresDetalle||'',
+        ordenesCompraDetalle:f.OrdenesCompraDetalle||'',
+        ordenesCompra:f.OrdenesCompra||''
       };
-      // Merge locally-saved real cost detail (survives page reload from SharePoint)
+      // Merge locally-saved details (survives page reload from SharePoint)
       if(!obj.costoRealDetalle && solpRealDetalleLocal[obj.id]){obj.costoRealDetalle=solpRealDetalleLocal[obj.id];}
+      if(!obj.proveedoresDetalle && solpProvDetalleLocal[obj.id]){obj.proveedoresDetalle=solpProvDetalleLocal[obj.id];}
+      if(!obj.ordenesCompraDetalle && solpOCDetalleLocal[obj.id]){obj.ordenesCompraDetalle=solpOCDetalleLocal[obj.id];}
+      if(!obj.ordenesCompra && solpOrdenesCompraLocal[obj.id]){obj.ordenesCompra=solpOrdenesCompraLocal[obj.id];}
       return obj;
     });
     solpCache=items;
@@ -4462,7 +4475,7 @@ function solpVerDetalle(id){
     {k:'Proveedor asignado',v:item.proveedor||'Sin asignar'},
     {k:'Ubicación / Sitio',v:item.ubicacion||'-'},
     {k:'Fecha requerida',v:item.fechaRequerida?solpFormatFecha(item.fechaRequerida)+(solpDiasParaFecha(item.fechaRequerida)<0?' <span style="color:var(--solp-red);font-weight:600">⚠ VENCIDA</span>':solpDiasParaFecha(item.fechaRequerida)<=2?' <span style="color:#f59e0b;font-weight:600">⚡ '+solpDiasParaFecha(item.fechaRequerida)+' días</span>':''):'<span style="color:var(--text-muted)">N/A</span>'},
-    {k:'Orden de Compra',v:item.ordenCompra?'<span style="color:var(--solp-green);font-weight:700">🧾 '+item.ordenCompra+'</span>':'<span style="color:var(--text-muted)">Sin asignar</span>'}
+    {k:'Órdenes de Compra',v:(item.ordenesCompra||item.ordenCompra)?'<span style="color:var(--solp-green);font-weight:700">🧾 '+(item.ordenesCompra||item.ordenCompra)+'</span>':'<span style="color:var(--text-muted)">Sin asignar</span>'}
   ];
   var metaHtml='';
   metaItems.forEach(function(m){
@@ -4503,7 +4516,10 @@ function solpVerDetalle(id){
       var realPrices=[];
       if(item.costoRealDetalle){realPrices=item.costoRealDetalle.split('|').map(function(v){return parseFloat(v)||0;});}
       var hasReal=realPrices.length>0&&realPrices.some(function(v){return v>0;});
-      itemsHtml='<table class="solp-det-items"><thead><tr><th>#</th><th>Descripción</th><th>Cant.</th><th>Und</th><th style="text-align:right">P.Unit Est.</th>'+(hasReal?'<th style="text-align:right">P.Unit Real</th>':'')+'<th style="text-align:right">Sub. Est.</th>'+(hasReal?'<th style="text-align:right">Sub. Real</th><th style="text-align:right">Desv.</th>':'')+'</tr></thead><tbody>';
+      var provArr=item.proveedoresDetalle?item.proveedoresDetalle.split('|'):[];
+      var ocArr=item.ordenesCompraDetalle?item.ordenesCompraDetalle.split('|'):[];
+      var hasProv=provArr.length>0&&provArr.some(function(v){return v;});
+      itemsHtml='<table class="solp-det-items"><thead><tr><th>#</th><th>Descripción</th><th>Cant.</th><th>Und</th><th style="text-align:right">P.Unit Est.</th>'+(hasReal?'<th style="text-align:right">P.Unit Real</th>':'')+'<th style="text-align:right">Sub. Est.</th>'+(hasReal?'<th style="text-align:right">Sub. Real</th><th style="text-align:right">Desv.</th>':'')+(hasProv?'<th>Proveedor</th><th>OC Zoho</th>':'')+'</tr></thead><tbody>';
       its.forEach(function(it,idx){
         var pu=it.precioUnit||0;
         var subEst=pu*it.cantidad;
@@ -4512,11 +4528,14 @@ function solpVerDetalle(id){
         var desvItem=subEst>0?((subReal-subEst)/subEst*100):0;
         var desvStr=hasReal&&puReal>0?((desvItem>=0?'+':'')+desvItem.toFixed(1)+'%'):'-';
         var desvColor=desvItem>5?'var(--solp-red)':desvItem<-5?'var(--solp-green)':'inherit';
+        var provItem=provArr[idx]||'';
+        var ocItem=ocArr[idx]||'';
         itemsHtml+='<tr><td>'+(idx+1)+'</td><td>'+it.descripcion+'</td><td>'+it.cantidad+'</td><td>'+it.unidad+'</td>'+
           '<td style="text-align:right">'+(pu>0?'$'+pu.toFixed(2):'-')+'</td>'+
           (hasReal?'<td style="text-align:right">'+(puReal>0?'$'+puReal.toFixed(2):'-')+'</td>':'')+
           '<td style="text-align:right">'+(subEst>0?'$'+subEst.toFixed(2):'-')+'</td>'+
           (hasReal?'<td style="text-align:right">'+(subReal>0?'$'+subReal.toFixed(2):'-')+'</td><td style="text-align:right;color:'+desvColor+'">'+desvStr+'</td>':'')+
+          (hasProv?'<td>'+(provItem||'-')+'</td><td>'+(ocItem||'-')+'</td>':'')+
           '</tr>';
       });
       itemsHtml+='</tbody></table>';
@@ -4652,6 +4671,8 @@ function solpRegistrarCostoReal(id){
       '<td style="text-align:right">'+(it.precioUnit>0?'$'+it.precioUnit.toFixed(2):'-')+'</td>'+
       '<td style="text-align:right"><input type="number" class="solp-costo-real-input" data-qty="'+it.cantidad+'" placeholder="0.00" step="0.01" min="0" oninput="solpCalcCostoReal()" style="width:100px;text-align:right;padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px"></td>'+
       '<td style="text-align:right" class="solp-costo-sub-real">$0.00</td>'+
+      '<td><input type="text" class="solp-costo-prov-input" placeholder="Proveedor" style="width:130px;padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius);font-size:12px"></td>'+
+      '<td><input type="text" class="solp-costo-oc-input" placeholder="OC-000" style="width:110px;padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius);font-size:12px"></td>'+
       '</tr>';
   });
   tbody.innerHTML=html;
@@ -4700,16 +4721,41 @@ function solpEnviarCostoReal(){
     totalReal+=qty*pr;
   });
   if(!anyFilled){alert('Ingresa al menos un precio real.');return;}
+  // Validate proveedor and OC for each filled item
+  var provInputs=document.querySelectorAll('.solp-costo-prov-input');
+  var ocInputs=document.querySelectorAll('.solp-costo-oc-input');
+  var missingProv=false;
+  inputs.forEach(function(inp,idx){
+    var pr=parseFloat(inp.value)||0;
+    if(pr>0){
+      var prov=(provInputs[idx]?provInputs[idx].value:'').trim();
+      if(!prov) missingProv=true;
+    }
+  });
+  if(missingProv){alert('Cada ítem con precio real debe tener un Proveedor asignado.');return;}
   // Build real-price pipe-delimited string for storage
   var realPrices=[];
   inputs.forEach(function(inp){realPrices.push(parseFloat(inp.value)||0);});
   var realPricesStr=realPrices.join('|');
+  // Build proveedores and OC pipe-delimited
+  var provArr=[];var ocArr=[];
+  provInputs.forEach(function(p){provArr.push(sanTxt((p.value||'').trim()));});
+  ocInputs.forEach(function(o){ocArr.push(sanTxt((o.value||'').trim()));});
+  var provStr=provArr.join('|');
+  var ocStr=ocArr.join('|');
+  // Build unique OC list for header
+  var ocUnicas=[];
+  ocArr.forEach(function(oc){if(oc&&ocUnicas.indexOf(oc)===-1) ocUnicas.push(oc);});
+  var ordenesCompraStr=ocUnicas.join(', ');
   document.getElementById('solpBtnCostoSubmit').disabled=true;
   document.getElementById('solpBtnCostoSubmit').textContent='Guardando...';
-  solpPost({accion:'actualizarCosto',datos:{itemId:String(solpCostoItemId),costoReal:totalReal,costoRealDetalle:realPricesStr,notasAdmin:''}})
+  solpPost({accion:'actualizarCosto',datos:{itemId:String(solpCostoItemId),costoReal:totalReal,costoRealDetalle:realPricesStr,proveedoresDetalle:provStr,ordenesCompraDetalle:ocStr,ordenesCompra:ordenesCompraStr,notasAdmin:''}})
   .then(function(){
-    // Save real cost detail locally so it persists through list reloads in this session
+    // Save details locally so they persist through list reloads in this session
     solpRealDetalleLocal[String(solpCostoItemId)]=realPricesStr;
+    solpProvDetalleLocal[String(solpCostoItemId)]=provStr;
+    solpOCDetalleLocal[String(solpCostoItemId)]=ocStr;
+    solpOrdenesCompraLocal[String(solpCostoItemId)]=ordenesCompraStr;
     solpCerrarCostoModal();solpCargarLista();solpVolverALista();
   })
   .catch(function(){alert('Error al actualizar.');document.getElementById('solpBtnCostoSubmit').disabled=false;document.getElementById('solpBtnCostoSubmit').textContent='✓ Guardar costos reales';});
@@ -4734,6 +4780,12 @@ function solpAsignarOrdenVenta(id){
 
 function solpCambiarEstado(id,nuevoEstado){
   if(!confirm('Cambiar estado a "'+nuevoEstado+'"?')) return;
+  var item=solpCache.find(function(i){return String(i.id)===String(id);});
+  // Validate Orden de Venta required for OT when closing (Entregada)
+  if(nuevoEstado==='Entregada'&&item&&item.destinoTipo==='OT'&&!item.ordenVenta){
+    alert('Esta SOLP es de tipo OT y requiere una Orden de Venta (SO Zoho) asignada antes de marcarla como Entregada. Asigna la Orden de Venta primero.');
+    return;
+  }
   var ordenCompra='';
   if(nuevoEstado==='Comprada'){
     ordenCompra=prompt('Ingresa el número de Orden de Compra de Zoho:');
@@ -4742,7 +4794,6 @@ function solpCambiarEstado(id,nuevoEstado){
     if(!ordenCompra){alert('Debes ingresar el número de Orden de Compra para marcar como Comprada.');return;}
   }
   var camposFecha={Cotizando:'FechaCotizando',Aprobada:'FechaAprobada',Comprada:'FechaComprada',Entregada:'FechaEntregada',Cerrada:'FechaCerrada',Rechazada:'FechaCerrada'};
-  var item=solpCache.find(function(i){return String(i.id)===String(id);});
   var estadoAnterior=item?item.estado:'';
   solpPost({accion:'cambiarEstado',datos:{itemId:String(id),nuevoEstado:nuevoEstado,estadoAnterior:estadoAnterior,campoFecha:camposFecha[nuevoEstado]||'FechaCerrada',titulo:item?item.numero:'',ot:item?item.ot:'',codigoGO:item?item.codigoGO:'',destinoTipo:item?item.destinoTipo:'',cliente:item?item.cliente:'',tipoMaterial:item?item.tipoMaterial:'',solicitante:item?item.solicitante:'',costoEstimado:item?item.costoEstimado:0,ubicacion:item?item.ubicacion:'',prioridad:item?item.prioridad:'',fechaRequerida:item?item.fechaRequerida:'',ordenCompra:ordenCompra}})
   .then(function(){solpCargarLista();solpVolverALista();})
