@@ -5395,6 +5395,7 @@ abrirSolicitud=function(tipo){
       </div>
 
       <div id="planAlerts"></div>
+      <div id="planDataInfo" style="font-size:11px;color:var(--text-muted);text-align:right;padding:0 8px 4px;font-style:italic"></div>
 
       <div class="plan-section-box">
         <div class="plan-section-header">
@@ -5732,9 +5733,11 @@ abrirSolicitud=function(tipo){
 <script>
 /* ===== PLANIFICACIÓN MODULE ===== */
 var planOtsCache=[];
+var planTrabajosCache=[];
 var planSolCache=[];
 var planClientesCache=[];
 var planSucursalesCache=[];
+var planDatosListos=false;
 var planTecnicos=['Carlos M.','José R.','Miguel A.'];
 var planTecColores={'Carlos M.':'#3b82f6','José R.':'#f59e0b','Miguel A.':'#8b5cf6'};
 var planWeekOffset=0;
@@ -5813,19 +5816,40 @@ function planInit(){
 }
 
 function planCargarDatos(){
-  /* Load clients, sucursales and OTs from existing webhook */
+  /* Load clients, sucursales, OTs and Trabajos from existing webhook */
+  planDatosListos=false;
   Promise.all([
     fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_CLIENTES'})}).then(function(r){return r.json();}),
     fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_SUCURSALES',payload:{clienteId:'todos'}})}).then(function(r){return r.json();}),
-    fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_OTS',payload:{estado:'todos'}})}).then(function(r){return r.json();})
+    fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_OTS',payload:{estado:'todos'}})}).then(function(r){return r.json();}),
+    fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_TRABAJOS'})}).then(function(r){return r.json();}).catch(function(){return [];})
   ]).then(function(results){
-    planClientesCache=results[0]||[];
-    planSucursalesCache=results[1]||[];
-    planOtsCache=results[2]||[];
+    planClientesCache=(results[0]||[]).map(function(c){return c.fields||c;});
+    planSucursalesCache=(results[1]||[]).map(function(s){return s.fields||s;});
+    planOtsCache=(results[2]||[]).map(function(o){return o.fields||o;});
+    planTrabajosCache=(results[3]||[]).map(function(t){return t.fields||t;});
+    planDatosListos=true;
     planRenderAll();
   }).catch(function(err){
     console.error('Error cargando datos planificación:',err);
   });
+}
+
+function planGetAllItems(){
+  /* Unifica OTs + Trabajos para renderizar en calendario/tabla.
+     Los trabajos de Programacion se marcan con _source='trabajo'. */
+  var items=[];
+  planOtsCache.forEach(function(ot){var o={};for(var k in ot)o[k]=ot[k];o._source='ot';items.push(o);});
+  planTrabajosCache.forEach(function(t){
+    var o={};for(var k in t)o[k]=t[k];o._source='trabajo';
+    /* Mapear campos de Programacion a nombres usados en render */
+    if(!o.Tecnico_Principal&&o.Tecnico)o.Tecnico_Principal=o.Tecnico;
+    if(!o.Tipo_OT&&o.Tipo_Trabajo)o.Tipo_OT=o.Tipo_Trabajo;
+    if(!o.Fecha_Programada&&o.FechaProgramada)o.Fecha_Programada=o.FechaProgramada;
+    if(!o.Estado_OT&&o.Estado)o.Estado_OT=o.Estado;
+    items.push(o);
+  });
+  return items;
 }
 
 function planRenderAll(){
@@ -5836,6 +5860,9 @@ function planRenderAll(){
   planRenderDaily();
   planRenderDashboard();
   planPoblarSelectClientes();
+  /* Indicador de datos cargados */
+  var info=document.getElementById('planDataInfo');
+  if(info)info.textContent='📊 '+planOtsCache.length+' OTs · '+planTrabajosCache.length+' Trabajos · '+planClientesCache.length+' Clientes';
 }
 
 function planSwitchRole(role){
@@ -5871,7 +5898,8 @@ function planAdminTab(el,panelId){
 function planRenderKpis(){
   var total=0,ejec=0,prog=0,pend=0,venc=0;
   var hoy=new Date();
-  planOtsCache.forEach(function(ot){
+  var allItems=planGetAllItems();
+  allItems.forEach(function(ot){
     var estado=(ot.Estado_OT||ot.Estado||'').toLowerCase();
     total++;
     if(estado==='ejecutada'||estado==='cerrada')ejec++;
@@ -5935,9 +5963,10 @@ function planRenderCalendario(){
     html+='<div class="plan-cal-header">'+diasSemana[i]+'<br><span style="font-size:14px;font-weight:800">'+d.getDate()+'</span></div>';
   });
 
-  /* Group OTs by tecnico */
+  /* Group OTs + Trabajos by tecnico */
   var tecMap={};
-  planOtsCache.forEach(function(ot){
+  var allItems=planGetAllItems();
+  allItems.forEach(function(ot){
     var tec=ot.Tecnico_Principal||ot.Tecnico||'Sin asignar';
     if(!tecMap[tec])tecMap[tec]=[];
     tecMap[tec].push(ot);
@@ -5996,7 +6025,8 @@ function planGetTipoPrefix(tipo){
 function planRenderTablaOTs(){
   var tbody=document.getElementById('planTablaBody');
   var search=(document.getElementById('planSearchOT').value||'').toLowerCase();
-  var filtered=planOtsCache.filter(function(ot){
+  var allItems=planGetAllItems();
+  var filtered=allItems.filter(function(ot){
     var estado=(ot.Estado_OT||ot.Estado||'').toLowerCase();
     var hoy=new Date();
     var fp=ot.Fecha_Programada||ot.FechaProgramada;
@@ -6044,7 +6074,8 @@ function planRenderTablaOTs(){
     var reprogHtml=reprog>0?'<span class="plan-badge candado">🔒</span>':'—';
 
     html+='<tr'+(estadoLower==='cerrada'||estadoLower==='cancelada'?' style="opacity:.6"':'')+'>';
-    html+='<td><span class="plan-ot-link">'+titulo+'</span></td>';
+    var srcTag=ot._source==='trabajo'?' <span style="font-size:9px;background:#E6F1FB;color:#0C447C;padding:1px 5px;border-radius:3px">PROG</span>':'';
+    html+='<td><span class="plan-ot-link">'+titulo+'</span>'+srcTag+'</td>';
     html+='<td><span class="plan-badge '+tipoBadge+'">'+tipo+'</span></td>';
     html+='<td>'+cliente+'</td>';
     html+='<td>'+tec+'</td>';
@@ -6069,7 +6100,8 @@ function planFiltroChip(el,estado){
 /* Vencidas */
 function planRenderVencidas(){
   var hoy=new Date();
-  var vencidas=planOtsCache.filter(function(ot){
+  var allItems=planGetAllItems();
+  var vencidas=allItems.filter(function(ot){
     var estado=(ot.Estado_OT||ot.Estado||'').toLowerCase();
     if(estado!=='abierta'&&estado!=='programada')return false;
     var fp=ot.Fecha_Programada||ot.FechaProgramada;
@@ -6137,7 +6169,8 @@ function planRenderDaily(){
 
   /* Filter OTs for today */
   var hoyStr=hoy.getFullYear()+'-'+String(hoy.getMonth()+1).padStart(2,'0')+'-'+String(hoy.getDate()).padStart(2,'0');
-  var hoyOTs=planOtsCache.filter(function(ot){
+  var allItems=planGetAllItems();
+  var hoyOTs=allItems.filter(function(ot){
     var fp=ot.Fecha_Programada||ot.FechaProgramada;
     if(!fp)return false;
     var fd=new Date(fp);
@@ -6210,11 +6243,12 @@ function planRenderDashboard(){
   document.getElementById('planDashTitle').innerHTML='📊 Dashboard de Operaciones — '+meses[hoy.getMonth()]+' '+hoy.getFullYear();
   document.getElementById('planDashSub').textContent='Reporte ejecutivo · Generado automáticamente';
 
-  var totalOTs=planOtsCache.length;
-  var ejecutadas=planOtsCache.filter(function(ot){var e=(ot.Estado_OT||ot.Estado||'').toLowerCase();return e==='ejecutada'||e==='cerrada';}).length;
+  var allItems=planGetAllItems();
+  var totalOTs=allItems.length;
+  var ejecutadas=allItems.filter(function(ot){var e=(ot.Estado_OT||ot.Estado||'').toLowerCase();return e==='ejecutada'||e==='cerrada';}).length;
   var cumpl=totalOTs>0?Math.round((ejecutadas/totalOTs)*100):0;
   var vencidas=0;
-  planOtsCache.forEach(function(ot){
+  allItems.forEach(function(ot){
     var e=(ot.Estado_OT||ot.Estado||'').toLowerCase();
     if(e!=='abierta'&&e!=='programada')return;
     var fp=ot.Fecha_Programada||ot.FechaProgramada;
@@ -6228,7 +6262,7 @@ function planRenderDashboard(){
 
   /* Build dashboard cards */
   var tecMap={};
-  planOtsCache.forEach(function(ot){
+  allItems.forEach(function(ot){
     var tec=ot.Tecnico_Principal||ot.Tecnico||'Sin asignar';
     if(!tecMap[tec])tecMap[tec]={total:0,completadas:0};
     tecMap[tec].total++;
@@ -6237,14 +6271,14 @@ function planRenderDashboard(){
   });
 
   var tipoMap={};
-  planOtsCache.forEach(function(ot){
+  allItems.forEach(function(ot){
     var tipo=planGetTipoPrefix(ot.Tipo_OT||ot.Tipo||'');
     if(!tipoMap[tipo])tipoMap[tipo]=0;
     tipoMap[tipo]++;
   });
 
   var clienteMap={};
-  planOtsCache.forEach(function(ot){
+  allItems.forEach(function(ot){
     var cli=ot.Cliente||'Sin cliente';
     if(!clienteMap[cli])clienteMap[cli]={total:0,horas:0,completadas:0};
     clienteMap[cli].total++;
