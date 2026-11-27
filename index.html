@@ -5847,11 +5847,14 @@ function planGetAllItems(){
   planOtsCache.forEach(function(ot){var o={};for(var k in ot)o[k]=ot[k];o._source='ot';items.push(o);});
   planTrabajosCache.forEach(function(t){
     var o={};for(var k in t)o[k]=t[k];o._source='trabajo';
-    /* Mapear campos de Programacion a nombres usados en render */
+    /* Mapear campos reales de Programacion a nombres usados en render */
     if(!o.Tecnico_Principal&&o.Tecnico)o.Tecnico_Principal=o.Tecnico;
+    if(!o.Tipo_OT&&o.TipoTrabajo)o.Tipo_OT=o.TipoTrabajo;
     if(!o.Tipo_OT&&o.Tipo_Trabajo)o.Tipo_OT=o.Tipo_Trabajo;
+    if(!o.Fecha_Programada&&o.FechaProgramad)o.Fecha_Programada=o.FechaProgramad;
     if(!o.Fecha_Programada&&o.FechaProgramada)o.Fecha_Programada=o.FechaProgramada;
     if(!o.Estado_OT&&o.Estado)o.Estado_OT=o.Estado;
+    if(!o.OT_Numero&&o.OT)o.OT_Numero=o.OT;
     items.push(o);
   });
   return items;
