@@ -1189,6 +1189,11 @@ function renderModulos(){
     cards.push({color:'teal',icon:'&#127970;',title:'Administrar clientes',desc:'Clientes, sucursales y equipos',action:'abrirAdminClientes()'});
   }
 
+  var planRoles=['Gerencia','Coordinador','Asistente','Administrativa'];
+  if(planRoles.indexOf(rol)!==-1){
+    cards.push({color:'blue',icon:'&#128197;',title:'Planificación',desc:'Programación de trabajos y OTs',action:'abrirPlanificacion()'});
+  }
+
   cards.forEach(function(c){
     var div=document.createElement('div');
     div.className='mod-card '+c.color;
@@ -5363,7 +5368,7 @@ abrirSolicitud=function(tipo){
     </div>
     <div>
       <div class="plan-top-bar-user" id="planTopUser">Coordinadora — María</div>
-      <button onclick="showOnly('screenModulos')" style="background:rgba(255,255,255,0.15);border:none;color:white;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit;margin-top:4px">&#8592; Volver</button>
+      <button onclick="launchModulos()" style="background:rgba(255,255,255,0.15);border:none;color:white;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit;margin-top:4px">&#8592; Volver</button>
     </div>
   </div>
 
