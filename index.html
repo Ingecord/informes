@@ -7140,8 +7140,8 @@ function planModalCargarTecnicos(){
       var rol=f.Rol||'';
       if(rol==='Tecnico'||rol==='Supervisor'||rol==='ServiciosProfesionales'){
         var opt=document.createElement('option');
-        opt.value=nombre;
-        opt.setAttribute('data-id',id);
+        opt.value=id;
+        opt.setAttribute('data-nombre',nombre);
         opt.textContent=nombre;
         sel.appendChild(opt);
       }
@@ -7182,10 +7182,13 @@ function planCrearTrabajo(){
   var prioridad=document.getElementById('planModalPrioridad').value;
   var facturable=document.getElementById('planModalFacturable').value;
   var desc=document.getElementById('planModalDesc').value;
-  var tecnico=document.getElementById('planModalTecnico').value;
+  var selTec=document.getElementById('planModalTecnico');
+  var tecnicoId=selTec.value;
+  var tecnicoNombre=(selTec.selectedIndex>0?selTec.options[selTec.selectedIndex].getAttribute('data-nombre'):'')||'';
 
   if(!clienteId||!sucursalId){alert('Seleccione cliente y sucursal');return;}
   if(!fecha){alert('Seleccione fecha');return;}
+  if(!tecnicoId){alert('Seleccione un técnico');return;}
   if(!planEquiposSeleccionados.length){alert('Seleccione al menos un equipo');return;}
 
   /* Buscar nombres de cliente y sucursal */
@@ -7201,7 +7204,7 @@ function planCrearTrabajo(){
     payload:{
       clienteId:clienteId,
       sucursalId:sucursalId,
-      tecnicoId:tecnico,
+      tecnicoId:tecnicoId,
       tipo:tipo,
       prioridad:prioridad,
       origen:'Trabajo Programado',
@@ -7215,8 +7218,6 @@ function planCrearTrabajo(){
   var btn=event.target;
   btn.disabled=true;
   btn.textContent='Creando OT...';
-
-  console.log('CREATE_OT payload:',JSON.stringify(payload,null,2));
 
   fetch(WEBHOOK_OT,{
     method:'POST',
@@ -7232,7 +7233,7 @@ function planCrearTrabajo(){
         cliente:sanTxt(clienteNombre),
         sucursal:sanTxt(sucursalNombre),
         tipoTrabajo:tipo,
-        tecnico:sanTxt(tecnico),
+        tecnico:sanTxt(tecnicoNombre),
         fechaProgramada:fecha,
         horaInicio:document.getElementById('planModalHora')?document.getElementById('planModalHora').value:'08:00',
         duracion:String(window.planUltimaEstimacion||planEquiposSeleccionados.length||1),
