@@ -5506,27 +5506,27 @@ abrirSolicitud=function(tipo){
           <div class="plan-form-group">
             <label class="plan-form-label">Tipo de trabajo</label>
             <select class="plan-form-input" id="planSolTipo" onchange="planEstimar()">
-              <option value="PM">Mantenimiento Preventivo</option>
-              <option value="CR">Correctivo</option>
-              <option value="INST">Instalación</option>
-              <option value="EVAL">Evaluación</option>
+              <option value="Mantenimiento_Preventivo">Mantenimiento Preventivo</option>
+              <option value="Mantenimiento_Correctivo">Correctivo</option>
+              <option value="Instalacion">Instalación</option>
+              <option value="Diagnostico">Diagnóstico</option>
             </select>
           </div>
           <div class="plan-form-group">
             <label class="plan-form-label">Tipo de equipo</label>
             <select class="plan-form-input" id="planSolEquipo" onchange="planEstimar()">
-              <option>Mini Split</option>
-              <option>Split Piso/Techo</option>
-              <option>Central (2-5 Ton)</option>
-              <option>Central (&gt; 5 Ton)</option>
-              <option>VRF — Unidad Interior</option>
-              <option>VRF — Unidad Exterior</option>
-              <option>Chiller Scroll</option>
-              <option>Chiller Tornillo</option>
-              <option>Fan Coil</option>
-              <option>Manejadora</option>
-              <option>Extracción</option>
-              <option>Refrigeración Comercial</option>
+              <option value="Mini split ≤2ton">Mini Split ≤2 ton</option>
+              <option value="Mini split >2ton">Mini Split &gt;2 ton</option>
+              <option value="Piso techo/Cassette">Piso Techo / Cassette</option>
+              <option value="Central ≤5ton">Central ≤5 ton</option>
+              <option value="Central >5ton">Central &gt;5 ton</option>
+              <option value="VRF condensadora">VRF Condensadora</option>
+              <option value="VRF evaporadora">VRF Evaporadora</option>
+              <option value="Chiller tornillo">Chiller Tornillo</option>
+              <option value="Chiller scroll">Chiller Scroll</option>
+              <option value="Extractor/Inyector">Extractor / Inyector</option>
+              <option value="Manejadora AHU">Manejadora AHU</option>
+              <option value="Fan coil">Fan Coil</option>
             </select>
           </div>
           <div class="plan-form-group">
@@ -5821,12 +5821,14 @@ function planCargarDatos(){
     fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_CLIENTES'})}).then(function(r){return r.json();}),
     fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_SUCURSALES',payload:{clienteId:'todos'}})}).then(function(r){return r.json();}),
     fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_OTS',payload:{estado:'todos'}})}).then(function(r){return r.json();}),
-    fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_TRABAJOS'})}).then(function(r){return r.json();}).catch(function(){return [];})
+    fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_TRABAJOS'})}).then(function(r){return r.json();}).catch(function(){return [];}),
+    fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_SOLICITUDES'})}).then(function(r){return r.json();}).catch(function(){return [];})
   ]).then(function(results){
     planClientesCache=(results[0]||[]).map(function(c){return c.fields||c;});
     planSucursalesCache=(results[1]||[]).map(function(s){return s.fields||s;});
     planOtsCache=(results[2]||[]).map(function(o){return o.fields||o;});
     planTrabajosCache=(results[3]||[]).map(function(t){return t.fields||t;});
+    planSolCache=(results[4]||[]).map(function(s){return s.fields||s;}).filter(function(s){return s&&s.Title;});
     planDatosListos=true;
     planRenderAll();
   }).catch(function(err){
@@ -5861,6 +5863,7 @@ function planRenderAll(){
   planRenderVencidas();
   planRenderDaily();
   planRenderDashboard();
+  planRenderSolicitudes();
   planPoblarSelectClientes();
   /* Indicador de datos cargados */
   var info=document.getElementById('planDataInfo');
@@ -6138,28 +6141,77 @@ function planRenderVencidas(){
 }
 
 /* Solicitudes (Coordinadora view) */
+function planCargarSolicitudes(){
+  fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_SOLICITUDES'})})
+  .then(function(r){return r.json();})
+  .then(function(data){
+    planSolCache=(data||[]).map(function(s){return s.fields||s;}).filter(function(s){return s&&s.Title;});
+    planRenderSolicitudes();
+  }).catch(function(err){console.error('Error cargando solicitudes:',err);});
+}
+
 function planRenderSolicitudes(){
-  /* For now show placeholder - will connect to Solicitudes list */
-  var count=planSolCache.length;
+  /* Filter: show only unresolved (no ResueltaPor) */
+  var pendientes=planSolCache.filter(function(s){return !s.ResueltaPor;});
+  var count=pendientes.length;
   document.getElementById('planSolCount').textContent=count;
   if(count===0){
     document.getElementById('planSolList').innerHTML='<div style="text-align:center;padding:30px;color:var(--text-muted);font-size:13px">✅ No hay solicitudes pendientes</div>';
     return;
   }
+  var tipoNombres={'Mantenimiento_Preventivo':'Preventivo','Mantenimiento_Correctivo':'Correctivo','Instalacion':'Instalación','Diagnostico':'Diagnóstico'};
   var html='';
-  planSolCache.forEach(function(sol){
-    var esUrgente=(sol.Prioridad||'').toLowerCase()==='urgente';
+  pendientes.forEach(function(sol){
+    var esUrgente=sol.Urgente===true||sol.Urgente==='true';
+    var tipoSol=sol.TipoSolicitud||'Nuevo Trabajo';
+    var tipoTrab=tipoNombres[sol.TipoTrabajo]||sol.TipoTrabajo||'—';
+    var equipo=sol.TipoEquipo||'';
+    var cant=sol.CantidadEquipos||1;
+    var facturable=sol.Facturable===true||sol.Facturable==='true';
+    var fecha=sol.Created?new Date(sol.Created).toLocaleDateString('es-PA'):'';
+    var iconClass=esUrgente?'urgente':(tipoSol==='Cancelar'?'cancelar':'nueva');
+    var icon=esUrgente?'🔴':(tipoSol==='Cancelar'?'❌':'📋');
     html+='<div class="plan-sol-card">';
-    html+='<div class="plan-sol-icon '+(esUrgente?'urgente':'nueva')+'">'+(esUrgente?'🔴':'📋')+'</div>';
+    html+='<div class="plan-sol-icon '+iconClass+'">'+icon+'</div>';
     html+='<div class="plan-sol-body">';
-    html+='<div class="plan-sol-title">'+(sol.Cliente||'—')+' — '+(sol.TipoTrabajo||'—')+'</div>';
-    html+='<div class="plan-sol-meta">'+(sol.Notas||'Sin notas')+'</div>';
+    html+='<div class="plan-sol-title">'+(sol.Cliente||'—')+' — '+tipoTrab+'</div>';
+    html+='<div class="plan-sol-meta">'+equipo+(cant>1?' × '+cant:'')+' · '+(facturable?'Facturable':'No facturable')+(fecha?' · '+fecha:'')+'</div>';
+    if(sol.Descripcion)html+='<div class="plan-sol-meta" style="margin-top:2px;font-style:italic">'+sol.Descripcion+'</div>';
+    html+='<div class="plan-sol-meta" style="margin-top:2px;font-size:11px;color:var(--text-muted)">Solicitado por: '+(sol.CreadaPor||'—')+' · Tipo: '+tipoSol+'</div>';
     html+='<div class="plan-sol-actions">';
-    html+='<button class="plan-btn primary sm">✓ Aprobar</button>';
-    html+='<button class="plan-btn danger sm">✕ Rechazar</button>';
+    html+='<button class="plan-btn primary sm" onclick="planAprobarSolicitud(\''+sol.id+'\')">✓ Aprobar y Programar</button>';
+    html+='<button class="plan-btn danger sm" onclick="planRechazarSolicitud(\''+sol.id+'\')">✕ Rechazar</button>';
     html+='</div></div></div>';
   });
   document.getElementById('planSolList').innerHTML=html;
+}
+
+/* Aprobar solicitud → abrir modal de programación con datos prellenados */
+function planAprobarSolicitud(solId){
+  var sol=planSolCache.filter(function(s){return String(s.id)===String(solId);})[0];
+  if(!sol){alert('Solicitud no encontrada');return;}
+  /* Open modal and pre-fill from solicitud data */
+  planAbrirModal();
+  /* Pre-select client by name */
+  var selCli=document.getElementById('planModalCliente');
+  for(var i=0;i<selCli.options.length;i++){
+    if(selCli.options[i].text===(sol.Cliente||'')){selCli.selectedIndex=i;break;}
+  }
+  /* Trigger sucursal load, then pre-select */
+  planModalCargarSuc();
+  /* Set tipo */
+  var selTipo=document.getElementById('planModalTipo');
+  if(selTipo&&sol.TipoTrabajo){selTipo.value=sol.TipoTrabajo;}
+  /* Set description with solicitud reference */
+  var desc=document.getElementById('planModalDesc');
+  if(desc){desc.value='[Solicitud #'+solId+'] '+(sol.Descripcion||'');}
+}
+
+/* Rechazar solicitud → pedir nota y marcar como resuelta */
+function planRechazarSolicitud(solId){
+  var nota=prompt('Motivo del rechazo:');
+  if(nota===null)return; /* cancelled */
+  alert('⚠️ La función UPDATE_SOLICITUD debe agregarse al escenario de Make.com para marcar como resuelta.');
 }
 
 /* Daily board */
@@ -6371,16 +6423,24 @@ function planCargarSucursalesSol(){
   var sel=document.getElementById('planSolSucursal');
   sel.innerHTML='<option value="">Cargando...</option>';
   if(!clienteId){sel.innerHTML='<option value="">— Seleccionar sucursal —</option>';return;}
-  var filtered=planSucursalesCache.filter(function(s){
-    return (s.Cliente||'')==clienteId||true; /* Show all for now */
-  });
-  var opts='<option value="">— Seleccionar sucursal —</option>';
-  filtered.forEach(function(s){
-    var nombre=s.Title||s.Titulo||s.Nombre||'';
-    var id=s.id||s.Id||'';
-    opts+='<option value="'+id+'">'+nombre+'</option>';
-  });
-  sel.innerHTML=opts;
+  /* Fetch sucursales filtered by client - same pattern as modal */
+  fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_SUCURSALES',payload:{clienteId:clienteId}})})
+  .then(function(r){return r.json();})
+  .then(function(data){
+    var filtradas=data.filter(function(s){
+      var f=s.fields||s;
+      return String(f.ClienteIDLookupId||f.ClienteLookupId||'')===String(clienteId);
+    });
+    sel.innerHTML='<option value="">— Seleccionar sucursal —</option>';
+    if(!filtradas.length){sel.innerHTML='<option value="">Sin sucursales</option>';return;}
+    filtradas.forEach(function(s){
+      var f=s.fields||s;
+      var opt=document.createElement('option');
+      opt.value=f.id||f.ID||'';
+      opt.textContent=f.Title||f.Nombre||'';
+      sel.appendChild(opt);
+    });
+  }).catch(function(){sel.innerHTML='<option value="">Error al cargar</option>';});
 }
 
 var planEquiposSeleccionados=[];
@@ -6582,8 +6642,12 @@ function planCrearTrabajo(){
 
 /* Send solicitud (Admin role) */
 function planEnviarSolicitud(){
-  var clienteId=document.getElementById('planSolCliente').value;
-  var sucursalId=document.getElementById('planSolSucursal').value;
+  var selCliente=document.getElementById('planSolCliente');
+  var selSucursal=document.getElementById('planSolSucursal');
+  var clienteId=selCliente.value;
+  var sucursalId=selSucursal.value;
+  var clienteNombre=selCliente.options[selCliente.selectedIndex]?selCliente.options[selCliente.selectedIndex].text:'';
+  var sucursalNombre=selSucursal.options[selSucursal.selectedIndex]?selSucursal.options[selSucursal.selectedIndex].text:'';
   var tipo=document.getElementById('planSolTipo').value;
   var equipo=document.getElementById('planSolEquipo').value;
   var cantidad=document.getElementById('planSolCantidad').value;
@@ -6593,8 +6657,54 @@ function planEnviarSolicitud(){
 
   if(!clienteId||!sucursalId){alert('Seleccione cliente y sucursal');return;}
 
-  /* For now - placeholder until Solicitudes route is added to Make.com */
-  alert('📨 Solicitud enviada a la coordinadora.\n\nNota: La ruta CREATE_SOLICITUD debe agregarse al escenario de Make.com para almacenar en la lista Solicitudes de SharePoint.');
+  var btn=document.querySelector('#planNuevaSolicitud button.primary');
+  if(btn){btn.disabled=true;btn.textContent='Enviando...';}
+
+  var payload={
+    action:'CREATE_SOLICITUD',
+    payload:{
+      titulo:sanTxt('Solicitud — '+clienteNombre+' — '+sucursalNombre),
+      tipoSolicitud:'Nuevo Trabajo',
+      cliente:sanTxt(clienteNombre),
+      sucursal:sanTxt(sucursalNombre),
+      tipoEquipo:equipo,
+      cantidadEquipos:cantidad,
+      tipoTrabajo:tipo,
+      descripcion:sanTxt(notas||''),
+      notaCliente:'',
+      facturable:facturable==='Si',
+      urgente:prioridad==='Urgente'||prioridad==='Extraordinaria',
+      creadaPor:sanTxt(session.nombre||'')
+    }
+  };
+
+  fetch(WEBHOOK_OT,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(payload)
+  }).then(function(r){return r.json();}).then(function(resp){
+    if(btn){btn.disabled=false;btn.textContent='📨 Enviar Solicitud a Coordinadora';}
+    if(resp&&resp.ok){
+      alert('✅ Solicitud #'+resp.id+' enviada exitosamente.\n\nLa coordinadora la revisará y programará el trabajo.');
+      /* Reset form */
+      document.getElementById('planSolCliente').selectedIndex=0;
+      document.getElementById('planSolSucursal').innerHTML='<option value="">— Seleccionar sucursal —</option>';
+      document.getElementById('planSolTipo').selectedIndex=0;
+      document.getElementById('planSolEquipo').selectedIndex=0;
+      document.getElementById('planSolCantidad').value='1';
+      document.getElementById('planSolPrioridad').selectedIndex=0;
+      document.getElementById('planSolFacturable').selectedIndex=0;
+      document.getElementById('planSolNotas').value='';
+      /* Reload solicitudes list */
+      planCargarSolicitudes();
+    }else{
+      alert('Error al crear solicitud. Intenta de nuevo.');
+    }
+  }).catch(function(err){
+    if(btn){btn.disabled=false;btn.textContent='📨 Enviar Solicitud a Coordinadora';}
+    console.error('Error solicitud:',err);
+    alert('Error de conexión al crear solicitud.');
+  });
 }
 
 /* Filter solicitudes */
