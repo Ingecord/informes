@@ -5875,12 +5875,18 @@ function planCargarDatos(){
     fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_SOLICITUDES'})}).then(function(r){return r.json();}).catch(function(){return [];}),
     fetch(WEBHOOK_ADMIN_CLIENTES,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_EQUIPOS_ALL'})}).then(function(r){return r.json();}).catch(function(){return [];})
   ]).then(function(results){
-    planClientesCache=(results[0]||[]).map(function(c){return c.fields||c;});
-    planSucursalesCache=(results[1]||[]).map(function(s){return s.fields||s;});
-    planOtsCache=(results[2]||[]).map(function(o){return o.fields||o;});
-    planTrabajosCache=(results[3]||[]).map(function(t){return t.fields||t;});
-    planSolCache=(results[4]||[]).map(function(s){return s.fields||s;}).filter(function(s){return s&&s.Title;});
-    planEquiposCache=(results[5]||[]).map(function(e){return e.fields||e;});
+    /* Normalizar preservando id de SharePoint (vive fuera de fields) */
+    function planNorm(arr){return(Array.isArray(arr)?arr:[]).map(function(x){var f=x.fields||x;if(x.id&&!f.id)f.id=x.id;return f;});}
+    planClientesCache=planNorm(results[0]);
+    planSucursalesCache=planNorm(results[1]);
+    planOtsCache=planNorm(results[2]);
+    planTrabajosCache=planNorm(results[3]);
+    planSolCache=planNorm(results[4]).filter(function(s){return s&&s.Title;});
+    /* GET_EQUIPOS_ALL puede devolver objeto envolvente en vez de array */
+    var eqRaw=results[5]||[];
+    if(!Array.isArray(eqRaw))eqRaw=eqRaw.value||eqRaw.results||eqRaw.data||[];
+    if(!Array.isArray(eqRaw))eqRaw=[];
+    planEquiposCache=planNorm(eqRaw);
     planDatosListos=true;
     planRenderAll();
   }).catch(function(err){
