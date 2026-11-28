@@ -567,12 +567,28 @@ textarea{min-height:90px;resize:vertical}
 .plan-est-preview{background:var(--surface);border:1px solid var(--border-light);border-radius:var(--radius);padding:14px;margin-top:12px}
 .plan-est-row{display:flex;justify-content:space-between;padding:4px 0;font-size:12px;color:var(--text)}
 .plan-est-row.total{font-weight:700;border-top:1px solid var(--border);margin-top:6px;padding-top:8px}
+.plan-month-nav{display:flex;align-items:center;gap:10px;padding:12px 16px}
+.plan-month-nav button{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 10px;cursor:pointer;font-size:12px;font-family:inherit;color:var(--text)}
+.plan-month-nav span{font-size:13px;font-weight:600;color:var(--text);min-width:120px;text-align:center}
+.plan-month-grid{display:grid;grid-template-columns:repeat(7,1fr);font-size:11px;border-top:1px solid var(--border-light)}
+.plan-month-dow{padding:8px 4px;text-align:center;font-weight:700;color:var(--text-muted);text-transform:uppercase;background:var(--surface);border-bottom:1px solid var(--border-light);border-right:1px solid var(--border-light);font-size:10px}
+.plan-month-day{min-height:80px;padding:4px;border-bottom:1px solid var(--border-light);border-right:1px solid var(--border-light);position:relative;background:var(--white)}
+.plan-month-day.other{background:var(--surface);opacity:0.5}
+.plan-month-day.today{background:#FEFCE8}
+.plan-month-day-num{font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:2px;text-align:right;padding-right:4px}
+.plan-month-day.today .plan-month-day-num{color:var(--teal);font-weight:800}
+.plan-month-item{padding:2px 4px;border-radius:3px;font-size:9px;margin-bottom:2px;cursor:pointer;line-height:1.3;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.plan-month-item.projected{border:1px dashed;opacity:0.75}
+.plan-month-more{font-size:9px;color:var(--text-muted);padding:2px 4px;cursor:pointer}
+.plan-month-legend{display:flex;gap:16px;padding:8px 16px;flex-wrap:wrap;font-size:11px;color:var(--text-muted)}
+.plan-month-legend-item{display:flex;align-items:center;gap:4px}
+.plan-month-legend-swatch{width:12px;height:12px;border-radius:3px}
 .plan-view{display:none}
 .plan-view.active{display:block}
 .plan-coord-panel{display:none}
 .plan-admin-panel{display:none}
 #planModalNuevo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;justify-content:center;align-items:center;padding:20px}
-@media(max-width:700px){.plan-kpi-row{grid-template-columns:repeat(3,1fr)}.plan-cal-grid{font-size:10px}.plan-cal-grid{grid-template-columns:70px repeat(6,1fr)}.plan-form-row,.plan-form-row-3{grid-template-columns:1fr}.plan-dash-grid{grid-template-columns:1fr}.plan-dash-kpi-row{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){.plan-kpi-row{grid-template-columns:repeat(3,1fr)}.plan-cal-grid{font-size:10px}.plan-cal-grid{grid-template-columns:70px repeat(6,1fr)}.plan-form-row,.plan-form-row-3{grid-template-columns:1fr}.plan-dash-grid{grid-template-columns:1fr}.plan-dash-kpi-row{grid-template-columns:repeat(2,1fr)}.plan-month-grid{font-size:9px}.plan-month-day{min-height:55px}.plan-month-item{font-size:8px}.plan-month-legend{gap:8px;font-size:10px}.plan-month-nav{flex-wrap:wrap}}
 
 </style>
 </head>
@@ -5387,6 +5403,7 @@ abrirSolicitud=function(tipo){
       <button class="plan-tab" onclick="planCoordTab(this,'planCoordSolicitudes')">📨 Solicitudes</button>
       <button class="plan-tab" onclick="planCoordTab(this,'planCoordVencidas')">🚨 OTs Vencidas</button>
       <button class="plan-tab" onclick="planCoordTab(this,'planCoordTodas')">📋 Todas las OTs</button>
+      <button class="plan-tab" onclick="planCoordTab(this,'planCoordMensual')">📆 Vista Mensual</button>
     </div>
 
     <!-- Agenda Semanal -->
@@ -5471,6 +5488,37 @@ abrirSolicitud=function(tipo){
             <tr><td colspan="9" style="text-align:center;padding:30px;color:var(--text-muted)">Cargando...</td></tr>
           </tbody>
         </table>
+      </div>
+    </div>
+
+    <!-- Vista Mensual -->
+    <div id="planCoordMensual" class="plan-coord-panel">
+      <div class="plan-section-box">
+        <div class="plan-section-header">
+          <div class="plan-section-title">📆 Programación Mensual</div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <select class="plan-form-input" id="planMesFiltroTec" onchange="planRenderMensual()" style="width:auto;padding:4px 8px;font-size:11px">
+              <option value="todos">Todos los técnicos</option>
+            </select>
+          </div>
+        </div>
+        <div class="plan-month-nav">
+          <button onclick="planCambiarMes(-1)">&#8592; Anterior</button>
+          <span id="planMonthLabel">Noviembre 2026</span>
+          <button onclick="planCambiarMes(1)">Siguiente &#8594;</button>
+          <button onclick="planMonthOffset=0;planRenderMensual()" style="font-size:11px;color:var(--teal)">Hoy</button>
+        </div>
+        <div class="plan-month-legend">
+          <div class="plan-month-legend-item"><div class="plan-month-legend-swatch" style="background:#E1F5EE;border:1px solid #0F6E56"></div> Preventivo</div>
+          <div class="plan-month-legend-item"><div class="plan-month-legend-swatch" style="background:var(--amber-bg);border:1px solid #633806"></div> Correctivo</div>
+          <div class="plan-month-legend-item"><div class="plan-month-legend-swatch" style="background:var(--blue-bg);border:1px solid #0C447C"></div> Instalación</div>
+          <div class="plan-month-legend-item"><div class="plan-month-legend-swatch" style="background:#EDE9FE;border:1px solid #5B21B6"></div> Diagnóstico</div>
+          <div class="plan-month-legend-item"><div class="plan-month-legend-swatch" style="background:#FEF3C7;border:1px dashed #92400E"></div> Proyectado (periodicidad)</div>
+        </div>
+        <div style="overflow-x:auto">
+          <div class="plan-month-grid" id="planMonthGrid"></div>
+        </div>
+        <div id="planMonthSummary" style="padding:12px 16px;font-size:12px;color:var(--text-muted)"></div>
       </div>
     </div>
   </div>
@@ -5730,6 +5778,8 @@ var planDatosListos=false;
 var planTecnicos=['Carlos M.','José R.','Miguel A.'];
 var planTecColores={'Carlos M.':'#3b82f6','José R.':'#f59e0b','Miguel A.':'#8b5cf6'};
 var planWeekOffset=0;
+var planMonthOffset=0;
+var planEquiposCache=[];
 var planFiltroEstado='todas';
 var planFiltroSolEstado='todas';
 
@@ -5822,13 +5872,15 @@ function planCargarDatos(){
     fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_SUCURSALES',payload:{clienteId:'todos'}})}).then(function(r){return r.json();}),
     fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_OTS',payload:{estado:'todos'}})}).then(function(r){return r.json();}),
     fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_TRABAJOS'})}).then(function(r){return r.json();}).catch(function(){return [];}),
-    fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_SOLICITUDES'})}).then(function(r){return r.json();}).catch(function(){return [];})
+    fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_SOLICITUDES'})}).then(function(r){return r.json();}).catch(function(){return [];}),
+    fetch(WEBHOOK_ADMIN_CLIENTES,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_EQUIPOS_ALL'})}).then(function(r){return r.json();}).catch(function(){return [];})
   ]).then(function(results){
     planClientesCache=(results[0]||[]).map(function(c){return c.fields||c;});
     planSucursalesCache=(results[1]||[]).map(function(s){return s.fields||s;});
     planOtsCache=(results[2]||[]).map(function(o){return o.fields||o;});
     planTrabajosCache=(results[3]||[]).map(function(t){return t.fields||t;});
     planSolCache=(results[4]||[]).map(function(s){return s.fields||s;}).filter(function(s){return s&&s.Title;});
+    planEquiposCache=(results[5]||[]).map(function(e){return e.fields||e;});
     planDatosListos=true;
     planRenderAll();
   }).catch(function(err){
@@ -5864,6 +5916,7 @@ function planRenderAll(){
   planRenderDaily();
   planRenderDashboard();
   planRenderSolicitudes();
+  planRenderMensual();
   planPoblarSelectClientes();
   /* Indicador de datos cargados */
   var info=document.getElementById('planDataInfo');
@@ -5954,6 +6007,190 @@ function planGetWeekDates(){
 function planCambiarSemana(dir){
   planWeekOffset+=dir;
   planRenderCalendario();
+}
+
+function planCambiarMes(dir){
+  planMonthOffset+=dir;
+  planRenderMensual();
+}
+
+function planGenerarProyecciones(anio,mes){
+  /* Genera trabajos proyectados desde equipos con periodicidad.
+     Para cada equipo con Periodicidad != 'Segun Demanda' y que tiene Proxima_Fecha,
+     calcula si cae en el mes solicitado. Si ya pasó, proyecta la siguiente fecha. */
+  var proyecciones=[];
+  var periodoMeses={'Mensual':1,'Bimensual':2,'Trimestral':3,'Cuatrimestral':4,'Semestral':6};
+  planEquiposCache.forEach(function(eq){
+    if(!eq.Periodicidad||eq.Periodicidad==='Segun Demanda')return;
+    var mesesP=periodoMeses[eq.Periodicidad];
+    if(!mesesP)return;
+    /* Obtener fecha de próxima ejecución o calcular desde última */
+    var proxStr=eq.Proxima_Fecha||eq.ProximaFecha;
+    var ultStr=eq.Ultima_Ejecucion||eq.UltimaEjecucion;
+    var prox=null;
+    if(proxStr){
+      prox=new Date(proxStr);
+    }else if(ultStr){
+      prox=new Date(ultStr);
+      prox.setMonth(prox.getMonth()+mesesP);
+    }else{
+      return;/* Sin fechas no podemos proyectar */
+    }
+    if(isNaN(prox.getTime()))return;
+    /* Iterar hacia adelante hasta cubrir el mes solicitado */
+    var mesInicio=new Date(anio,mes,1);
+    var mesFin=new Date(anio,mes+1,0);
+    /* Si la próxima fecha es muy anterior al mes, avanzar */
+    var iteraciones=0;
+    while(prox<mesInicio&&iteraciones<60){
+      prox.setMonth(prox.getMonth()+mesesP);
+      iteraciones++;
+    }
+    /* Verificar si cae en el mes solicitado */
+    if(prox>=mesInicio&&prox<=mesFin){
+      var clienteNombre=eq.Cliente||eq.ClienteNombre||'';
+      var sucursalNombre=eq.Sucursal||eq.SucursalNombre||eq.Ubicacion||'';
+      proyecciones.push({
+        _projected:true,
+        _source:'proyeccion',
+        Fecha_Programada:prox.toISOString().split('T')[0],
+        Tipo_OT:'Mantenimiento_Preventivo',
+        Cliente:clienteNombre,
+        Sucursal:sucursalNombre,
+        Equipo:eq.Tipo||eq.TipoEquipo||'Equipo',
+        Marca:eq.Marca||'',
+        Periodicidad:eq.Periodicidad,
+        Estado_OT:'Proyectado',
+        OT_Numero:'—',
+        _equipoId:eq.id||eq.Id||''
+      });
+    }
+  });
+  return proyecciones;
+}
+
+function planRenderMensual(){
+  var grid=document.getElementById('planMonthGrid');
+  var label=document.getElementById('planMonthLabel');
+  var summary=document.getElementById('planMonthSummary');
+  if(!grid)return;
+
+  var hoy=new Date();
+  var anio=hoy.getFullYear();
+  var mes=hoy.getMonth()+planMonthOffset;
+  /* Ajustar año si mes sale de rango */
+  while(mes<0){mes+=12;anio--;}
+  while(mes>11){mes-=12;anio++;}
+
+  var meses=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  label.textContent=meses[mes]+' '+anio;
+
+  /* Calcular días del mes */
+  var primerDia=new Date(anio,mes,1);
+  var ultimoDia=new Date(anio,mes+1,0);
+  var diasEnMes=ultimoDia.getDate();
+  var diaInicio=primerDia.getDay()||7;/* 1=lun,...,7=dom */
+
+  /* Obtener items reales programados */
+  var items=planGetAllItems();
+  var filtroTec=document.getElementById('planMesFiltroTec');
+  var tecSel=filtroTec?filtroTec.value:'todos';
+
+  /* Poblar select de técnicos si está vacío */
+  if(filtroTec&&filtroTec.options.length<=1){
+    var tecsSet={};
+    items.forEach(function(it){var t=it.Tecnico_Principal||it.Tecnico||'';if(t)tecsSet[t]=1;});
+    planTecnicos.forEach(function(t){tecsSet[t]=1;});
+    Object.keys(tecsSet).sort().forEach(function(t){
+      var opt=document.createElement('option');opt.value=t;opt.textContent=t;
+      filtroTec.appendChild(opt);
+    });
+  }
+
+  /* Filtrar items del mes */
+  var mesStr=(mes+1<10?'0':'')+(mes+1);
+  var prefijo=anio+'-'+mesStr;
+  var itemsMes=items.filter(function(it){
+    var f=it.Fecha_Programada||'';
+    if(f.substring(0,7)!==prefijo)return false;
+    if(tecSel!=='todos'){var t=it.Tecnico_Principal||it.Tecnico||'';if(t!==tecSel)return false;}
+    return true;
+  });
+
+  /* Generar proyecciones de periodicidad */
+  var proyecciones=planGenerarProyecciones(anio,mes);
+  if(tecSel!=='todos'){
+    /* Las proyecciones no tienen técnico asignado, así que si hay filtro de técnico las ocultamos */
+    proyecciones=[];
+  }
+
+  /* Combinar items reales + proyectados */
+  var todosItems=itemsMes.concat(proyecciones);
+
+  /* Agrupar por día */
+  var porDia={};
+  todosItems.forEach(function(it){
+    var f=it.Fecha_Programada||'';
+    var dia=parseInt(f.substring(8,10));
+    if(!porDia[dia])porDia[dia]=[];
+    porDia[dia].push(it);
+  });
+
+  /* Renderizar grid */
+  var html='';
+  /* Headers de días de semana */
+  var dow=['LUN','MAR','MIÉ','JUE','VIE','SÁB','DOM'];
+  dow.forEach(function(d){html+='<div class="plan-month-dow">'+d+'</div>';});
+
+  /* Celdas vacías antes del primer día */
+  for(var i=1;i<diaInicio;i++){
+    html+='<div class="plan-month-day other"></div>';
+  }
+
+  /* Días del mes */
+  var hoyStr=hoy.toISOString().split('T')[0];
+  var totalReales=0,totalProyectados=0;
+  for(var d=1;d<=diasEnMes;d++){
+    var fechaStr=anio+'-'+mesStr+'-'+(d<10?'0':'')+d;
+    var esHoy=fechaStr===hoyStr;
+    html+='<div class="plan-month-day'+(esHoy?' today':'')+'">';
+    html+='<div class="plan-month-day-num">'+d+'</div>';
+    var diaItems=porDia[d]||[];
+    var maxShow=3;
+    for(var j=0;j<Math.min(diaItems.length,maxShow);j++){
+      var it=diaItems[j];
+      var tipo=(it.Tipo_OT||'').toLowerCase();
+      var cls='pm';
+      if(tipo.indexOf('correctivo')>-1)cls='cr';
+      else if(tipo.indexOf('instalacion')>-1||tipo.indexOf('instalación')>-1)cls='inst';
+      else if(tipo.indexOf('diagnostico')>-1||tipo.indexOf('diagnóstico')>-1)cls='eval';
+      var projected=it._projected?' projected':'';
+      var lbl=it._projected?(it.Cliente||it.Equipo||'PM'):(it.OT_Numero||it.Cliente||'OT');
+      if(it._projected)totalProyectados++;else totalReales++;
+      html+='<div class="plan-month-item '+cls+projected+'" title="'+(it.Cliente||'')+' — '+(it.Sucursal||'')+' — '+(it.Tipo_OT||'')+'">';
+      html+=lbl+'</div>';
+    }
+    if(diaItems.length>maxShow){
+      html+='<div class="plan-month-more">+'+(diaItems.length-maxShow)+' más</div>';
+    }
+    html+='</div>';
+  }
+
+  /* Celdas vacías después del último día para completar la semana */
+  var totalCeldas=(diaInicio-1)+diasEnMes;
+  var resto=totalCeldas%7;
+  if(resto>0){
+    for(var i=0;i<7-resto;i++){
+      html+='<div class="plan-month-day other"></div>';
+    }
+  }
+
+  grid.innerHTML=html;
+
+  /* Summary */
+  if(summary){
+    summary.innerHTML='📊 <strong>'+totalReales+'</strong> trabajos programados · <strong>'+totalProyectados+'</strong> trabajos proyectados (periodicidad) · <strong>'+(totalReales+totalProyectados)+'</strong> total en '+meses[mes];
+  }
 }
 
 function planRenderCalendario(){
