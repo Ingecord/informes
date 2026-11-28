@@ -5727,9 +5727,9 @@ abrirSolicitud=function(tipo){
         <div class="plan-form-group">
           <label class="plan-form-label">Prioridad</label>
           <select class="plan-form-input" id="planModalPrioridad">
-            <option>Normal</option>
-            <option>Urgente</option>
-            <option>Extraordinaria</option>
+            <option value="Media">Media</option>
+            <option value="Alta">Alta</option>
+            <option value="Baja">Baja</option>
           </select>
         </div>
       </div>
@@ -7203,7 +7203,7 @@ function planCrearTrabajo(){
       tecnicoId:tecnico,
       tipo:tipo,
       prioridad:prioridad,
-      origen:'Planificacion',
+      origen:'Trabajo Programado',
       fecha:fecha,
       descripcion:sanTxt(desc||'Trabajo programado desde módulo de planificación'),
       equipos:planEquiposSeleccionados.map(function(e){return e.id;}),
