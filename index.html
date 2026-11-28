@@ -5651,7 +5651,12 @@ abrirSolicitud=function(tipo){
   <!-- ====== TABLERO DIARIO ====== -->
   <div id="planViewDaily" class="plan-view">
     <div class="plan-daily-header">
-      <div class="plan-daily-date" id="planDailyDate">📋 Cargando...</div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <button class="plan-btn sm" onclick="planCambiarDia(-1)">← Anterior</button>
+        <div class="plan-daily-date" id="planDailyDate" style="flex:1;text-align:center">📋 Cargando...</div>
+        <button class="plan-btn sm" onclick="planCambiarDia(1)">Siguiente →</button>
+        <button class="plan-btn sm" onclick="planDayOffset=0;planRenderDaily()" style="color:var(--teal)">Hoy</button>
+      </div>
       <div class="plan-daily-subtitle" id="planDailySub">—</div>
     </div>
     <div class="plan-kpi-row" style="grid-template-columns:repeat(4,1fr)" id="planDailyKpis">
@@ -5668,7 +5673,15 @@ abrirSolicitud=function(tipo){
   <!-- ====== DASHBOARD GERENCIA ====== -->
   <div id="planViewGerencia" class="plan-view">
     <div class="plan-dash-header">
-      <div class="plan-dash-title" id="planDashTitle">📊 Dashboard de Operaciones</div>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <div class="plan-dash-title" id="planDashTitle" style="flex:1">📊 Dashboard de Operaciones</div>
+        <select class="plan-form-input" id="planDashPeriodo" onchange="planRenderDashboard()" style="width:auto;padding:4px 8px;font-size:11px">
+          <option value="mes">Este Mes</option>
+          <option value="trimestre">Este Trimestre</option>
+          <option value="anio">Este Año</option>
+          <option value="todo">Todo</option>
+        </select>
+      </div>
       <div class="plan-dash-subtitle" id="planDashSub">Cargando...</div>
     </div>
     <div class="plan-dash-kpi-row" style="padding-top:16px">
@@ -5762,6 +5775,45 @@ abrirSolicitud=function(tipo){
       <div style="display:flex;gap:8px">
         <button class="plan-btn primary" style="flex:1;justify-content:center" onclick="planCrearTrabajo()">✓ Programar y Generar OT</button>
         <button class="plan-btn" onclick="planCerrarModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Reprogramar Trabajo -->
+  <div id="planModalReprog" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);z-index:1200;justify-content:center;align-items:center" onclick="if(event.target===this)planCerrarReprog()">
+    <div style="background:var(--white);border-radius:var(--radius);max-width:420px;width:100%;padding:24px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <h3 style="font-size:16px;font-weight:700">🔄 Reprogramar Trabajo</h3>
+        <button onclick="planCerrarReprog()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-muted)">✕</button>
+      </div>
+      <div id="planReprogInfo" style="font-size:12px;color:var(--text-muted);margin-bottom:12px;padding:10px;background:var(--surface);border-radius:var(--radius-sm)"></div>
+      <div id="planReprogCandadoMsg" style="display:none;padding:12px;background:var(--red-bg);color:var(--red-text);border-radius:var(--radius-sm);font-size:12px;margin-bottom:12px">
+        🔒 Este trabajo ya fue reprogramado una vez. No se permite más reprogramaciones.
+      </div>
+      <div id="planReprogForm">
+        <div class="plan-form-group" style="margin-bottom:12px">
+          <label class="plan-form-label">Nueva fecha</label>
+          <input class="plan-form-input" type="date" id="planReprogFecha">
+        </div>
+        <div class="plan-form-group" style="margin-bottom:12px">
+          <label class="plan-form-label">Motivo de reprogramación</label>
+          <select class="plan-form-input" id="planReprogMotivo">
+            <option value="Solicitud del cliente">Solicitud del cliente</option>
+            <option value="Falta de acceso">Falta de acceso al sitio</option>
+            <option value="Falta de personal">Falta de personal</option>
+            <option value="Clima">Condiciones climáticas</option>
+            <option value="Material pendiente">Material/repuestos pendientes</option>
+            <option value="Otro">Otro</option>
+          </select>
+        </div>
+        <div class="plan-form-group" style="margin-bottom:16px">
+          <label class="plan-form-label">Nota (opcional)</label>
+          <textarea class="plan-form-input" rows="2" id="planReprogNota" placeholder="Detalle adicional..."></textarea>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="plan-btn primary" style="flex:1;justify-content:center" onclick="planEjecutarReprog()">✓ Reprogramar</button>
+          <button class="plan-btn" onclick="planCerrarReprog()">Cancelar</button>
+        </div>
       </div>
     </div>
   </div>
@@ -6199,6 +6251,94 @@ function planRenderMensual(){
   }
 }
 
+/* ===== REPROGRAMACIÓN ===== */
+var planReprogItemId=null;
+var planReprogItemData=null;
+
+function planAbrirReprog(itemId){
+  planReprogItemId=itemId;
+  /* Find the trabajo in cache */
+  var t=null;
+  planTrabajosCache.forEach(function(x){if(String(x.id)===String(itemId))t=x;});
+  if(!t){alert('No se encontró el trabajo.');return;}
+  planReprogItemData=t;
+
+  var veces=parseInt(t.VecesReprogramado)||0;
+  var info=document.getElementById('planReprogInfo');
+  info.innerHTML='<strong>OT:</strong> '+(t.OT||'—')+' · <strong>Cliente:</strong> '+(t.Cliente||'—')+'<br><strong>Fecha actual:</strong> '+(t.FechaProgramad||'—')+' · <strong>Técnico:</strong> '+(t.Tecnico||'—')+'<br><strong>Reprogramaciones previas:</strong> '+veces;
+
+  var candadoMsg=document.getElementById('planReprogCandadoMsg');
+  var form=document.getElementById('planReprogForm');
+  if(veces>=1||t.Candado===true||t.Candado==='true'){
+    candadoMsg.style.display='block';
+    form.style.display='none';
+  } else {
+    candadoMsg.style.display='none';
+    form.style.display='block';
+    /* Set min date to tomorrow */
+    var tom=new Date();tom.setDate(tom.getDate()+1);
+    document.getElementById('planReprogFecha').value='';
+    document.getElementById('planReprogFecha').min=tom.toISOString().split('T')[0];
+    document.getElementById('planReprogMotivo').selectedIndex=0;
+    document.getElementById('planReprogNota').value='';
+  }
+  document.getElementById('planModalReprog').style.display='flex';
+}
+
+function planCerrarReprog(){
+  document.getElementById('planModalReprog').style.display='none';
+  planReprogItemId=null;planReprogItemData=null;
+}
+
+function planEjecutarReprog(){
+  var fecha=document.getElementById('planReprogFecha').value;
+  if(!fecha){alert('Seleccione la nueva fecha.');return;}
+  var motivo=document.getElementById('planReprogMotivo').value;
+  var nota=document.getElementById('planReprogNota').value.trim();
+  var t=planReprogItemData;
+  if(!t){alert('Error: datos no disponibles.');return;}
+
+  var veces=(parseInt(t.VecesReprogramado)||0)+1;
+  var candado=veces>=1;
+  var notaFull='[REPROG '+new Date().toISOString().split('T')[0]+'] '+motivo+(nota?' — '+nota:'');
+  if(t.NotasOperativas)notaFull=t.NotasOperativas+' | '+notaFull;
+
+  var payload={
+    action:'UPDATE_TRABAJO',
+    id:planReprogItemId,
+    FechaProgramad:fecha,
+    VecesReprogramado:String(veces),
+    Candado:candado,
+    NotasOperativas:sanTxt(notaFull),
+    Estado:'Reprogramada'
+  };
+
+  var btns=document.querySelectorAll('#planReprogForm button');
+  btns.forEach(function(b){b.disabled=true;});
+
+  fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
+  .then(function(r){return r.json();})
+  .then(function(res){
+    planCerrarReprog();
+    alert('✅ Trabajo reprogramado a '+fecha+(candado?' (🔒 candado aplicado)':''));
+    /* Update local cache */
+    planTrabajosCache.forEach(function(x){
+      if(String(x.id)===String(planReprogItemId)){
+        x.FechaProgramad=fecha;
+        x.VecesReprogramado=String(veces);
+        x.Candado=candado;
+        x.NotasOperativas=notaFull;
+        x.Estado='Reprogramada';
+      }
+    });
+    planRenderAll();
+  })
+  .catch(function(e){
+    alert('❌ Error al reprogramar: '+e.message);
+    btns.forEach(function(b){b.disabled=false;});
+  });
+}
+
 function planRenderCalendario(){
   var dates=planGetWeekDates();
   var meses=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
@@ -6318,8 +6458,11 @@ function planRenderTablaOTs(){
       if(fdd<hoy&&(hoy-fdd)>86400000){estadoLower='vencida';estado='Vencida';}
     }
     var estadoBadge=estadoLower==='abierta'?'programada':estadoLower;
-    var reprog=ot.Reprogramaciones||0;
+    var reprog=parseInt(ot.VecesReprogramado||ot.Reprogramaciones||0);
     var reprogHtml=reprog>0?'<span class="plan-badge candado">🔒</span>':'—';
+    /* Botón reprogramar: solo para trabajos programados/abiertos, source=trabajo, sin candado */
+    var canReprog=ot._source==='trabajo'&&(estadoLower==='abierta'||estadoLower==='programada'||estadoLower==='reprogramada')&&reprog<1;
+    var reprogBtn=canReprog?'<button class="plan-btn sm" onclick="planAbrirReprog(\''+ot.id+'\')" style="font-size:9px;padding:2px 6px;margin-left:4px" title="Reprogramar">🔄</button>':'';
 
     html+='<tr'+(estadoLower==='cerrada'||estadoLower==='cancelada'?' style="opacity:.6"':'')+'>';
     var srcTag=ot._source==='trabajo'?' <span style="font-size:9px;background:#E6F1FB;color:#0C447C;padding:1px 5px;border-radius:3px">PROG</span>':'';
@@ -6331,7 +6474,7 @@ function planRenderTablaOTs(){
     html+='<td>'+(ot.Equipos||'—')+'</td>';
     html+='<td>'+(ot.TiempoEstimado||'—')+'</td>';
     html+='<td><span class="plan-badge '+estadoBadge+'">'+estado+'</span></td>';
-    html+='<td>'+reprogHtml+'</td>';
+    html+='<td>'+reprogHtml+reprogBtn+'</td>';
     html+='</tr>';
   });
   tbody.innerHTML=html;
@@ -6483,47 +6626,51 @@ function planRechazarSolicitud(solId){
 }
 
 /* Daily board */
+var planDayOffset=0;
+function planCambiarDia(dir){planDayOffset+=dir;planRenderDaily();}
+
 function planRenderDaily(){
-  var hoy=new Date();
+  var dia=new Date();
+  dia.setDate(dia.getDate()+planDayOffset);
   var diasSem=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
   var meses=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-  document.getElementById('planDailyDate').innerHTML='📋 '+diasSem[hoy.getDay()]+', '+hoy.getDate()+' de '+meses[hoy.getMonth()]+' '+hoy.getFullYear();
+  var esHoy=planDayOffset===0;
+  document.getElementById('planDailyDate').innerHTML='📋 '+diasSem[dia.getDay()]+', '+dia.getDate()+' de '+meses[dia.getMonth()]+' '+dia.getFullYear()+(esHoy?' <span style="font-size:11px;background:var(--teal-light);color:var(--teal);padding:2px 8px;border-radius:10px">HOY</span>':'');
 
-  /* Filter OTs for today */
-  var hoyStr=hoy.getFullYear()+'-'+String(hoy.getMonth()+1).padStart(2,'0')+'-'+String(hoy.getDate()).padStart(2,'0');
+  var diaStr=dia.getFullYear()+'-'+String(dia.getMonth()+1).padStart(2,'0')+'-'+String(dia.getDate()).padStart(2,'0');
   var allItems=planGetAllItems();
-  var hoyOTs=allItems.filter(function(ot){
+  var diaOTs=allItems.filter(function(ot){
     var fp=ot.Fecha_Programada||ot.FechaProgramada;
     if(!fp)return false;
     var fd=new Date(fp);
     var fdStr=fd.getFullYear()+'-'+String(fd.getMonth()+1).padStart(2,'0')+'-'+String(fd.getDate()).padStart(2,'0');
-    return fdStr===hoyStr;
+    return fdStr===diaStr;
   });
 
   var tecMap={};
-  hoyOTs.forEach(function(ot){
+  diaOTs.forEach(function(ot){
     var tec=ot.Tecnico_Principal||ot.Tecnico||'Sin asignar';
     if(!tecMap[tec])tecMap[tec]=[];
     tecMap[tec].push(ot);
   });
 
   var totalTec=Object.keys(tecMap).length;
-  document.getElementById('planDailySub').textContent=totalTec+' técnico'+(totalTec!==1?'s':'')+' · '+hoyOTs.length+' trabajo'+(hoyOTs.length!==1?'s':'')+' programado'+(hoyOTs.length!==1?'s':'')+' · Jornada 8:00—17:00';
+  document.getElementById('planDailySub').textContent=totalTec+' técnico'+(totalTec!==1?'s':'')+' · '+diaOTs.length+' trabajo'+(diaOTs.length!==1?'s':'')+' programado'+(diaOTs.length!==1?'s':'');
 
   var comp=0,curso=0,porIni=0;
-  hoyOTs.forEach(function(ot){
+  diaOTs.forEach(function(ot){
     var e=(ot.Estado_OT||ot.Estado||'').toLowerCase();
     if(e==='ejecutada'||e==='cerrada')comp++;
     else if(e==='en curso'||e==='en_curso')curso++;
     else porIni++;
   });
-  document.getElementById('planDkTotal').textContent=hoyOTs.length;
+  document.getElementById('planDkTotal').textContent=diaOTs.length;
   document.getElementById('planDkComp').textContent=comp;
   document.getElementById('planDkCurso').textContent=curso;
   document.getElementById('planDkPorIni').textContent=porIni;
 
-  if(hoyOTs.length===0){
-    document.getElementById('planDailyCards').innerHTML='<div style="text-align:center;padding:30px;color:var(--text-muted);font-size:13px">No hay trabajos programados para hoy</div>';
+  if(diaOTs.length===0){
+    document.getElementById('planDailyCards').innerHTML='<div style="text-align:center;padding:30px;color:var(--text-muted);font-size:13px">No hay trabajos programados para '+(esHoy?'hoy':'este día')+'</div>';
     return;
   }
 
@@ -6547,9 +6694,34 @@ function planRenderDaily(){
       else if(estado==='en curso'||estado==='en_curso')estadoHtml='<span style="color:var(--teal);font-weight:600">En curso</span>';
       else estadoHtml='<span style="color:var(--text-muted)">Por iniciar</span>';
 
+      /* Hora real: usar HoraInicio y Duracion si existen */
+      var hi=ot.HoraInicio||'';
+      var dur=ot.Duracion||ot.TiempoEstimado||'';
+      var horaTxt='8:00 — 17:00';
+      if(hi){
+        horaTxt=hi;
+        if(dur){
+          var horas=parseFloat(dur)||0;
+          if(horas>0){
+            var parts=hi.split(':');
+            var hh=parseInt(parts[0])||8;
+            var mm=parseInt(parts[1])||0;
+            mm+=Math.round(horas*60);
+            hh+=Math.floor(mm/60);mm=mm%60;
+            horaTxt=hi+' — '+String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0');
+          }
+        }
+      }
+
+      /* Reprog info */
+      var reprog=parseInt(ot.VecesReprogramado||0);
+      var reprogTag=reprog>0?' · <span style="font-size:9px;background:var(--red-bg);color:var(--red-text);padding:1px 5px;border-radius:3px">🔒 Reprogramado</span>':'';
+      var canReprog=ot._source==='trabajo'&&(estado==='abierta'||estado==='programada'||estado==='reprogramada')&&reprog<1;
+      var reprogBtn=canReprog?' <button class="plan-btn sm" onclick="planAbrirReprog(\''+ot.id+'\')" style="font-size:9px;padding:2px 6px" title="Reprogramar">🔄</button>':'';
+
       html+='<div class="plan-daily-task"'+(estado==='en curso'||estado==='en_curso'?' style="background:#f0fdf4"':'')+'>';
-      html+='<span class="plan-daily-task-time">8:00 — 17:00</span>';
-      html+='<span class="plan-daily-task-client">'+(ot.Cliente||'—')+'</span>';
+      html+='<span class="plan-daily-task-time">'+horaTxt+'</span>';
+      html+='<span class="plan-daily-task-client">'+(ot.Cliente||'—')+reprogTag+reprogBtn+'</span>';
       html+='<span class="plan-daily-task-type">'+(tipoIcon[tipo]||'🔧')+' '+(tipoNombres[tipo]||tipo)+' · <span class="plan-badge '+tipoBadge+'">'+tipo+'</span> · '+estadoHtml+'</span>';
       html+='</div>';
     });
@@ -6562,10 +6734,26 @@ function planRenderDaily(){
 function planRenderDashboard(){
   var hoy=new Date();
   var meses=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-  document.getElementById('planDashTitle').innerHTML='📊 Dashboard de Operaciones — '+meses[hoy.getMonth()]+' '+hoy.getFullYear();
+  var periodo=(document.getElementById('planDashPeriodo')||{}).value||'mes';
+  var periodoLabel={'mes':meses[hoy.getMonth()]+' '+hoy.getFullYear(),'trimestre':'Q'+Math.ceil((hoy.getMonth()+1)/3)+' '+hoy.getFullYear(),'anio':'Año '+hoy.getFullYear(),'todo':'Histórico'};
+  document.getElementById('planDashTitle').innerHTML='📊 Dashboard de Operaciones — '+(periodoLabel[periodo]||'');
   document.getElementById('planDashSub').textContent='Reporte ejecutivo · Generado automáticamente';
 
-  var allItems=planGetAllItems();
+  /* Filter by period */
+  var allRaw=planGetAllItems();
+  var allItems=allRaw;
+  if(periodo!=='todo'){
+    var inicioP;
+    if(periodo==='mes'){inicioP=new Date(hoy.getFullYear(),hoy.getMonth(),1);}
+    else if(periodo==='trimestre'){var q=Math.floor(hoy.getMonth()/3)*3;inicioP=new Date(hoy.getFullYear(),q,1);}
+    else{inicioP=new Date(hoy.getFullYear(),0,1);}
+    allItems=allRaw.filter(function(ot){
+      var fp=ot.Fecha_Programada||ot.FechaProgramada;
+      if(!fp)return false;
+      return new Date(fp)>=inicioP;
+    });
+  }
+
   var totalOTs=allItems.length;
   var ejecutadas=allItems.filter(function(ot){var e=(ot.Estado_OT||ot.Estado||'').toLowerCase();return e==='ejecutada'||e==='cerrada';}).length;
   var cumpl=totalOTs>0?Math.round((ejecutadas/totalOTs)*100):0;
@@ -6577,9 +6765,17 @@ function planRenderDashboard(){
     if(fp){var fd=new Date(fp);if(fd<hoy&&(hoy-fd)>86400000)vencidas++;}
   });
 
+  /* Reprogramaciones promedio */
+  var totalReprog=0,conReprog=0;
+  allItems.forEach(function(ot){
+    var r=parseInt(ot.VecesReprogramado||ot.Reprogramaciones||0);
+    if(r>0){totalReprog+=r;conReprog++;}
+  });
+  var promReprog=conReprog>0?(totalReprog/conReprog).toFixed(1):'0';
+
   document.getElementById('planGkOts').textContent=totalOTs;
   document.getElementById('planGkCumpl').textContent=cumpl+'%';
-  document.getElementById('planGkReprog').textContent='—';
+  document.getElementById('planGkReprog').textContent=promReprog;
   document.getElementById('planGkVenc').textContent=vencidas;
 
   /* Build dashboard cards */
@@ -6639,7 +6835,8 @@ function planRenderDashboard(){
   html+='</div></div>';
 
   /* Top clientes */
-  html+='<div class="plan-dash-card"><div class="plan-dash-card-title">🏢 Top Clientes (OTs del Mes)</div>';
+  var periodoTxt={'mes':'del Mes','trimestre':'del Trimestre','anio':'del Año','todo':'Histórico'};
+  html+='<div class="plan-dash-card"><div class="plan-dash-card-title">🏢 Top Clientes (OTs '+(periodoTxt[periodo]||'')+')</div>';
   html+='<table class="plan-table"><thead><tr><th>Cliente</th><th style="text-align:right">OTs</th><th>Cumpl.</th></tr></thead><tbody>';
   var clienteArr=Object.keys(clienteMap).map(function(c){return {nombre:c,total:clienteMap[c].total,comp:clienteMap[c].completadas};});
   clienteArr.sort(function(a,b){return b.total-a.total;});
@@ -6650,10 +6847,22 @@ function planRenderDashboard(){
   });
   html+='</tbody></table></div>';
 
+  /* Reprogramaciones */
+  html+='<div class="plan-dash-card"><div class="plan-dash-card-title">🔄 Reprogramaciones</div><div style="font-size:12px">';
+  html+='<div style="display:flex;gap:16px;margin-bottom:8px">';
+  html+='<div style="text-align:center"><div style="font-size:20px;font-weight:800;color:var(--solp-amber)">'+conReprog+'</div><div style="font-size:10px;color:var(--text-muted)">trabajos reprogramados</div></div>';
+  var candados=allItems.filter(function(ot){return ot.Candado===true||ot.Candado==='true';}).length;
+  html+='<div style="text-align:center"><div style="font-size:20px;font-weight:800;color:var(--solp-red)">'+candados+'</div><div style="font-size:10px;color:var(--text-muted)">con candado 🔒</div></div>';
+  html+='<div style="text-align:center"><div style="font-size:20px;font-weight:800;color:var(--teal)">'+promReprog+'</div><div style="font-size:10px;color:var(--text-muted)">promedio reprogs</div></div>';
+  html+='</div></div></div>';
+
   /* Alertas */
   html+='<div class="plan-dash-card"><div class="plan-dash-card-title" style="color:var(--solp-red)">🚨 Alertas</div><div style="font-size:12px">';
   if(vencidas>0){
     html+='<div style="padding:8px 0;border-bottom:1px solid var(--border-light);display:flex;gap:10px;align-items:center"><span style="font-size:16px">🔴</span><div><div style="font-weight:600">'+vencidas+' OT'+(vencidas>1?'s':'')+' vencida'+(vencidas>1?'s':'')+'</div><div style="color:var(--text-muted);font-size:11px">Requieren atención inmediata</div></div></div>';
+  }
+  if(conReprog>0){
+    html+='<div style="padding:8px 0;border-bottom:1px solid var(--border-light);display:flex;gap:10px;align-items:center"><span style="font-size:16px">🟡</span><div><div style="font-weight:600">'+conReprog+' trabajo'+(conReprog>1?'s':'')+' reprogramado'+(conReprog>1?'s':'')+'</div><div style="color:var(--text-muted);font-size:11px">'+(candados>0?candados+' con candado aplicado':'Sin candados')+'</div></div></div>';
   }
   html+='</div></div>';
 
