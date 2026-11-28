@@ -7141,6 +7141,7 @@ function planModalCargarTecnicos(){
       if(rol==='Tecnico'||rol==='Supervisor'||rol==='ServiciosProfesionales'){
         var opt=document.createElement('option');
         opt.value=nombre;
+        opt.setAttribute('data-id',id);
         opt.textContent=nombre;
         sel.appendChild(opt);
       }
@@ -7214,6 +7215,8 @@ function planCrearTrabajo(){
   var btn=event.target;
   btn.disabled=true;
   btn.textContent='Creando OT...';
+
+  console.log('CREATE_OT payload:',JSON.stringify(payload,null,2));
 
   fetch(WEBHOOK_OT,{
     method:'POST',
