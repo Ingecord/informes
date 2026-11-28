@@ -5760,9 +5760,35 @@ abrirSolicitud=function(tipo){
         </div>
       </div>
 
-      <div class="plan-form-group">
-        <label class="plan-form-label">Descripción</label>
-        <textarea class="plan-form-input" rows="2" id="planModalDesc" placeholder="Notas adicionales..."></textarea>
+      <div class="plan-form-row">
+        <div class="plan-form-group">
+          <label class="plan-form-label">Hora de inicio</label>
+          <select class="plan-form-input" id="planModalHora">
+            <option value="07:00">7:00 AM</option>
+            <option value="07:30">7:30 AM</option>
+            <option value="08:00" selected>8:00 AM</option>
+            <option value="08:30">8:30 AM</option>
+            <option value="09:00">9:00 AM</option>
+            <option value="09:30">9:30 AM</option>
+            <option value="10:00">10:00 AM</option>
+            <option value="10:30">10:30 AM</option>
+            <option value="11:00">11:00 AM</option>
+            <option value="11:30">11:30 AM</option>
+            <option value="12:00">12:00 PM</option>
+            <option value="12:30">12:30 PM</option>
+            <option value="13:00">1:00 PM</option>
+            <option value="13:30">1:30 PM</option>
+            <option value="14:00">2:00 PM</option>
+            <option value="14:30">2:30 PM</option>
+            <option value="15:00">3:00 PM</option>
+            <option value="15:30">3:30 PM</option>
+            <option value="16:00">4:00 PM</option>
+          </select>
+        </div>
+        <div class="plan-form-group" style="flex:2">
+          <label class="plan-form-label">Descripción</label>
+          <textarea class="plan-form-input" rows="2" id="planModalDesc" placeholder="Notas adicionales..."></textarea>
+        </div>
       </div>
 
       <div class="plan-est-preview" id="planModalEst">
@@ -5837,11 +5863,27 @@ var planFiltroSolEstado='todas';
 
 /* Base hours for time estimation (Tipo × TipoEquipo) */
 var planHorasBase={
-  'PM':{'Mini Split':1,'Split Piso/Techo':1.2,'Central (2-5 Ton)':2,'Central (> 5 Ton)':3,'VRF — Unidad Interior':1,'VRF — Unidad Exterior':2.5,'Chiller Scroll':4,'Chiller Tornillo':6,'Fan Coil':0.8,'Manejadora':1.5,'Extracción':0.8,'Refrigeración Comercial':2},
-  'CR':{'Mini Split':1.5,'Split Piso/Techo':2,'Central (2-5 Ton)':3,'Central (> 5 Ton)':4,'VRF — Unidad Interior':2,'VRF — Unidad Exterior':3,'Chiller Scroll':5,'Chiller Tornillo':8,'Fan Coil':1.5,'Manejadora':2,'Extracción':1.5,'Refrigeración Comercial':3},
-  'INST':{'Mini Split':2,'Split Piso/Techo':2.5,'Central (2-5 Ton)':4,'Central (> 5 Ton)':6,'VRF — Unidad Interior':3,'VRF — Unidad Exterior':5,'Chiller Scroll':8,'Chiller Tornillo':12,'Fan Coil':1.5,'Manejadora':3,'Extracción':2,'Refrigeración Comercial':4},
-  'EVAL':{'Mini Split':0.5,'Split Piso/Techo':0.8,'Central (2-5 Ton)':1,'Central (> 5 Ton)':1.5,'VRF — Unidad Interior':0.5,'VRF — Unidad Exterior':1,'Chiller Scroll':2,'Chiller Tornillo':3,'Fan Coil':0.5,'Manejadora':1,'Extracción':0.5,'Refrigeración Comercial':1}
+  'Mantenimiento_Preventivo':{'Mini Split':1,'Split Piso/Techo':1.2,'Piso techo/Cassette':1.2,'Central (2-5 Ton)':2,'Central ≤5ton':2,'Central (> 5 Ton)':3,'Central >5ton':3,'VRF — Unidad Interior':1,'VRF evaporadora':1,'VRF — Unidad Exterior':2.5,'VRF condensadora':2.5,'Chiller Scroll':4,'Chiller scroll':4,'Chiller Tornillo':6,'Chiller tornillo':6,'Fan Coil':0.8,'Fan coil':0.8,'Manejadora':1.5,'Manejadora AHU':1.5,'Extracción':0.8,'Extractor/Inyector':0.8,'Mini split ≤2ton':1,'Mini split >2ton':1.2,'General':1},
+  'Mantenimiento_Correctivo':{'Mini Split':1.5,'Split Piso/Techo':2,'Piso techo/Cassette':2,'Central (2-5 Ton)':3,'Central ≤5ton':3,'Central (> 5 Ton)':4,'Central >5ton':4,'VRF — Unidad Interior':2,'VRF evaporadora':2,'VRF — Unidad Exterior':3,'VRF condensadora':3,'Chiller Scroll':5,'Chiller scroll':5,'Chiller Tornillo':8,'Chiller tornillo':8,'Fan Coil':1.5,'Fan coil':1.5,'Manejadora':2,'Manejadora AHU':2,'Extracción':1.5,'Extractor/Inyector':1.5,'Mini split ≤2ton':1.5,'Mini split >2ton':2,'General':1.5},
+  'Instalacion':{'Mini Split':2,'Split Piso/Techo':2.5,'Piso techo/Cassette':2.5,'Central (2-5 Ton)':4,'Central ≤5ton':4,'Central (> 5 Ton)':6,'Central >5ton':6,'VRF — Unidad Interior':3,'VRF evaporadora':3,'VRF — Unidad Exterior':5,'VRF condensadora':5,'Chiller Scroll':8,'Chiller scroll':8,'Chiller Tornillo':12,'Chiller tornillo':12,'Fan Coil':1.5,'Fan coil':1.5,'Manejadora':3,'Manejadora AHU':3,'Extracción':2,'Extractor/Inyector':2,'Mini split ≤2ton':2,'Mini split >2ton':2.5,'General':2},
+  'Diagnostico':{'Mini Split':0.5,'Split Piso/Techo':0.8,'Piso techo/Cassette':0.8,'Central (2-5 Ton)':1,'Central ≤5ton':1,'Central (> 5 Ton)':1.5,'Central >5ton':1.5,'VRF — Unidad Interior':0.5,'VRF evaporadora':0.5,'VRF — Unidad Exterior':1,'VRF condensadora':1,'Chiller Scroll':2,'Chiller scroll':2,'Chiller Tornillo':3,'Chiller tornillo':3,'Fan Coil':0.5,'Fan coil':0.5,'Manejadora':1,'Manejadora AHU':1,'Extracción':0.5,'Extractor/Inyector':0.5,'Mini split ≤2ton':0.5,'Mini split >2ton':0.8,'General':0.5}
 };
+/* Mapeo de TipoEquipo/TipoSistema de SharePoint a key de planHorasBase */
+function planMapearTipoEquipo(eq){
+  var t=eq.TipoEquipo||eq.TipoSistema||eq.Tipo||'';
+  if(t)return t;
+  /* Fallback: intentar desde Title */
+  var title=(eq.Title||eq.Nombre||'').toLowerCase();
+  if(title.indexOf('mini split')>-1||title.indexOf('minisplit')>-1)return 'Mini Split';
+  if(title.indexOf('vrf')>-1)return title.indexOf('conden')>-1?'VRF condensadora':'VRF evaporadora';
+  if(title.indexOf('chiller')>-1)return title.indexOf('tornillo')>-1?'Chiller tornillo':'Chiller scroll';
+  if(title.indexOf('fan coil')>-1||title.indexOf('fancoil')>-1)return 'Fan coil';
+  if(title.indexOf('manejadora')>-1||title.indexOf('ahu')>-1)return 'Manejadora AHU';
+  if(title.indexOf('extrac')>-1||title.indexOf('inyect')>-1)return 'Extractor/Inyector';
+  if(title.indexOf('central')>-1)return 'Central ≤5ton';
+  if(title.indexOf('piso')>-1||title.indexOf('cassette')>-1)return 'Piso techo/Cassette';
+  return 'General';
+}
 
 function planFactorDescuento(n){
   if(n<=1)return 1;
@@ -5861,8 +5903,14 @@ function planEstimar(){
   var equipo=document.getElementById('planSolEquipo').value;
   var cant=document.getElementById('planSolCantidad').value;
   var est=planCalcularTiempo(tipo,equipo,cant);
-  var tipoNombres={'PM':'Preventivo','CR':'Correctivo','INST':'Instalación','EVAL':'Evaluación'};
-  var html='<div class="plan-est-row"><span>Base: '+tipoNombres[tipo]+' × '+equipo+' × '+est.cantidad+' equipos</span><span>'+est.total+'h</span></div>';
+  var tipoNombres={
+    'Mantenimiento_Preventivo':'Preventivo',
+    'Mantenimiento_Correctivo':'Correctivo',
+    'Instalacion':'Instalación',
+    'Diagnostico':'Diagnóstico'
+  };
+  var nombreTipo=tipoNombres[tipo]||tipo;
+  var html='<div class="plan-est-row"><span>Base: '+nombreTipo+' × '+equipo+' × '+est.cantidad+' equipos</span><span>'+est.total+'h</span></div>';
   var dias=Math.ceil(est.total/8);
   html+='<div class="plan-est-row total"><span>Tiempo total estimado</span><span>'+est.total+'h'+(dias>1?' ≈ '+dias+' días':'')+'</span></div>';
   document.getElementById('planEstRows').innerHTML=html;
@@ -5875,8 +5923,6 @@ function planModalEstimar(){
     document.getElementById('planModalEstRows').innerHTML='<div class="plan-est-row" style="color:var(--text-muted)">Selecciona equipos para estimar</div>';
     return;
   }
-  /* Usar 'General' como tipo de equipo genérico ya que ahora se seleccionan equipos reales */
-  var est=planCalcularTiempo(tipo,'General',cant);
   var tipoNombres={
     'Mantenimiento_Preventivo':'Preventivo',
     'Mantenimiento_Correctivo':'Correctivo',
@@ -5884,10 +5930,28 @@ function planModalEstimar(){
     'Diagnostico':'Diagnóstico'
   };
   var nombreTipo=tipoNombres[tipo]||tipo;
-  var html='<div class="plan-est-row"><span>'+nombreTipo+' × '+cant+' equipo(s)</span><span>'+est.total+'h</span></div>';
-  var dias=Math.ceil(est.total/8);
-  html+='<div class="plan-est-row total"><span>Total estimado</span><span>'+est.total+'h'+(dias>1?' ≈ '+dias+' días':'')+'</span></div>';
+  /* Agrupar equipos por tipo real para calcular horas correctamente */
+  var grupos={};
+  planEquiposSeleccionados.forEach(function(eq){
+    var tipoEq=planMapearTipoEquipo(eq);
+    if(!grupos[tipoEq])grupos[tipoEq]={tipo:tipoEq,cantidad:0,equipos:[]};
+    grupos[tipoEq].cantidad++;
+    grupos[tipoEq].equipos.push(eq);
+  });
+  var totalHoras=0;
+  var html='';
+  Object.keys(grupos).forEach(function(key){
+    var g=grupos[key];
+    var est=planCalcularTiempo(tipo,g.tipo,g.cantidad);
+    totalHoras+=est.total;
+    html+='<div class="plan-est-row"><span>'+nombreTipo+' × '+g.tipo+' × '+g.cantidad+'</span><span>'+est.total+'h</span></div>';
+  });
+  totalHoras=Math.round(totalHoras*10)/10;
+  var dias=Math.ceil(totalHoras/8);
+  html+='<div class="plan-est-row total"><span>Total estimado</span><span>'+totalHoras+'h'+(dias>1?' ≈ '+dias+' días':'')+'</span></div>';
   document.getElementById('planModalEstRows').innerHTML=html;
+  /* Guardar total para usar al crear trabajo */
+  window.planUltimaEstimacion=totalHoras;
 }
 
 /* Navigation */
@@ -6999,14 +7063,16 @@ function planModalCargarEquipos(){
       var f=e.fields||e;
       var nombre=f.Title||'';
       var id=f.id||f.ID||'';
+      var tipoEq=f.TipoEquipo||f.TipoSistema||f.Tipo||'';
       var div=document.createElement('div');
       div.style.cssText='display:flex;align-items:center;gap:10px;padding:8px 10px;border:0.5px solid var(--border);border-radius:6px;margin-bottom:4px;cursor:pointer;background:var(--white)';
-      div.innerHTML='<input type="checkbox" data-id="'+id+'" data-nombre="'+nombre+'" style="width:auto;accent-color:#0F6E56"><span style="font-size:13px;color:var(--text)">'+nombre+'</span>';
+      var labelTipo=tipoEq?' <span style="font-size:11px;color:var(--text-muted)">('+tipoEq+')</span>':'';
+      div.innerHTML='<input type="checkbox" data-id="'+id+'" data-nombre="'+nombre+'" data-tipo="'+(tipoEq||'')+'" style="width:auto;accent-color:#0F6E56"><span style="font-size:13px;color:var(--text)">'+nombre+labelTipo+'</span>';
       var cb=div.querySelector('input');
       div.onclick=function(ev){if(ev.target!==cb)cb.click();};
       cb.onchange=function(){
         if(this.checked){
-          planEquiposSeleccionados.push({id:this.getAttribute('data-id'),nombre:this.getAttribute('data-nombre')});
+          planEquiposSeleccionados.push({id:this.getAttribute('data-id'),nombre:this.getAttribute('data-nombre'),TipoEquipo:this.getAttribute('data-tipo'),Title:this.getAttribute('data-nombre')});
         } else {
           var rid=cb.getAttribute('data-id');
           planEquiposSeleccionados=planEquiposSeleccionados.filter(function(x){return x.id!==rid;});
@@ -7087,12 +7153,23 @@ function planModalCargarTecnicos(){
 /* Modal open/close */
 function planAbrirModal(){
   document.getElementById('planModalNuevo').style.display='flex';
+  window.planUltimaEstimacion=0;
   planModalCargarTecnicos();
   planModalEstimar();
+  /* Default: hora actual redondeada a la próxima media hora */
+  var selH=document.getElementById('planModalHora');
+  if(selH){
+    var now=new Date();var hh=now.getHours();var mm=now.getMinutes();
+    if(mm>=30){hh++;mm=0;}else{mm=30;}
+    if(hh<7)hh=8;if(hh>16){hh=8;mm=0;}
+    var val=String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0');
+    for(var i=0;i<selH.options.length;i++){if(selH.options[i].value===val){selH.selectedIndex=i;break;}}
+  }
 }
 function planCerrarModal(){
   document.getElementById('planModalNuevo').style.display='none';
   planSolicitudAprobandoId=null;
+  window.planUltimaEstimacion=0;
 }
 
 /* Create work (Coordinadora: programs directly via CREATE_OT) */
@@ -7154,8 +7231,8 @@ function planCrearTrabajo(){
         tipoTrabajo:tipo,
         tecnico:sanTxt(tecnico),
         fechaProgramada:fecha,
-        horaInicio:'08:00',
-        duracion:String(planEquiposSeleccionados.length||1),
+        horaInicio:document.getElementById('planModalHora')?document.getElementById('planModalHora').value:'08:00',
+        duracion:String(window.planUltimaEstimacion||planEquiposSeleccionados.length||1),
         prioridad:prioridad,
         facturable:facturable,
         equipo:sanTxt(equiposNombres),
