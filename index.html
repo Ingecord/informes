@@ -7233,7 +7233,7 @@ function planCrearTrabajo(){
         fechaProgramada:fecha,
         horaInicio:document.getElementById('planModalHora')?document.getElementById('planModalHora').value:'08:00',
         duracion:String(window.planUltimaEstimacion||planEquiposSeleccionados.length||1),
-        prioridad:prioridad,
+        prioridad:(prioridad==='Alta'?'Urgente':'Normal'),
         facturable:facturable,
         equipo:sanTxt(equiposNombres),
         cantidadEquipos:String(planEquiposSeleccionados.length),
