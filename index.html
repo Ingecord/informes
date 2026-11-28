@@ -6187,9 +6187,13 @@ function planRenderSolicitudes(){
 }
 
 /* Aprobar solicitud → abrir modal de programación con datos prellenados */
+var planSolicitudAprobandoId=null;
+
 function planAprobarSolicitud(solId){
   var sol=planSolCache.filter(function(s){return String(s.id)===String(solId);})[0];
   if(!sol){alert('Solicitud no encontrada');return;}
+  /* Save solicitud ID so planCrearTrabajo marks it resolved after creation */
+  planSolicitudAprobandoId=String(solId);
   /* Open modal and pre-fill from solicitud data */
   planAbrirModal();
   /* Pre-select client by name */
@@ -6210,8 +6214,29 @@ function planAprobarSolicitud(solId){
 /* Rechazar solicitud → pedir nota y marcar como resuelta */
 function planRechazarSolicitud(solId){
   var nota=prompt('Motivo del rechazo:');
-  if(nota===null)return; /* cancelled */
-  alert('⚠️ La función UPDATE_SOLICITUD debe agregarse al escenario de Make.com para marcar como resuelta.');
+  if(nota===null)return;
+  var ahora=new Date().toISOString();
+  fetch(WEBHOOK_OT,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      action:'UPDATE_SOLICITUD',
+      payload:{
+        itemId:String(solId),
+        resueltaPor:sanTxt(session.nombre||''),
+        fechaResolucion:ahora,
+        notaResolucion:sanTxt('RECHAZADA: '+(nota||'Sin motivo'))
+      }
+    })
+  }).then(function(r){return r.json();}).then(function(resp){
+    if(resp&&resp.ok){
+      alert('Solicitud #'+solId+' rechazada.');
+      planCargarSolicitudes();
+    }else{alert('Error al rechazar.');}
+  }).catch(function(err){
+    console.error('Error rechazando:',err);
+    alert('Error de conexión.');
+  });
 }
 
 /* Daily board */
@@ -6551,6 +6576,7 @@ function planAbrirModal(){
 }
 function planCerrarModal(){
   document.getElementById('planModalNuevo').style.display='none';
+  planSolicitudAprobandoId=null;
 }
 
 /* Create work (Coordinadora: programs directly via CREATE_OT) */
@@ -6630,6 +6656,20 @@ function planCrearTrabajo(){
     btn.disabled=false;
     btn.textContent='✓ Programar y Generar OT';
     planCerrarModal();
+    /* If this was triggered from a solicitud approval, mark it resolved */
+    if(planSolicitudAprobandoId){
+      var solIdTemp=planSolicitudAprobandoId;
+      planSolicitudAprobandoId=null;
+      fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+        action:'UPDATE_SOLICITUD',
+        payload:{
+          itemId:solIdTemp,
+          resueltaPor:sanTxt(session.nombre||''),
+          fechaResolucion:new Date().toISOString(),
+          notaResolucion:'APROBADA — Trabajo programado para '+fecha
+        }
+      })}).catch(function(e){console.error('Error marcando solicitud:',e);});
+    }
     alert('✅ OT y trabajo creados exitosamente.');
     planCargarDatos();
   }).catch(function(err){
