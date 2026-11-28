@@ -5649,40 +5649,35 @@ abrirSolicitud=function(tipo){
         </div>
         <div class="plan-form-group">
           <label class="plan-form-label">Sucursal</label>
-          <select class="plan-form-input" id="planModalSucursal"></select>
+          <select class="plan-form-input" id="planModalSucursal" onchange="planModalCargarEquipos()"></select>
         </div>
       </div>
 
-      <div class="plan-form-row-3">
+      <div class="plan-form-row">
         <div class="plan-form-group">
-          <label class="plan-form-label">Tipo</label>
+          <label class="plan-form-label">Tipo de trabajo</label>
           <select class="plan-form-input" id="planModalTipo" onchange="planModalEstimar()">
-            <option value="PM">Preventivo</option>
-            <option value="CR">Correctivo</option>
-            <option value="INST">Instalación</option>
-            <option value="EVAL">Evaluación</option>
+            <option value="Mantenimiento_Preventivo">Preventivo</option>
+            <option value="Mantenimiento_Correctivo">Correctivo</option>
+            <option value="Instalacion">Instalación</option>
+            <option value="Diagnostico">Diagnóstico</option>
           </select>
         </div>
         <div class="plan-form-group">
-          <label class="plan-form-label">Equipo</label>
-          <select class="plan-form-input" id="planModalEquipo" onchange="planModalEstimar()">
-            <option>Mini Split</option>
-            <option>Split Piso/Techo</option>
-            <option>Central (2-5 Ton)</option>
-            <option>Central (&gt; 5 Ton)</option>
-            <option>VRF — Unidad Interior</option>
-            <option>VRF — Unidad Exterior</option>
-            <option>Chiller Scroll</option>
-            <option>Chiller Tornillo</option>
-            <option>Fan Coil</option>
-            <option>Manejadora</option>
-            <option>Extracción</option>
-            <option>Refrigeración Comercial</option>
+          <label class="plan-form-label">Prioridad</label>
+          <select class="plan-form-input" id="planModalPrioridad">
+            <option>Normal</option>
+            <option>Urgente</option>
+            <option>Extraordinaria</option>
           </select>
         </div>
-        <div class="plan-form-group">
-          <label class="plan-form-label">Cantidad</label>
-          <input class="plan-form-input" type="number" id="planModalCantidad" value="1" min="1" onchange="planModalEstimar()">
+      </div>
+
+      <div class="plan-form-group">
+        <label class="plan-form-label">Equipos de la sucursal</label>
+        <div id="planModalEquiposCount" style="font-size:11px;color:var(--text-muted);margin-bottom:4px">0 equipo(s) seleccionado(s)</div>
+        <div id="planModalEquiposCont" style="max-height:180px;overflow-y:auto;border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px">
+          <div style="text-align:center;padding:16px;color:var(--text-muted);font-size:13px">Selecciona cliente y sucursal</div>
         </div>
       </div>
 
@@ -5692,26 +5687,15 @@ abrirSolicitud=function(tipo){
           <select class="plan-form-input" id="planModalTecnico"></select>
         </div>
         <div class="plan-form-group">
-          <label class="plan-form-label">Fecha programada</label>
-          <input class="plan-form-input" type="date" id="planModalFecha">
-        </div>
-      </div>
-
-      <div class="plan-form-row">
-        <div class="plan-form-group">
-          <label class="plan-form-label">Prioridad</label>
-          <select class="plan-form-input" id="planModalPrioridad">
-            <option>Normal</option>
-            <option>Urgente</option>
-            <option>Extraordinaria</option>
-          </select>
-        </div>
-        <div class="plan-form-group">
           <label class="plan-form-label">Facturable</label>
           <select class="plan-form-input" id="planModalFacturable">
             <option value="Si">Sí</option>
             <option value="No">No</option>
           </select>
+        </div>
+        <div class="plan-form-group">
+          <label class="plan-form-label">Fecha programada</label>
+          <input class="plan-form-input" type="date" id="planModalFecha">
         </div>
       </div>
 
@@ -5784,11 +5768,21 @@ function planEstimar(){
 
 function planModalEstimar(){
   var tipo=document.getElementById('planModalTipo').value;
-  var equipo=document.getElementById('planModalEquipo').value;
-  var cant=document.getElementById('planModalCantidad').value;
-  var est=planCalcularTiempo(tipo,equipo,cant);
-  var tipoNombres={'PM':'Preventivo','CR':'Correctivo','INST':'Instalación','EVAL':'Evaluación'};
-  var html='<div class="plan-est-row"><span>'+tipoNombres[tipo]+' × '+equipo+' × '+est.cantidad+'</span><span>'+est.total+'h</span></div>';
+  var cant=planEquiposSeleccionados.length;
+  if(!cant){
+    document.getElementById('planModalEstRows').innerHTML='<div class="plan-est-row" style="color:var(--text-muted)">Selecciona equipos para estimar</div>';
+    return;
+  }
+  /* Usar 'General' como tipo de equipo genérico ya que ahora se seleccionan equipos reales */
+  var est=planCalcularTiempo(tipo,'General',cant);
+  var tipoNombres={
+    'Mantenimiento_Preventivo':'Preventivo',
+    'Mantenimiento_Correctivo':'Correctivo',
+    'Instalacion':'Instalación',
+    'Diagnostico':'Diagnóstico'
+  };
+  var nombreTipo=tipoNombres[tipo]||tipo;
+  var html='<div class="plan-est-row"><span>'+nombreTipo+' × '+cant+' equipo(s)</span><span>'+est.total+'h</span></div>';
   var dias=Math.ceil(est.total/8);
   html+='<div class="plan-est-row total"><span>Total estimado</span><span>'+est.total+'h'+(dias>1?' ≈ '+dias+' días':'')+'</span></div>';
   document.getElementById('planModalEstRows').innerHTML=html;
@@ -6389,22 +6383,110 @@ function planCargarSucursalesSol(){
   sel.innerHTML=opts;
 }
 
+var planEquiposSeleccionados=[];
+
+function planModalCargarEquipos(){
+  var sucursalId=document.getElementById('planModalSucursal').value;
+  var cont=document.getElementById('planModalEquiposCont');
+  planEquiposSeleccionados=[];
+  document.getElementById('planModalEquiposCount').textContent='0 equipo(s) seleccionado(s)';
+  if(!sucursalId){
+    cont.innerHTML='<div style="text-align:center;padding:16px;color:var(--text-muted);font-size:13px">Selecciona una sucursal para ver los equipos</div>';
+    return;
+  }
+  cont.innerHTML='<div style="text-align:center;padding:16px;color:var(--text-muted);font-size:13px">Cargando equipos...</div>';
+  fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_EQUIPOS',payload:{sucursalId:sucursalId}})})
+  .then(function(r){return r.json();})
+  .then(function(data){
+    data=data.filter(function(e){var f=e.fields||e;return String(f.SucursalIDLookupId||f.SucursalLookupId||'')===String(sucursalId);});
+    if(!data.length){cont.innerHTML='<div style="text-align:center;padding:16px;color:var(--text-muted);font-size:13px">Sin equipos registrados en esta sucursal</div>';return;}
+    cont.innerHTML='';
+    data.forEach(function(e){
+      var f=e.fields||e;
+      var nombre=f.Title||'';
+      var id=f.id||f.ID||'';
+      var div=document.createElement('div');
+      div.style.cssText='display:flex;align-items:center;gap:10px;padding:8px 10px;border:0.5px solid var(--border);border-radius:6px;margin-bottom:4px;cursor:pointer;background:var(--white)';
+      div.innerHTML='<input type="checkbox" data-id="'+id+'" data-nombre="'+nombre+'" style="width:auto;accent-color:#0F6E56"><span style="font-size:13px;color:var(--text)">'+nombre+'</span>';
+      var cb=div.querySelector('input');
+      div.onclick=function(ev){if(ev.target!==cb)cb.click();};
+      cb.onchange=function(){
+        if(this.checked){
+          planEquiposSeleccionados.push({id:this.getAttribute('data-id'),nombre:this.getAttribute('data-nombre')});
+        } else {
+          var rid=cb.getAttribute('data-id');
+          planEquiposSeleccionados=planEquiposSeleccionados.filter(function(x){return x.id!==rid;});
+        }
+        document.getElementById('planModalEquiposCount').textContent=planEquiposSeleccionados.length+' equipo(s) seleccionado(s)';
+        planModalEstimar();
+      };
+      cont.appendChild(div);
+    });
+  })
+  .catch(function(){cont.innerHTML='<div style="text-align:center;padding:16px;color:var(--text-muted);font-size:13px">Error al cargar equipos</div>';});
+}
+
 function planModalCargarSuc(){
   var clienteId=document.getElementById('planModalCliente').value;
   var sel=document.getElementById('planModalSucursal');
-  sel.innerHTML='<option value="">Cargando...</option>';
-  var opts='<option value="">— Seleccionar sucursal —</option>';
-  planSucursalesCache.forEach(function(s){
-    var nombre=s.Title||s.Titulo||s.Nombre||'';
-    var id=s.id||s.Id||'';
-    opts+='<option value="'+id+'">'+nombre+'</option>';
-  });
-  sel.innerHTML=opts;
+  sel.innerHTML='<option value="">Cargando sucursales...</option>';
+  /* Limpiar equipos al cambiar cliente */
+  planEquiposSeleccionados=[];
+  document.getElementById('planModalEquiposCount').textContent='0 equipo(s) seleccionado(s)';
+  document.getElementById('planModalEquiposCont').innerHTML='<div style="text-align:center;padding:16px;color:var(--text-muted);font-size:13px">Selecciona una sucursal para ver los equipos</div>';
+  if(!clienteId){
+    sel.innerHTML='<option value="">— Seleccionar sucursal —</option>';
+    return;
+  }
+  fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'GET_SUCURSALES',payload:{clienteId:clienteId}})})
+  .then(function(r){return r.json();})
+  .then(function(data){
+    var filtradas=data.filter(function(s){
+      var f=s.fields||s;
+      return String(f.ClienteIDLookupId||f.ClienteLookupId||'')===String(clienteId);
+    });
+    sel.innerHTML='<option value="">— Seleccionar sucursal —</option>';
+    if(!filtradas.length){sel.innerHTML='<option value="">Sin sucursales para este cliente</option>';return;}
+    filtradas.forEach(function(s){
+      var f=s.fields||s;
+      var opt=document.createElement('option');
+      opt.value=f.id||f.ID||'';
+      opt.textContent=f.Title||f.Nombre||'';
+      sel.appendChild(opt);
+    });
+  })
+  .catch(function(){sel.innerHTML='<option value="">Error al cargar</option>';});
+}
+
+/* Cargar técnicos desde lista Personal (igual que módulo OT) */
+function planModalCargarTecnicos(){
+  var sel=document.getElementById('planModalTecnico');
+  sel.innerHTML='<option value="">Cargando técnicos...</option>';
+  fetch(CONSULTA_URL+'?accion=listar_tecnicos')
+  .then(function(r){return r.json();})
+  .then(function(data){
+    sel.innerHTML='<option value="">— Seleccionar técnico —</option>';
+    data.forEach(function(t){
+      var f=t.fields||t;
+      var nombre=f.Title||'';
+      var id=f.id||f.ID||'';
+      var rol=f.Rol||'';
+      if(rol==='Tecnico'||rol==='Supervisor'||rol==='ServiciosProfesionales'){
+        var opt=document.createElement('option');
+        opt.value=nombre;
+        opt.textContent=nombre;
+        sel.appendChild(opt);
+      }
+    });
+    if(sel.options.length<=1){sel.innerHTML='<option value="">No hay técnicos disponibles</option>';}
+  })
+  .catch(function(){sel.innerHTML='<option value="">Error al cargar técnicos</option>';});
 }
 
 /* Modal open/close */
 function planAbrirModal(){
   document.getElementById('planModalNuevo').style.display='flex';
+  planModalCargarTecnicos();
   planModalEstimar();
 }
 function planCerrarModal(){
@@ -6424,8 +6506,15 @@ function planCrearTrabajo(){
 
   if(!clienteId||!sucursalId){alert('Seleccione cliente y sucursal');return;}
   if(!fecha){alert('Seleccione fecha');return;}
+  if(!planEquiposSeleccionados.length){alert('Seleccione al menos un equipo');return;}
 
-  var tipoMap={'PM':'Mantenimiento_Preventivo','CR':'Mantenimiento_Correctivo','INST':'Instalacion','EVAL':'Diagnostico'};
+  /* Buscar nombres de cliente y sucursal */
+  var clienteNombre='';
+  planClientesCache.forEach(function(c){if(String(c.id||c.Id)==String(clienteId))clienteNombre=c.Title||c.Nombre||'';});
+  var sucursalNombre='';
+  planSucursalesCache.forEach(function(s){if(String(s.id||s.Id)==String(sucursalId))sucursalNombre=s.Title||s.Nombre||'';});
+
+  var equiposNombres=planEquiposSeleccionados.map(function(e){return e.nombre;}).join(', ');
 
   var payload={
     action:'CREATE_OT',
@@ -6433,12 +6522,12 @@ function planCrearTrabajo(){
       clienteId:clienteId,
       sucursalId:sucursalId,
       tecnicoId:tecnico,
-      tipo:tipoMap[tipo]||tipo,
+      tipo:tipo,
       prioridad:prioridad,
       origen:'Planificacion',
       fecha:fecha,
       descripcion:sanTxt(desc||'Trabajo programado desde módulo de planificación'),
-      equipos:[],
+      equipos:planEquiposSeleccionados.map(function(e){return e.id;}),
       registrado_por:session.nombre
     }
   };
@@ -6452,16 +6541,42 @@ function planCrearTrabajo(){
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify(payload)
   }).then(function(r){return r.json();}).then(function(resp){
+    /* OT creada — ahora crear trabajo en Programacion */
+    var trabajoPayload={
+      action:'CREATE_TRABAJO',
+      payload:{
+        titulo:sanTxt(tipo.replace(/_/g,' ')+' — '+clienteNombre+' — '+sucursalNombre),
+        otNumero:'OT-PORTAL',
+        cliente:sanTxt(clienteNombre),
+        sucursal:sanTxt(sucursalNombre),
+        tipoTrabajo:tipo,
+        tecnico:sanTxt(tecnico),
+        fechaProgramada:fecha,
+        horaInicio:'08:00',
+        duracion:String(planEquiposSeleccionados.length||1),
+        prioridad:prioridad,
+        facturable:facturable,
+        equipo:sanTxt(equiposNombres),
+        cantidadEquipos:String(planEquiposSeleccionados.length),
+        notasConfirmadas:'',
+        notasOperativas:sanTxt(desc||''),
+        descripcionTrabajo:sanTxt(desc||''),
+        creadoPor:sanTxt(session.nombre||''),
+        incluyeTraslado:'No'
+      }
+    };
+    return fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(trabajoPayload)});
+  }).then(function(r){return r.text();}).then(function(){
     btn.disabled=false;
     btn.textContent='✓ Programar y Generar OT';
     planCerrarModal();
-    alert('✅ OT creada exitosamente. Power Automate asignará el número consecutivo.');
+    alert('✅ OT y trabajo creados exitosamente.');
     planCargarDatos();
   }).catch(function(err){
     btn.disabled=false;
     btn.textContent='✓ Programar y Generar OT';
-    console.error('Error creando OT:',err);
-    alert('Error al crear OT. Verifica tu conexión e intenta de nuevo.');
+    console.error('Error creando OT/trabajo:',err);
+    alert('Error al crear. Verifica tu conexión e intenta de nuevo.');
   });
 }
 
