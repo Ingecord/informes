@@ -6520,8 +6520,11 @@ function planRenderVencidas(){
     html+='<div style="text-align:center"><div class="plan-ot-dias">'+dias+'d</div><div class="plan-ot-dias-label">vencida</div></div>';
     html+='<div class="plan-ot-info"><div class="plan-ot-info-title"><span class="plan-ot-link">'+titulo+'</span> — '+cliente+'</div>';
     html+='<div class="plan-ot-info-meta">Técnico: '+tec+' · Programada: '+fpStr+' · <span class="plan-badge vencida">Vencida</span></div></div>';
-    html+='<button class="plan-btn sm">Responder</button>';
-    html+='</div>';
+    var canReprog=ot._source==='trabajo'&&(parseInt(ot.VecesReprogramado||0)<1);
+    html+='<div style="display:flex;gap:4px;align-items:center;flex-shrink:0">';
+    if(canReprog)html+='<button class="plan-btn sm" onclick="planAbrirReprog(\''+ot.id+'\')" title="Reprogramar">🔄</button>';
+    html+='<button class="plan-btn sm danger" onclick="planResponderVencida(\''+ot.id+'\',\''+titulo.replace(/'/g,"\\'")+'\',\''+cliente.replace(/'/g,"\\'")+'\')">⚡ Responder</button>';
+    html+='</div></div>';
   });
   document.getElementById('planVencList').innerHTML=html;
 }
@@ -6574,27 +6577,32 @@ function planRenderSolicitudes(){
 
 /* Aprobar solicitud → abrir modal de programación con datos prellenados */
 var planSolicitudAprobandoId=null;
+var planSolPreselect=null;
 
 function planAprobarSolicitud(solId){
   var sol=planSolCache.filter(function(s){return String(s.id)===String(solId);})[0];
   if(!sol){alert('Solicitud no encontrada');return;}
-  /* Save solicitud ID so planCrearTrabajo marks it resolved after creation */
   planSolicitudAprobandoId=String(solId);
-  /* Open modal and pre-fill from solicitud data */
+  /* Save data to pre-select after async loads */
+  planSolPreselect={sucursal:sol.Sucursal||'',tipo:sol.TipoTrabajo||'',desc:sol.Descripcion||'',solId:solId,facturable:sol.Facturable};
+  /* Open modal */
   planAbrirModal();
   /* Pre-select client by name */
   var selCli=document.getElementById('planModalCliente');
   for(var i=0;i<selCli.options.length;i++){
     if(selCli.options[i].text===(sol.Cliente||'')){selCli.selectedIndex=i;break;}
   }
-  /* Trigger sucursal load, then pre-select */
-  planModalCargarSuc();
   /* Set tipo */
   var selTipo=document.getElementById('planModalTipo');
   if(selTipo&&sol.TipoTrabajo){selTipo.value=sol.TipoTrabajo;}
-  /* Set description with solicitud reference */
+  /* Set facturable */
+  var selFact=document.getElementById('planModalFacturable');
+  if(selFact){selFact.value=(sol.Facturable===true||sol.Facturable==='true')?'Si':'No';}
+  /* Set description */
   var desc=document.getElementById('planModalDesc');
   if(desc){desc.value='[Solicitud #'+solId+'] '+(sol.Descripcion||'');}
+  /* Trigger sucursal load — pre-select happens inside planModalCargarSuc callback */
+  planModalCargarSuc();
 }
 
 /* Rechazar solicitud → pedir nota y marcar como resuelta */
@@ -6623,6 +6631,55 @@ function planRechazarSolicitud(solId){
     console.error('Error rechazando:',err);
     alert('Error de conexión.');
   });
+}
+
+/* Responder OT Vencida */
+function planResponderVencida(itemId,titulo,cliente){
+  var t=null;
+  planTrabajosCache.forEach(function(x){if(String(x.id)===String(itemId))t=x;});
+  /* Also check OTs cache if not found in trabajos */
+  if(!t)planOtsCache.forEach(function(x){if(String(x.id)===String(itemId))t=x;});
+
+  var opciones=['No se ejecutó — Reprogramar','No se ejecutó — Cancelar','Falta informe — Notificar técnico','Ya se ejecutó — Marcar como ejecutada'];
+  var sel=prompt('OT Vencida: '+titulo+' ('+cliente+')\n\nSeleccione acción:\n1. '+opciones[0]+'\n2. '+opciones[1]+'\n3. '+opciones[2]+'\n4. '+opciones[3]+'\n\nIngrese número (1-4):');
+  if(!sel)return;
+  var opcion=parseInt(sel);
+
+  if(opcion===1){
+    /* Reprogramar */
+    if(t&&t._source==='trabajo'){
+      planAbrirReprog(itemId);
+    } else {
+      alert('Para reprogramar una OT, use el módulo de OTs.');
+    }
+  } else if(opcion===2){
+    /* Cancelar */
+    var motivo=prompt('Motivo de cancelación:');
+    if(!motivo)return;
+    var payload={action:'UPDATE_TRABAJO',id:itemId,Estado:'Cancelada',NotasOperativas:sanTxt('[CANCELADA '+ new Date().toISOString().split('T')[0]+'] '+motivo)};
+    fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
+    .then(function(r){return r.json();})
+    .then(function(){
+      alert('OT cancelada.');
+      planTrabajosCache.forEach(function(x){if(String(x.id)===String(itemId))x.Estado='Cancelada';});
+      planRenderAll();
+    }).catch(function(e){alert('Error: '+e.message);});
+  } else if(opcion===3){
+    /* Falta informe */
+    alert('📧 Función de notificación por correo pendiente de configurar en Make.com.\n\nTécnico asignado: '+(t?t.Tecnico||t.Tecnico_Principal||'—':'—'));
+  } else if(opcion===4){
+    /* Marcar ejecutada */
+    var payload2={action:'UPDATE_TRABAJO',id:itemId,Estado:'Ejecutada'};
+    fetch(WEBHOOK_OT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload2)})
+    .then(function(r){return r.json();})
+    .then(function(){
+      alert('✅ Trabajo marcado como ejecutado.');
+      planTrabajosCache.forEach(function(x){if(String(x.id)===String(itemId))x.Estado='Ejecutada';});
+      planRenderAll();
+    }).catch(function(e){alert('Error: '+e.message);});
+  } else {
+    alert('Opción no válida.');
+  }
 }
 
 /* Daily board */
@@ -6991,6 +7048,13 @@ function planModalCargarSuc(){
       opt.textContent=f.Title||f.Nombre||'';
       sel.appendChild(opt);
     });
+    /* Pre-select sucursal if coming from solicitud approval */
+    if(planSolPreselect&&planSolPreselect.sucursal){
+      for(var i=0;i<sel.options.length;i++){
+        if(sel.options[i].text===planSolPreselect.sucursal){sel.selectedIndex=i;break;}
+      }
+      planSolPreselect=null;
+    }
   })
   .catch(function(){sel.innerHTML='<option value="">Error al cargar</option>';});
 }
